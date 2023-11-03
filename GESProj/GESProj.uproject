@@ -1,0 +1,13 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{692BB651-46A7-213C-E429-17A40D7E4067}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "GESProj",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
