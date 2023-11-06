@@ -1,7 +1,7 @@
-#include "GameEventHandler.h"
+#include "..\Public\GlobalEventHandler.h"
 
 //---------- FGameEventListeners ----------
-bool FGameEventListeners::Dispatch(const FGameEventData& EventData) {
+bool FGlobalEventListeners::Dispatch(const FGlobalEventData& EventData) {
     if (!GetListener().IsBound()) {
         return false;
     }
@@ -10,17 +10,17 @@ bool FGameEventListeners::Dispatch(const FGameEventData& EventData) {
     return true;
 }
 
-void FGameEventListeners::Clear() {
+void FGlobalEventListeners::Clear() {
     Listeners.Clear();
     HandleMap.Empty();
 }
 
 //---------- FGameEventHandler ----------
-bool FGameEventHandler::Register(
-    const FGameEventType& InEventID,
-    const FGameEventStaticDelegate InStaticCallback) {
+bool FGlobalEventHandler::Register(
+    const FGlobalEventType& InEventID,
+    const FGlobalEventStaticDelegate InStaticCallback) {
     
-    FGameEventListeners& ListenersPtr = EventMap.FindOrAdd(InEventID);
+    FGlobalEventListeners& ListenersPtr = EventMap.FindOrAdd(InEventID);
     ListenersPtr.Init(InEventID);
 
     if (!ListenersPtr.Register(InStaticCallback)) {
@@ -30,10 +30,10 @@ bool FGameEventHandler::Register(
     return true;
 }
 
-bool FGameEventHandler::Unregister(
-    const FGameEventType& InEventID,
-    const FGameEventStaticDelegate InStaticCallback) {
-    FGameEventListeners* ListenersPtr = EventMap.Find(InEventID);
+bool FGlobalEventHandler::Unregister(
+    const FGlobalEventType& InEventID,
+    const FGlobalEventStaticDelegate InStaticCallback) {
+    FGlobalEventListeners* ListenersPtr = EventMap.Find(InEventID);
     if (!ListenersPtr) {
         return false;
     }
@@ -41,7 +41,7 @@ bool FGameEventHandler::Unregister(
     return ListenersPtr->Unregister(InStaticCallback);
 }
 
-bool FGameEventHandler::Dispatch(const FGameEventData& EventData) {
+bool FGlobalEventHandler::Dispatch(const FGlobalEventData& EventData) {
     const auto ListenersPtr = EventMap.Find(EventData.EventID);
     if (!ListenersPtr) {
         return false;
@@ -50,7 +50,7 @@ bool FGameEventHandler::Dispatch(const FGameEventData& EventData) {
     return ListenersPtr->Dispatch(EventData);
 }
 
-void FGameEventHandler::Clear() {
+void FGlobalEventHandler::Clear() {
     for (auto Listeners : EventMap) {
         Listeners.Value.Clear();
     }

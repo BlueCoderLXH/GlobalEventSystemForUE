@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class GameEventSystem : ModuleRules
+public class GlobalEventSystem : ModuleRules
 {
-	public GameEventSystem(ReadOnlyTargetRules Target) : base(Target)
+	public GlobalEventSystem(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		PublicIncludePaths.AddRange(

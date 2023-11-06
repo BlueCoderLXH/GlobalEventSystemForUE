@@ -2,12 +2,12 @@
 
 #include "CoreMinimal.h"
 
-typedef FName FGameEventType;
+typedef FName FGlobalEventType;
 
 /**
  * EGameEventParamType
  */
-enum class EGameEventParamType : uint8
+enum class EGlobalEventParamType : uint8
 {
 	None = 0,
 	Any,
@@ -23,9 +23,9 @@ enum class EGameEventParamType : uint8
  *
  * Wrap the event parameter with support type
  */
-struct GAMEEVENTSYSTEM_API FGameEventParamWrapper
+struct GLOBALEVENTSYSTEM_API FGlobalEventParamWrapper
 {
-	EGameEventParamType Type;
+	EGlobalEventParamType Type;
 
 	// Static
 	union
@@ -42,85 +42,85 @@ struct GAMEEVENTSYSTEM_API FGameEventParamWrapper
 	// Dynamic
 	FString StrValue;
 
-	FGameEventParamWrapper()
+	FGlobalEventParamWrapper()
 	{
 		bValue = false;
 		IntValue = 0;
 		FloatValue = 0;
 		DataPtr = nullptr;
 		StrValue = "";
-		Type = EGameEventParamType::None;		
+		Type = EGlobalEventParamType::None;		
 	}
 
-	~FGameEventParamWrapper()
+	~FGlobalEventParamWrapper()
 	{
 		bValue = false;
 		IntValue = 0;
 		FloatValue = 0;
 		DataPtr = nullptr;
 		StrValue = "";
-		Type = EGameEventParamType::None;
+		Type = EGlobalEventParamType::None;
 	}
 
 	bool GetBool() const
 	{
-		checkf(Type == EGameEventParamType::Bool, TEXT("FGameEventParamWrapper:GetBool Type:%s isn't a bool"), *GetTypeString());
+		checkf(Type == EGlobalEventParamType::Bool, TEXT("FGameEventParamWrapper:GetBool Type:%s isn't a bool"), *GetTypeString());
 		return bValue;
 	}
 
 	int8 GetByte() const
 	{
-		checkf(Type == EGameEventParamType::Integer, TEXT("FGameEventParamWrapper:GetInteger Type:%s isn't a int"), *GetTypeString());
+		checkf(Type == EGlobalEventParamType::Integer, TEXT("FGameEventParamWrapper:GetInteger Type:%s isn't a int"), *GetTypeString());
 		return IntValue;
 	}
 
 	int16 GetShort() const
 	{
-		checkf(Type == EGameEventParamType::Integer, TEXT("FGameEventParamWrapper:GetInteger Type:%s isn't a int"), *GetTypeString());
+		checkf(Type == EGlobalEventParamType::Integer, TEXT("FGameEventParamWrapper:GetInteger Type:%s isn't a int"), *GetTypeString());
 		return IntValue;		
 	}
 
 	int32 GetInt() const
 	{
-		checkf(Type == EGameEventParamType::Integer, TEXT("FGameEventParamWrapper:GetInteger Type:%s isn't a int"), *GetTypeString());
+		checkf(Type == EGlobalEventParamType::Integer, TEXT("FGameEventParamWrapper:GetInteger Type:%s isn't a int"), *GetTypeString());
 		return IntValue;
 	}
 
 	int64 GetLong() const
 	{
-		checkf(Type == EGameEventParamType::Integer, TEXT("FGameEventParamWrapper:GetInteger Type:%s isn't a int"), *GetTypeString());
+		checkf(Type == EGlobalEventParamType::Integer, TEXT("FGameEventParamWrapper:GetInteger Type:%s isn't a int"), *GetTypeString());
 		return IntValue;
 	}
 
 	float GetFloat() const
 	{
-		checkf(Type == EGameEventParamType::Float, TEXT("FGameEventParamWrapper:GetFloat Type:%s isn't a float"), *GetTypeString());
+		checkf(Type == EGlobalEventParamType::Float, TEXT("FGameEventParamWrapper:GetFloat Type:%s isn't a float"), *GetTypeString());
 		return FloatValue;
 	}
 
 	double GetDouble() const
 	{
-		checkf(Type == EGameEventParamType::Float, TEXT("FGameEventParamWrapper:GetDouble Type:%s isn't a float"), *GetTypeString());
+		checkf(Type == EGlobalEventParamType::Float, TEXT("FGameEventParamWrapper:GetDouble Type:%s isn't a float"), *GetTypeString());
 		return FloatValue;		
 	}
 
 	const FString& GetString() const
 	{
-		checkf(Type == EGameEventParamType::String, TEXT("FGameEventParamWrapper:GetString Type:%s isn't a FString"), *GetTypeString());
+		checkf(Type == EGlobalEventParamType::String, TEXT("FGameEventParamWrapper:GetString Type:%s isn't a FString"), *GetTypeString());
 		return StrValue;
 	}
 
 	template<typename T>
 	std::enable_if_t<std::is_base_of<UObject, T>::value, T*> GetUObject() const
 	{
-		checkf(Type == EGameEventParamType::Object || Type == EGameEventParamType::Any, TEXT("FGameEventParamWrapper:GetObject Type:%s isn't a UObject"), *GetTypeString());
+		checkf(Type == EGlobalEventParamType::Object || Type == EGlobalEventParamType::Any, TEXT("FGameEventParamWrapper:GetObject Type:%s isn't a UObject"), *GetTypeString());
 		return static_cast<T*>(DataPtr);
 	}
 
 	template<typename T>
 	T* GetAny() const
 	{
-		checkf(Type == EGameEventParamType::Any || Type == EGameEventParamType::Object, TEXT("FGameEventParamWrapper:GetAny Type:%s isn't a Any"), *GetTypeString());
+		checkf(Type == EGlobalEventParamType::Any || Type == EGlobalEventParamType::Object, TEXT("FGameEventParamWrapper:GetAny Type:%s isn't a Any"), *GetTypeString());
 		T* AnyObjectPtr = static_cast<T*>(DataPtr);
 		// checkf(AnyObjectPtr, TEXT("FGameEventParamWrapper:GetAny AnyObjectPtr is null!"));
 		return AnyObjectPtr;
@@ -132,25 +132,25 @@ private:
 		FString Ret;
 		switch (Type)
 		{
-		case EGameEventParamType::Any:
+		case EGlobalEventParamType::Any:
 			Ret = TEXT("Any");
 			break;			
-		case EGameEventParamType::Bool:
+		case EGlobalEventParamType::Bool:
 			Ret = TEXT("Bool");
 			break;
-		case EGameEventParamType::Integer:
+		case EGlobalEventParamType::Integer:
 			Ret = TEXT("Integer");
 			break;			
-		case EGameEventParamType::Float:
+		case EGlobalEventParamType::Float:
 			Ret = TEXT("Float");
 			break;			
-		case EGameEventParamType::String:
+		case EGlobalEventParamType::String:
 			Ret = TEXT("FString");
 			break;		
-		case EGameEventParamType::Object:
+		case EGlobalEventParamType::Object:
 			Ret = TEXT("UObject");
 			break;
-		case EGameEventParamType::None:
+		case EGlobalEventParamType::None:
 			Ret = TEXT("None");
 			break;
 		}
@@ -163,9 +163,9 @@ private:
  *
  * The array of FGameEventParamWrapper
  */
-struct GAMEEVENTSYSTEM_API FGameEventData
+struct GLOBALEVENTSYSTEM_API FGlobalEventData
 {
-	FGameEventType EventID;
+	FGlobalEventType EventID;
 
 	template<typename T>
 	void PushParam(const T& AnyObject)
@@ -194,18 +194,18 @@ struct GAMEEVENTSYSTEM_API FGameEventData
 	template<typename T>
 	void PushParam(T* AnyObject)
 	{
-		FGameEventParamWrapper ParamWrapper;
+		FGlobalEventParamWrapper ParamWrapper;
 
-		ParamWrapper.Type = EGameEventParamType::Any;		
+		ParamWrapper.Type = EGlobalEventParamType::Any;		
 		ParamWrapper.DataPtr = AnyObject;
 		Params.Add(ParamWrapper);
 	}
 
 	void PushParam(std::nullptr_t NullPtr)
 	{
-		FGameEventParamWrapper ParamWrapper;
+		FGlobalEventParamWrapper ParamWrapper;
 
-		ParamWrapper.Type = EGameEventParamType::Any;		
+		ParamWrapper.Type = EGlobalEventParamType::Any;		
 		ParamWrapper.DataPtr = nullptr;
 		Params.Add(ParamWrapper);		
 	}
@@ -217,17 +217,17 @@ struct GAMEEVENTSYSTEM_API FGameEventData
 
 	void PushParam(UObject* Object)
 	{
-		FGameEventParamWrapper ParamWrapper;
+		FGlobalEventParamWrapper ParamWrapper;
 
-		ParamWrapper.Type = EGameEventParamType::Object;
+		ParamWrapper.Type = EGlobalEventParamType::Object;
 		ParamWrapper.DataPtr = Object;
 		Params.Add(ParamWrapper);
 	}
 
 	void PushParam(bool bValue)
 	{
-		FGameEventParamWrapper ParamWrapper;
-		ParamWrapper.Type = EGameEventParamType::Bool;
+		FGlobalEventParamWrapper ParamWrapper;
+		ParamWrapper.Type = EGlobalEventParamType::Bool;
 		ParamWrapper.bValue = bValue;
 		Params.Add(ParamWrapper);
 	}
@@ -249,8 +249,8 @@ struct GAMEEVENTSYSTEM_API FGameEventData
 
 	void PushParam(int64 LongValue)
 	{
-		FGameEventParamWrapper ParamWrapper;
-		ParamWrapper.Type = EGameEventParamType::Integer;
+		FGlobalEventParamWrapper ParamWrapper;
+		ParamWrapper.Type = EGlobalEventParamType::Integer;
 		ParamWrapper.IntValue = LongValue;
 		Params.Add(ParamWrapper);
 	}
@@ -262,8 +262,8 @@ struct GAMEEVENTSYSTEM_API FGameEventData
 	
 	void PushParam(double DoubleValue)
 	{
-		FGameEventParamWrapper ParamWrapper;
-		ParamWrapper.Type = EGameEventParamType::Float;
+		FGlobalEventParamWrapper ParamWrapper;
+		ParamWrapper.Type = EGlobalEventParamType::Float;
 		ParamWrapper.FloatValue = DoubleValue;
 		Params.Add(ParamWrapper);
 	}
@@ -300,8 +300,8 @@ struct GAMEEVENTSYSTEM_API FGameEventData
 
 	void PushParam(FString&& StrValue)
 	{
-		FGameEventParamWrapper ParamWrapper;
-		ParamWrapper.Type = EGameEventParamType::String;
+		FGlobalEventParamWrapper ParamWrapper;
+		ParamWrapper.Type = EGlobalEventParamType::String;
 		ParamWrapper.StrValue = StrValue;
 		Params.Add(ParamWrapper);
 	}
@@ -415,37 +415,37 @@ struct GAMEEVENTSYSTEM_API FGameEventData
 			auto DataParam = Params[i];
 			switch (DataParam.Type)
 			{
-			case EGameEventParamType::None:
+			case EGlobalEventParamType::None:
 				Ret += TEXT("None:");
 				break;
-			case EGameEventParamType::Any:
+			case EGlobalEventParamType::Any:
 				Ret += FString::Printf(TEXT("Any:%p"), DataParam.DataPtr);
 				break;
-			case EGameEventParamType::Bool:
+			case EGlobalEventParamType::Bool:
 				{
 					const bool bValue = DataParam.GetBool();
 					Ret += FString::Printf(TEXT("Bool:%s"), bValue ? TEXT("true") : TEXT("false"));
 				}
 				break;
-			case EGameEventParamType::Integer:
+			case EGlobalEventParamType::Integer:
 				{
 					const int32 IntValue = DataParam.GetInt();
 					Ret += FString::Printf(TEXT("Integer:%d"), IntValue);
 				}
 				break;
-			case EGameEventParamType::Float:
+			case EGlobalEventParamType::Float:
 				{
 					const float FValue = DataParam.GetFloat();
 					Ret += FString::Printf(TEXT("Float:%f"), FValue);					
 				}
 				break;
-			case EGameEventParamType::String:
+			case EGlobalEventParamType::String:
 				{
 					FString StrValue = DataParam.GetString();
 					Ret += FString::Printf(TEXT("String:%s"), *StrValue);					
 				}
 				break;
-			case EGameEventParamType::Object:
+			case EGlobalEventParamType::Object:
 				{
 					UObject* Object = DataParam.GetUObject<UObject>();
 					Ret += FString::Printf(TEXT("Object:%s_%s"), *(Object->GetClass()->GetName()), *(Object->GetName()));					
@@ -469,17 +469,17 @@ struct GAMEEVENTSYSTEM_API FGameEventData
 		Params.Reset();
 	}
 
-	~FGameEventData()
+	~FGlobalEventData()
 	{
 		Params.Empty();
 	}
 
 private:
-	const FGameEventParamWrapper& GetParam(const int32 Index) const
+	const FGlobalEventParamWrapper& GetParam(const int32 Index) const
 	{
 		checkf(Params.IsValidIndex(Index), TEXT("GetParam Index:%d is out of params bounds:%d"), Index, Params.Num());
 		return Params[Index];
 	}
 	
-	TArray<FGameEventParamWrapper> Params;
+	TArray<FGlobalEventParamWrapper> Params;
 };

@@ -2,25 +2,25 @@
 
 #include <functional>
 
-#include "GameEventData.h"
+#include "GlobalEventData.h"
 
-DEFINE_LOG_CATEGORY_STATIC(LogGameEventSystem, Log, All);
+DEFINE_LOG_CATEGORY_STATIC(LogGlobalEventSystem, Log, All);
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FGameEventListener, const FGameEventData&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FGlobalEventListener, const FGlobalEventData&);
 
-typedef void (*FGameEventStaticDelegate)(const FGameEventData&);
+typedef void (*FGlobalEventStaticDelegate)(const FGlobalEventData&);
 
-struct FGameEventCallbackKey
+struct FGlobalEventCallbackKey
 {
-    FGameEventCallbackKey(void* InCallbackPtr) {
+    FGlobalEventCallbackKey(void* InCallbackPtr) {
         HashCode = HashCombine(PointerHash(nullptr), PointerHash(InCallbackPtr));
     }
 
-    FGameEventCallbackKey(void* InTarget, void* InCallbackPtr) {
+    FGlobalEventCallbackKey(void* InTarget, void* InCallbackPtr) {
         HashCode = HashCombine(PointerHash(InTarget), PointerHash(InCallbackPtr));
     }
 
-    bool operator==(const FGameEventCallbackKey& Other) const {
+    bool operator==(const FGlobalEventCallbackKey& Other) const {
         return HashCode == Other.HashCode;
     }
 
@@ -32,7 +32,7 @@ private:
     uint32 HashCode;
 };
 
-inline uint32 GetTypeHash(const FGameEventCallbackKey& Key) {
+inline uint32 GetTypeHash(const FGlobalEventCallbackKey& Key) {
     return Key.GetHashCode();
 }
 
@@ -40,14 +40,14 @@ inline uint32 GetTypeHash(const FGameEventCallbackKey& Key) {
  * FGameEventListeners
  * The collection of FGameEventListener
  */
-class GAMEEVENTSYSTEM_API FGameEventListeners
+class GLOBALEVENTSYSTEM_API FGlobalEventListeners
 {
 public:
-    void Init(const FGameEventType& InEventID) {
+    void Init(const FGlobalEventType& InEventID) {
         EventID = InEventID;
     }
 
-    bool Register(const FGameEventStaticDelegate& InCallback) {
+    bool Register(const FGlobalEventStaticDelegate& InCallback) {
         auto BindListener = [&] () -> FDelegateHandle {
             return GetListener().AddStatic(InCallback);
         };
@@ -55,7 +55,7 @@ public:
         return RegisterInner(nullptr, PointerCast<void*>(InCallback), BindListener);
     }
 
-    bool Unregister(const FGameEventStaticDelegate& InCallback) {
+    bool Unregister(const FGlobalEventStaticDelegate& InCallback) {
         auto UnBindListener = [&] (const FDelegateHandle& DelegateHandle) -> void {
             GetListener().Remove(DelegateHandle);
         };
@@ -66,7 +66,7 @@ public:
     template<typename ClassType>
     bool Register(
         std::enable_if_t<std::is_base_of<UObject, ClassType>::value, ClassType*> InTarget,
-        void (ClassType::* InCallback) (const FGameEventData&)) {
+        void (ClassType::* InCallback) (const FGlobalEventData&)) {
         auto BindListener = [&] () -> FDelegateHandle {
             return GetListener(InTarget).AddUObject(InTarget, InCallback);
         };
@@ -77,7 +77,7 @@ public:
     template<typename ClassType>
     bool Unregister(
         std::enable_if_t<std::is_base_of<UObject, ClassType>::value, ClassType*> InTarget,
-        void (ClassType::* InCallback) (const FGameEventData&)) {
+        void (ClassType::* InCallback) (const FGlobalEventData&)) {
         auto UnBindListener = [&] (const FDelegateHandle& DelegateHandle) -> void {
             GetListener(InTarget).Remove(DelegateHandle);
         };
@@ -86,7 +86,7 @@ public:
     }
 
     template<typename ClassType>
-    bool RegisterRaw(ClassType* InTarget, void (ClassType::* InCallback) (const FGameEventData&)) {
+    bool RegisterRaw(ClassType* InTarget, void (ClassType::* InCallback) (const FGlobalEventData&)) {
         auto BindListener = [&] () -> FDelegateHandle {
             return GetListener().AddRaw(InTarget, InCallback);
         };
@@ -95,7 +95,7 @@ public:
     }
 
     template<typename ClassType>
-    bool UnregisterRaw(ClassType* InTarget, void (ClassType::* InCallback) (const FGameEventData&)) {
+    bool UnregisterRaw(ClassType* InTarget, void (ClassType::* InCallback) (const FGlobalEventData&)) {
         auto UnBindListener = [&] (const FDelegateHandle& DelegateHandle) -> void {
             GetListener().Remove(DelegateHandle);
         };
@@ -103,15 +103,15 @@ public:
         return UnregisterInner(InTarget, PointerCast<void*>(InCallback), UnBindListener);
     }
 
-    bool Dispatch(const FGameEventData& EventData);
+    bool Dispatch(const FGlobalEventData& EventData);
 
     void Clear();
 
 private:
     bool RegisterInner(void* InTarget, void* InCallback, std::function<FDelegateHandle()> BindListener) {
-        const FGameEventCallbackKey FuncKey(InTarget, InCallback);
+        const FGlobalEventCallbackKey FuncKey(InTarget, InCallback);
         if (HandleMap.Find(FuncKey)) {
-            UE_LOG(LogGameEventSystem, Warning, TEXT("Register an existent callback for event:%s"), *EventID.ToString());
+            UE_LOG(LogGlobalEventSystem, Warning, TEXT("Register an existent callback for event:%s"), *EventID.ToString());
             return false;
         }
 
@@ -121,9 +121,9 @@ private:
     }
 
     bool UnregisterInner(void* InTarget, void* InCallback, std::function<void(const FDelegateHandle&)> UnBindListener) {
-        const FGameEventCallbackKey FuncKey(InTarget, InCallback);
+        const FGlobalEventCallbackKey FuncKey(InTarget, InCallback);
         if (!HandleMap.Find(FuncKey)) {
-            UE_LOG(LogGameEventSystem, Warning, TEXT("Unregister an inexistent callback for event:%s"), *EventID.ToString());
+            UE_LOG(LogGlobalEventSystem, Warning, TEXT("Unregister an inexistent callback for event:%s"), *EventID.ToString());
             return false;
         }
 
@@ -133,7 +133,7 @@ private:
         return true;
     }
 
-    FGameEventListener& GetListener(const UObject* WorldContext = nullptr) {
+    FGlobalEventListener& GetListener(const UObject* WorldContext = nullptr) {
         return Listeners;
     }
 
@@ -142,11 +142,11 @@ private:
         return *static_cast<DstType*>(static_cast<void*>(&SrcPtr));
     }
 
-    FGameEventType EventID;
+    FGlobalEventType EventID;
 
-    FGameEventListener Listeners;
+    FGlobalEventListener Listeners;
 
-    TMap<FGameEventCallbackKey, FDelegateHandle> HandleMap;
+    TMap<FGlobalEventCallbackKey, FDelegateHandle> HandleMap;
 };
 
 /**
@@ -156,24 +156,24 @@ private:
  * - Unregister()
  * - Dispatch()
  */
-class GAMEEVENTSYSTEM_API FGameEventHandler
+class GLOBALEVENTSYSTEM_API FGlobalEventHandler
 {
 public:
     bool Register(
-        const FGameEventType& InEventID,
-        const FGameEventStaticDelegate InStaticCallback);
+        const FGlobalEventType& InEventID,
+        const FGlobalEventStaticDelegate InStaticCallback);
 
     bool Unregister(
-        const FGameEventType& InEventID,
-        const FGameEventStaticDelegate InStaticCallback);
+        const FGlobalEventType& InEventID,
+        const FGlobalEventStaticDelegate InStaticCallback);
 
     template<typename ClassType>
     bool Register(
-        const FGameEventType& InEventID,
+        const FGlobalEventType& InEventID,
         std::enable_if_t<std::is_base_of<UObject, ClassType>::value, ClassType*> InTarget,
-        void (ClassType::* InCallback) (const FGameEventData&)) {
+        void (ClassType::* InCallback) (const FGlobalEventData&)) {
         
-        FGameEventListeners& ListenersPtr = EventMap.FindOrAdd(InEventID);
+        FGlobalEventListeners& ListenersPtr = EventMap.FindOrAdd(InEventID);
         ListenersPtr.Init(InEventID);
 
         if (!ListenersPtr.Register(InTarget, InCallback)) {
@@ -185,11 +185,11 @@ public:
 
     template<typename ClassType>
     bool Unregister(
-        const FGameEventType& InEventID,
+        const FGlobalEventType& InEventID,
         std::enable_if_t<std::is_base_of<UObject, ClassType>::value, ClassType*> InTarget,
-        void (ClassType::* InCallback) (const FGameEventData&)) {
+        void (ClassType::* InCallback) (const FGlobalEventData&)) {
         
-        FGameEventListeners* ListenersPtr = EventMap.Find(InEventID);
+        FGlobalEventListeners* ListenersPtr = EventMap.Find(InEventID);
         if (!ListenersPtr) {
             return false;
         }
@@ -199,10 +199,10 @@ public:
 
     template<typename ClassType>
     bool RegisterRaw(
-        const FGameEventType& InEventID, ClassType* InTarget,
-        void (ClassType::* InCallback) (const FGameEventData&)) {
+        const FGlobalEventType& InEventID, ClassType* InTarget,
+        void (ClassType::* InCallback) (const FGlobalEventData&)) {
         
-        FGameEventListeners& ListenersPtr = EventMap.FindOrAdd(InEventID);
+        FGlobalEventListeners& ListenersPtr = EventMap.FindOrAdd(InEventID);
         ListenersPtr.Init(InEventID);
 
         if (!ListenersPtr.RegisterRaw(InTarget, InCallback)) {
@@ -214,10 +214,10 @@ public:
 
     template<typename ClassType>
     bool UnregisterRaw(
-        const FGameEventType& InEventID, ClassType* InTarget,
-        void (ClassType::* InCallback) (const FGameEventData&)) {
+        const FGlobalEventType& InEventID, ClassType* InTarget,
+        void (ClassType::* InCallback) (const FGlobalEventData&)) {
 
-        FGameEventListeners* ListenersPtr = EventMap.Find(InEventID);
+        FGlobalEventListeners* ListenersPtr = EventMap.Find(InEventID);
         if (!ListenersPtr) {
             return false;
         }
@@ -225,10 +225,10 @@ public:
         return ListenersPtr->UnregisterRaw(InTarget, InCallback);
     }
 
-    bool Dispatch(const FGameEventData& EventData);
+    bool Dispatch(const FGlobalEventData& EventData);
 
     void Clear();
 
 private:
-    TMap<FGameEventType, FGameEventListeners> EventMap;
+    TMap<FGlobalEventType, FGlobalEventListeners> EventMap;
 };

@@ -2,7 +2,7 @@
 	"FileVersion": 3,
 	"Version": 1,
 	"VersionName": "1.0",
-	"FriendlyName": "GameEventSystem",
+	"FriendlyName": "GlobalEventSystem",
 	"Description": "",
 	"Category": "Other",
 	"CreatedBy": "lixiaohua",
@@ -17,12 +17,12 @@
 	"EnabledByDefault": true,
 	"Modules": [
 		{
-			"Name": "GameEventSystem",
+			"Name": "GlobalEventSystem",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "GameEventSystemEditor",
+			"Name": "GlobalEventSystemEditor",
 			"Type": "Editor",
 			"LoadingPhase": "PostEngineInit"
 		}

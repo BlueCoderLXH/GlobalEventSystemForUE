@@ -1,10 +1,10 @@
 #include "GlobalEventSystem.h"
 
-TArray<FGameEventType> FGlobalEventSystem::EventIDs;
+TArray<FGlobalEventType> FGlobalEventSystem::EventIDs;
 
 int FGlobalEventSystem::ReceiveEventFromLua(lua_State* L)
 {
-	FGameEventData EventData;
+	FGlobalEventData EventData;
 	if (!ParseEventData(L, EventData))
 	{
 		return 0;
@@ -19,14 +19,14 @@ bool FGlobalEventSystem::CheckLuaParams(lua_State* L)
 	const int32 NumParams = lua_gettop(L);
 	if (NumParams < 1)
 	{
-		UE_LOG(LogGameEventSystem, Error, TEXT("CheckLuaParams: There should be at least one param for 'EventID'"));
+		UE_LOG(LogGlobalEventSystem, Error, TEXT("CheckLuaParams: There should be at least one param for 'EventID'"));
 		return false;
 	}
 	
 	// The first param should always be 'EventID'
 	if (lua_type(L, 1) != LUA_TSTRING)
 	{
-		UE_LOG(LogGameEventSystem, Error, TEXT("CheckLuaParams: The first param should be a string as the 'EventID' Param"));
+		UE_LOG(LogGlobalEventSystem, Error, TEXT("CheckLuaParams: The first param should be a string as the 'EventID' Param"));
 		return false;
 	}
 
@@ -42,7 +42,7 @@ bool FGlobalEventSystem::CheckLuaParams(lua_State* L)
 		case LUA_TLIGHTUSERDATA:
 			break;
 		default:
-			UE_LOG(LogGameEventSystem, Error, TEXT("CheckLuaParams: the type:%d of Param[%d] is unsupported!"), ParamType, i);
+			UE_LOG(LogGlobalEventSystem, Error, TEXT("CheckLuaParams: the type:%d of Param[%d] is unsupported!"), ParamType, i);
 			return false;
 		}
 	}
@@ -50,14 +50,14 @@ bool FGlobalEventSystem::CheckLuaParams(lua_State* L)
 	return true;
 }
 
-bool FGlobalEventSystem::ParseEventData(lua_State* L, FGameEventData& EventData)
+bool FGlobalEventSystem::ParseEventData(lua_State* L, FGlobalEventData& EventData)
 {
 	if (!CheckLuaParams(L))
 	{
 		return false;
 	}
 	
-	EventData.EventID = FGameEventType(lua_tostring(L, 1));
+	EventData.EventID = FGlobalEventType(lua_tostring(L, 1));
 	if (!CheckEventID(EventData.EventID))
 	{
 		return false;
@@ -110,7 +110,7 @@ bool FGlobalEventSystem::ParseEventData(lua_State* L, FGameEventData& EventData)
 		else
 		{
 			// Never allow passing the unsupported type of params
-			UE_LOG(LogGameEventSystem, Error, TEXT("ParseEventData: the type:%d of Param[%d] is unsupported!"), ParamType, i);
+			UE_LOG(LogGlobalEventSystem, Error, TEXT("ParseEventData: the type:%d of Param[%d] is unsupported!"), ParamType, i);
 		}
 	}
 

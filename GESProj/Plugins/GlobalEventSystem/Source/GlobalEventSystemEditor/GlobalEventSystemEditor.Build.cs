@@ -1,8 +1,8 @@
 using UnrealBuildTool;
 
-public class GameEventSystemEditor : ModuleRules
+public class GlobalEventSystemEditor : ModuleRules
 {
-	public GameEventSystemEditor(ReadOnlyTargetRules Target) : base(Target)
+	public GlobalEventSystemEditor(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		
@@ -19,26 +19,10 @@ public class GameEventSystemEditor : ModuleRules
 			"UMGEditor",
 			"ContentBrowser",
 			"EditorStyle",
-			"NiagaraCore",
-			"Niagara",
 			"PropertyEditor",
-			"AIModule",
-			"AnimationModifiers",
-			"ApplicationCore",
-			"GameplayTags",
 			"WorkspaceMenuStructure",
 			"Kismet",
-			"LevelSequence",
-			"MovieScene",
-			"MovieSceneTracks",
-			"MovieSceneTools",
-			"Json",
-			"JsonUtilities",
-			"EditorSubsystem",
-			"Persona",
-			"SkeletonEditor",
-			"MaterialAnalyzer",
-			"Sequencer"
+			"EditorSubsystem"
 		});
 		
 		PrivateDependencyModuleNames.AddRange(new string[]
@@ -49,13 +33,8 @@ public class GameEventSystemEditor : ModuleRules
 			"Lua",
 			"ToolMenus",
 			"ContentBrowser",
-			"GameEventSystem",
+			"GlobalEventSystem",
 			"EditorScriptingUtilities",
-			"ImageWrapper",
-			"MoviePlayer",
-			"LevelSequence",
-			"Niagara",
-			"NiagaraAnimNotifies",
 			"Paper2D",
 			"GraphEditor"
 		});

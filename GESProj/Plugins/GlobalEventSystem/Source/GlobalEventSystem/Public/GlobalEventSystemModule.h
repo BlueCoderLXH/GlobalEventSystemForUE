@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-class FGameEventSystemModule : public IModuleInterface
+class FGlobalEventSystemModule : public IModuleInterface
 {
 public:
 
