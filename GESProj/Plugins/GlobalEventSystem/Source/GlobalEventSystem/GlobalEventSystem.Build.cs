@@ -6,6 +6,8 @@ public class GlobalEventSystem : ModuleRules
 {
 	public GlobalEventSystem(ReadOnlyTargetRules Target) : base(Target)
 	{
+		OptimizeCode = CodeOptimization.Never;
+		
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		PublicIncludePaths.AddRange(
 			new string[] {
@@ -25,6 +27,9 @@ public class GlobalEventSystem : ModuleRules
 			new string[]
 			{
 				"Core",
+				"Engine",
+				"UnLua",
+				"Lua",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -33,8 +38,6 @@ public class GlobalEventSystem : ModuleRules
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"UnLua",
-				"Lua",
 				"CoreUObject",
 				"Engine",
 				"Slate",

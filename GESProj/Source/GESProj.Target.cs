@@ -10,5 +10,8 @@ public class GESProjTarget : TargetRules
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		ExtraModuleNames.AddRange( new string[] { "GESProj" } );
+
+		// bForceUnityBuild = false;
+		// bUseUnityBuild = false;
 	}
 }

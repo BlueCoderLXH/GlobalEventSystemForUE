@@ -10,5 +10,8 @@ public class GESProjEditorTarget : TargetRules
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		ExtraModuleNames.AddRange( new string[] { "GESProj" } );
+		
+		// bForceUnityBuild = false;
+		// bUseUnityBuild = false;
 	}
 }

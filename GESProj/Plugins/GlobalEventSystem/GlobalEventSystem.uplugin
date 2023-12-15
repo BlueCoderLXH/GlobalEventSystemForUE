@@ -23,7 +23,7 @@
 		},
 		{
 			"Name": "GlobalEventSystemEditor",
-			"Type": "Editor",
+			"Type": "Runtime",
 			"LoadingPhase": "PostEngineInit"
 		}
 	],

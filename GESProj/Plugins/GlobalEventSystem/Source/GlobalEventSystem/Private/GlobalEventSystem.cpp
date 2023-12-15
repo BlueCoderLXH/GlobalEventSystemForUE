@@ -1,10 +1,10 @@
 #include "GlobalEventSystem.h"
 
-TArray<FGlobalEventType> FGlobalEventSystem::EventIDs;
+TArray<FGESEventType> FGlobalEventSystem::EventIDs;
 
 int FGlobalEventSystem::ReceiveEventFromLua(lua_State* L)
 {
-	FGlobalEventData EventData;
+	FGESEventDataArray EventData;
 	if (!ParseEventData(L, EventData))
 	{
 		return 0;
@@ -50,15 +50,15 @@ bool FGlobalEventSystem::CheckLuaParams(lua_State* L)
 	return true;
 }
 
-bool FGlobalEventSystem::ParseEventData(lua_State* L, FGlobalEventData& EventData)
+bool FGlobalEventSystem::ParseEventData(lua_State* L, FGESEventDataArray& EventData)
 {
 	if (!CheckLuaParams(L))
 	{
 		return false;
 	}
 	
-	EventData.EventID = FGlobalEventType(lua_tostring(L, 1));
-	if (!CheckEventID(EventData.EventID))
+	EventData.SetEventID(FGESEventType(lua_tostring(L, 1)));
+	if (!CheckEventID(EventData.GetEventID()))
 	{
 		return false;
 	}

@@ -4,6 +4,8 @@ public class GlobalEventSystemEditor : ModuleRules
 {
 	public GlobalEventSystemEditor(ReadOnlyTargetRules Target) : base(Target)
 	{
+		OptimizeCode = CodeOptimization.Never;
+		
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		
 		PublicDependencyModuleNames.AddRange(new string[]
@@ -22,21 +24,20 @@ public class GlobalEventSystemEditor : ModuleRules
 			"PropertyEditor",
 			"WorkspaceMenuStructure",
 			"Kismet",
-			"EditorSubsystem"
+			"EditorSubsystem",
+			"BlueprintGraph",
+			"GlobalEventSystem",
 		});
 		
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{
-			"BlueprintGraph",
 			"KismetCompiler",
 			"UnLua",
-			"Lua",
 			"ToolMenus",
-			"ContentBrowser",
 			"GlobalEventSystem",
 			"EditorScriptingUtilities",
 			"Paper2D",
-			"GraphEditor"
+			"GraphEditor",
 		});
 	}
 }
