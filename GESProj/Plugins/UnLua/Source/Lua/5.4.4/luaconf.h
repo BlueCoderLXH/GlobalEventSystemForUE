@@ -755,7 +755,7 @@
 @@ of a function in debug information.
 ** CHANGE it if you want a different size.
 */
-#define LUA_IDSIZE	256
+#define LUA_IDSIZE	100
 
 
 /*

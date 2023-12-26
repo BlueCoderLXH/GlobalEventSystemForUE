@@ -1,15 +1,28 @@
 #include "UnLuaEx.h"
 #include "LuaCore.h"
+#include "Blueprint/UserWidget.h"
+#include "Engine/AssetManager.h"
 #include "Engine/World.h"
-#include "UMG/Public/Blueprint/UserWidget.h"
 
 #if WITH_EDITOR
 #include "Editor/UnrealEdEngine.h"
 #include "Engine/GameEngine.h"
 #endif
 
+static UClass* LoadWidgetClass(const FSoftClassPath& InPath) {
+    UClass* Class = InPath.ResolveClass();
+    if (!Class && UAssetManager::IsValid()) {
+        TSoftClassPtr<UUserWidget> ClassPtr(InPath);
+        Class = UAssetManager::GetStreamableManager().LoadSynchronous(ClassPtr);
+    }
+    if (!Class)
+        Class = InPath.TryLoadClass<UUserWidget>();
+    return Class;
+}
+
+
 static UUserWidget* LoadUI(const FSoftClassPath& Path) {
-	TSubclassOf<UUserWidget> WidgetClass = Path.TryLoadClass<UUserWidget>();
+	TSubclassOf<UUserWidget> WidgetClass = LoadWidgetClass(Path);
 	UWorld* World = nullptr;
 
 #if WITH_EDITOR
@@ -34,7 +47,7 @@ static UUserWidget* LoadUIByPath(const FString& Path) {
 }
 
 static UUserWidget* LoadUIAndSetName(const FSoftClassPath& Path, const FName& InName) {
-	TSubclassOf<UUserWidget> WidgetClass = Path.TryLoadClass<UUserWidget>();
+	TSubclassOf<UUserWidget> WidgetClass = LoadWidgetClass(Path);
 	UWorld* World = nullptr;
 
 #if WITH_EDITOR
