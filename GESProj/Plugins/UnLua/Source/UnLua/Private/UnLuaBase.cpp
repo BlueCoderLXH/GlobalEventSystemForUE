@@ -90,6 +90,28 @@ namespace UnLua
     }
 
     /**
+     * Run a Lua file
+     */
+    bool RunFile(lua_State *L, const FString &RelativeFilePath, const char *Mode, int32 Env)
+    {
+        bool bSuccess = LoadFile(L, RelativeFilePath, Mode, Env);       // load the file content as a Lua chunk
+        if (!bSuccess)
+        {
+            UE_LOG(LogUnLua, Warning, TEXT("%s: Failed to load lua file!"), ANSI_TO_TCHAR(__FUNCTION__));
+            return false;
+        }
+
+        int32 Code = lua_pcall(L, 0, LUA_MULTRET, 0);       // pcall
+        if (Code != LUA_OK)
+        {
+            UE_LOG(LogUnLua, Warning, TEXT("Failed to call lua_pcall, error code: %d"), Code);
+            ReportLuaCallError(L);                          // report pcall error
+        }
+
+        return Code == LUA_OK;
+    }    
+
+    /**
      * Load a Lua chunk without running it
      */
     bool LoadChunk(lua_State *L, const char *Chunk, int32 ChunkSize, const char *ChunkName, const char *Mode, int32 Env)
@@ -495,6 +517,13 @@ namespace UnLua
         FScriptMap *ScriptMap = (FScriptMap*)GetScriptContainer(L, Index);
         return ScriptMap;
     }
+
+    /**
+     * Get a script container at the given stack index
+     */
+    void* GetScriptContainerPointer(lua_State* L, int32 Index) {
+        return GetScriptContainer(L, Index);
+    }    
 
     /**
      * Helper to recover Lua stack automatically
