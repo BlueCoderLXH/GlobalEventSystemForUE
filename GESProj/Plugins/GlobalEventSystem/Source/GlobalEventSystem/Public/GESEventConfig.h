@@ -133,7 +133,7 @@ struct GLOBALEVENTSYSTEM_API FGESEventConfigItem
 	UPROPERTY(EditAnywhere)
 	TArray<FGESEventDataType> EventDataTypes;
 
-	bool IsValid() const { return EventType.IsEqual(NAME_None); }
+	bool IsValid() const { return !EventType.IsEqual(NAME_None); }
 	
 	int32 GetEventDataNum() const { return EventDataTypes.Num(); }
 };
@@ -211,7 +211,7 @@ public:
 			return EventConfigItem.EventType == EventName;
 		});
 
-		check(FindEventConfigItemPtr);
+		// check(FindEventConfigItemPtr);
 
 		if (FindEventConfigItemPtr)
 		{

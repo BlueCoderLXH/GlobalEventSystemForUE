@@ -13,31 +13,16 @@ public class GlobalEventSystemEditor : ModuleRules
 			"Core",
 			"CoreUObject",
 			"Engine",
-			"InputCore",
 			"Slate",
 			"SlateCore",
-			"UMG",
 			"UnrealEd",
-			"UMGEditor",
-			"ContentBrowser",
-			"EditorStyle",
-			"PropertyEditor",
-			"WorkspaceMenuStructure",
 			"Kismet",
-			"EditorSubsystem",
 			"BlueprintGraph",
 			"GlobalEventSystem",
-		});
-		
-		PrivateDependencyModuleNames.AddRange(new string[]
-		{
 			"KismetCompiler",
-			"UnLua",
-			"ToolMenus",
 			"GlobalEventSystem",
-			"EditorScriptingUtilities",
-			"Paper2D",
-			"GraphEditor",
+			"UnLua",
+			"Lua"
 		});
 	}
 }

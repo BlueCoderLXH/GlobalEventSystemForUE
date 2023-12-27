@@ -18,21 +18,25 @@ public:
 
 	static void Init()
 	{
-		// Register function 'DispatchEventToCpp'
-		lua_State* L = UnLua::GetState();
-		if (L)
-		{
-			lua_register(L, "DispatchEventToCpp", FGlobalEventSystem::ReceiveEventFromLua);
-			UE_LOG(LogGlobalEventSystem, Log, TEXT("DispatchEventToCpp is registered ok!"));
-		}
-
-		// Get event ID from lua
-		const auto LuaRetResult = UnLua::Call(UnLua::GetState(), "Global_GetEventNames");
-		if (LuaRetResult.Num() > 0)
-		{
-			EventIDs = LuaRetResult[0].Value<TArray<FGESEventType>>();
-			UE_LOG(LogGlobalEventSystem, Log, TEXT("Get EventIDs:%d from lua!"), EventIDs.Num());
-		}
+		UnLua::Startup();
+		
+		UGESEventConfigHelper::Init();
+		
+		// // Register function 'DispatchEventToCpp'
+		// lua_State* L = UnLua::GetState();
+		// if (L)
+		// {
+		// 	lua_register(L, "DispatchEventToCpp", FGlobalEventSystem::ReceiveEventFromLua);
+		// 	UE_LOG(LogGlobalEventSystem, Log, TEXT("DispatchEventToCpp is registered ok!"));
+		// }
+		//
+		// // Get event ID from lua
+		// const auto LuaRetResult = UnLua::Call(UnLua::GetState(), "Global_GetEventNames");
+		// if (LuaRetResult.Num() > 0)
+		// {
+		// 	EventIDs = LuaRetResult[0].Value<TArray<FGESEventType>>();
+		// 	UE_LOG(LogGlobalEventSystem, Log, TEXT("Get EventIDs:%d from lua!"), EventIDs.Num());
+		// }
 	}
 
 	/**
@@ -196,11 +200,10 @@ public:
 	static void DispatchFromBP(const FGESEventDataArray& EventData)
 	{
 		DispatchToCpp(EventData);
-		// TODO: Dispatch to lua
 	}	
 
 	/**
-	 * 触发事件到所有层(C++/Lua)
+	 * 触发事件到所有层(C++/Lua/BP)
 	 * @param EventID FGameEventType 事件ID
 	 * @param Args T&&... 事件数据, 变参
 	 */
@@ -208,7 +211,6 @@ public:
 	static void DispatchToAll(const FGESEventType& EventID, T&&... Args)
 	{
 		DispatchToCpp(EventID, Forward<T>(Args)...);
-		DispatchToLua(EventID, Forward<T>(Args)...);
 	}
 
 	/**
@@ -236,16 +238,16 @@ public:
 		GetHandler().Dispatch(EventData);
 	}
 
-	/**
-	 * 触发事件(仅Lua)
-	 * @param EventID FGameEventType 事件ID
-	 * @param Args T 事件数据, 变参
-	 */
-	template <typename... T>
-	static void DispatchToLua(const FGESEventType& EventID, T&&... Args)
-	{
-		UnLua::CallTableFunc(UnLua::GetState(), "EventSystem", "Trigger", EventID, Forward<T>(Args)...);
-	}
+	// /**
+	//  * 触发事件(仅Lua)
+	//  * @param EventID FGameEventType 事件ID
+	//  * @param Args T 事件数据, 变参
+	//  */
+	// template <typename... T>
+	// static void DispatchToLua(const FGESEventType& EventID, T&&... Args)
+	// {
+	// 	UnLua::CallTableFunc(UnLua::GetState(), "EventSystem", "Trigger", EventID, Forward<T>(Args)...);
+	// }
 
 private:
 	static void PushParams(FGESEventDataArray& EventData)
@@ -279,7 +281,7 @@ private:
 			return false;
 		}
 
-		if (!EventIDs.Contains(EventID) && !UGESEventConfigHelper::FindEvent(EventID))
+		if (/*!EventIDs.Contains(EventID) && */!UGESEventConfigHelper::FindEvent(EventID))
 		{
 			UE_LOG(LogGlobalEventSystem, Error, TEXT("CheckEventID: EventID:%s isn't define in 'Enums.lua'!"), *EventID.ToString());
 			return false;
@@ -288,9 +290,9 @@ private:
 		return true;
 	}
 
-	static bool ParseEventData(lua_State* L, FGESEventDataArray& EventData);
-
-	static int ReceiveEventFromLua(lua_State* L);
+	// static bool ParseEventData(lua_State* L, FGESEventDataArray& EventData);
+	//
+	// static int ReceiveEventFromLua(lua_State* L);
 
 	static TArray<FGESEventType> EventIDs;
 };

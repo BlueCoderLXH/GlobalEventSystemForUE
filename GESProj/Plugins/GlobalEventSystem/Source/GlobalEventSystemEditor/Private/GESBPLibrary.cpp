@@ -131,13 +131,6 @@ void UGESBPLibrary::GESDispatchEventInternal(FProperty* PropertyPtr, const void*
 void UGESBPLibrary::GESRegisterEvent(FName EventType, FGESDelegateForBP EventDelegate)
 {
 	FGlobalEventSystem::RegisterBP(EventType, EventDelegate.GetUObject(), EventDelegate.GetFunctionName());
-
-	if (EventType == TEXT("MyTestEvent"))
-	{
-		TArray<int32> ArrValue = { 1, 2, 3 };
-		
-		FGlobalEventSystem::DispatchToCpp(EventType, MoveTemp(ArrValue));
-	}
 }
 
 void UGESBPLibrary::GESUnregisterEvent(FName EventType)
@@ -286,4 +279,19 @@ DEFINE_FUNCTION(UGESBPLibrary::execGESConvertEventData)
 	}
 
 	P_FINISH;
+}
+
+void UGESBPLibrary::RegisterEventLua(const FName EventType, FGESDelegateForBP EventDelegate)
+{
+	FGlobalEventSystem::RegisterBP(EventType, EventDelegate.GetUObject(), EventDelegate.GetFunctionName());	
+}
+
+void UGESBPLibrary::DispatchEventLua(const FGESEventDataArray& EventData)
+{
+	FGlobalEventSystem::DispatchFromBP(EventData);
+}
+
+void UGESBPLibrary::UnregisterEventLua(const FName EventType, FGESDelegateForBP EventDelegate)
+{
+	FGlobalEventSystem::UnregisterBP(EventType, EventDelegate.GetUObject(), EventDelegate.GetFunctionName());
 }

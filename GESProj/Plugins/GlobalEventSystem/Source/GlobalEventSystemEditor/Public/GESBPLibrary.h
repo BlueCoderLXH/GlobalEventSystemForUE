@@ -10,6 +10,25 @@
 DECLARE_DYNAMIC_DELEGATE_OneParam(FGESDelegateForBP, UPARAM(ref) FGESEventDataArray&, EventDataArray);
 
 /**
+ * Only for test, will be removed in the future
+ */
+USTRUCT(BlueprintType)
+struct FGESTestStruct
+{
+	GENERATED_BODY()
+
+	FGESTestStruct() {}
+
+	FGESTestStruct(int32 InInt, FString InStr) : IntValue(InInt), StrValue(InStr) {}
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 IntValue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString StrValue;
+};
+
+/**
  * UGlobalEventSystemBPLibrary
  * Define
  */
@@ -32,14 +51,14 @@ public:
 	 * GESRegisterEvent
 	 * Register a global event from blueprint
 	 */
-	UFUNCTION(BlueprintCallable, Category="GlobalEventSystem", meta=(BlueprintInternalUseOnly="true"))
+	UFUNCTION(BlueprintCallable, Category="GES|RegisterEvent", meta=(BlueprintInternalUseOnly="true"))
 	static void GESRegisterEvent(FName EventType, FGESDelegateForBP EventDelegate);
 
 	/*
 	 * GESUnregisterEvent
 	 * Unregister a global event from blueprint
 	 */
-	UFUNCTION(BlueprintCallable, CustomThunk, Category="GlobalEventSystem", meta=(ToolTip="Unregister event for current blueprint", Keywords="GES,UE,UGE"))
+	UFUNCTION(BlueprintCallable, CustomThunk, Category="GES|UnregisterEvent", meta=(ToolTip="Unregister event for current blueprint", Keywords="GES,UE,UGE"))
 	static void GESUnregisterEvent(FName EventType);
 	DECLARE_FUNCTION(execGESUnregisterEvent);
 
@@ -47,7 +66,16 @@ public:
 	 * GESConvertEventData
 	 * Convert event data array to every single type-specified data
 	 */
-	UFUNCTION(BlueprintCallable, CustomThunk, Category="GlobalEventSystem", meta=(Variadic, BlueprintInternalUseOnly="true"))
+	UFUNCTION(BlueprintCallable, CustomThunk, Category="GES|GESConvertEventData", meta=(Variadic, BlueprintInternalUseOnly="true"))
 	static void GESConvertEventData(UPARAM(ref) FGESEventDataArray& EventDataArray);
 	DECLARE_FUNCTION(execGESConvertEventData);
+
+	UFUNCTION(BlueprintCallable, Category="GES|DispatchEventLua")
+	static void DispatchEventLua(UPARAM(ref) const FGESEventDataArray& EventData);
+
+	UFUNCTION(BlueprintCallable, Category="GES|RegisterEventLua")
+	static void RegisterEventLua(const FName EventType, FGESDelegateForBP EventDelegate);
+
+	UFUNCTION(BlueprintCallable, Category="GES|UnregisterEventLua")
+	static void UnregisterEventLua(const FName EventType, FGESDelegateForBP EventDelegate);
 };

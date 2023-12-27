@@ -18,7 +18,9 @@ public class GESProj : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{
-			"GlobalEventSystem"
+			"GlobalEventSystem",
+			"UnLua",
+			"Lua"
 		});
 
 		// Uncomment if you are using Slate UI
