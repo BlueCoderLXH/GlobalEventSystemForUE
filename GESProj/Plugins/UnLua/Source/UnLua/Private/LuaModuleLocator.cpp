@@ -39,6 +39,14 @@ FString ULuaModuleLocator::Locate(const UObject* Object)
         return "";
     }
 
+#if !UE_BUILD_SHIPPING
+    UFunction* const Func = CDO->FindFunction(FName(TEXT("GetModuleName")));
+    if (Func && Func->GetNativeFunc() == nullptr ) 
+    {
+        UE_LOG(LogClass, Error, TEXT("Failed to bind native function %s.%s"), *CDO->GetName(), *Func->GetName());
+    }
+#endif
+
     return IUnLuaInterface::Execute_GetModuleName(CDO);
 }
 

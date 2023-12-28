@@ -110,7 +110,7 @@
 */
 #if !defined(lua_tmpnam)	/* { */
 
-#if defined(LUA_USE_POSIX)	/* { */
+#if defined(LUA_USE_POSIX) || defined(__ANDROID__)	/* { */
 
 #include <unistd.h>
 
@@ -140,6 +140,11 @@
 
 
 static int os_execute (lua_State *L) {
+// Modified by leo. Disable this function on non-editor distributions.
+#if !WITH_EDITOR
+  lua_pushboolean(L, 0);
+  return 1;
+#else
   const char *cmd = luaL_optstring(L, 1, NULL);
   int stat;
   errno = 0;
@@ -150,6 +155,7 @@ static int os_execute (lua_State *L) {
     lua_pushboolean(L, stat);  /* true if there is a shell */
     return 1;
   }
+#endif
 }
 
 

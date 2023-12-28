@@ -16,10 +16,57 @@
 #include "Animation/AnimNotifies/AnimNotify.h"
 #include "Animation/AnimNotifies/AnimNotifyState.h"
 
+int32 UUnLuaSettings::DebugTag = 0;
+bool UUnLuaSettings::bLuaGCByAloneFrame = true;
+
 UUnLuaSettings::UUnLuaSettings(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer)
 {
     PreBindClasses.Add(UBlueprintFunctionLibrary::StaticClass());
     PreBindClasses.Add(UAnimNotifyState::StaticClass());
     PreBindClasses.Add(UAnimNotify::StaticClass());
+}
+
+void UUnLuaSettings::EnablePrintLogCallUFuntion(bool bInEnable)
+{
+    if (bInEnable) 
+    {
+        DebugTag |= (1 << 0);
+    }
+    else
+    {
+        DebugTag &= ~(1 << 0);
+    }
+}
+
+void UUnLuaSettings::EnablePrintLogCallArrayGet(bool bInEnable)
+{
+    if (bInEnable) 
+    {
+        DebugTag |= (1 << 1);
+    }
+    else
+    {
+        DebugTag &= ~(1 << 1);
+    }
+}
+
+bool UUnLuaSettings::IsPrintLogCallUFuntion() 
+{
+    return (DebugTag & (1 << 0)) != 0;
+}
+
+bool UUnLuaSettings::IsPrintLogCallArrayGet()
+{
+    return (DebugTag & (1 << 1)) != 0;
+}
+
+bool UUnLuaSettings::IsLuaGCByAloneFrame() 
+{
+    return bLuaGCByAloneFrame;    
+}
+
+void UUnLuaSettings::SetLuaGCByAloneFrame(bool bInEnable) 
+{
+    bLuaGCByAloneFrame = bInEnable;    
 }

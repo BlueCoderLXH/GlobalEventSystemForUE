@@ -61,13 +61,14 @@ namespace UnLua
         lua_pushstring(L, "__gc");
         lua_pushcfunction(L, ReleaseSharedPtr);
         lua_rawset(L, -3);
+        lua_pop(L, 1);
 
         luaL_newmetatable(L, "UnLuaManualRefProxy");
         lua_pushstring(L, "__gc");
         lua_pushcfunction(L, ReleaseManualRef);
         lua_rawset(L, -3);
 
-        lua_pop(L, 2);
+        lua_pop(L, 1);
     }
 
     void FObjectRegistry::NotifyUObjectDeleted(UObject* Object)
@@ -85,13 +86,6 @@ namespace UnLua
         if (!Object)
         {
             lua_pushnil(L);
-            return;
-        }
-
-        // avoid invalid ptrs in containers from lua
-        if (!UnLua::IsUObjectValid(Object))
-        {
-            luaL_error(L, "attempt to read invalid uobject ptr from lua, maybe from containers like TArray.");
             return;
         }
 

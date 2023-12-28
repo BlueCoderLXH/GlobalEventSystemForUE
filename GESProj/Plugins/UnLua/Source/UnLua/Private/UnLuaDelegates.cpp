@@ -25,3 +25,5 @@ FUnLuaDelegates::FGenericLuaDelegate FUnLuaDelegates::HotfixLua;
 FUnLuaDelegates::FGenericLuaDelegate FUnLuaDelegates::ReportLuaCallError;
 FUnLuaDelegates::FGenericLuaDelegate FUnLuaDelegates::ConfigureLuaGC;
 FUnLuaDelegates::FCustomLuaFileLoader FUnLuaDelegates::CustomLoadLuaFile;
+
+FUnLuaDelegates::FNotifyStringDelegate FUnLuaDelegates::NotifyLuaError;

@@ -28,7 +28,6 @@
 #include "DefaultParamCollection.h"
 #include "GameDelegates.h"
 #include "LuaEnvLocator.h"
-#include "LuaOverrides.h"
 #include "UnLuaDebugBase.h"
 #include "UnLuaInterface.h"
 #include "UnLuaSettings.h"
@@ -136,7 +135,14 @@ namespace UnLua
                 EnvLocator->Reset();
                 EnvLocator->RemoveFromRoot();
                 EnvLocator = nullptr;
-                FLuaOverrides::Get().RestoreAll();
+                FClassRegistry::Cleanup();
+                FEnumRegistry::Cleanup();
+
+                for (const auto Class : TObjectRange<UClass>())
+                {
+                    if (Class->ImplementsInterface(UUnLuaInterface::StaticClass()))
+                        ULuaFunction::RestoreOverrides(Class);
+                }
             }
 
             bIsActive = bActive;
@@ -168,12 +174,19 @@ namespace UnLua
             const auto Env = EnvLocator->Locate(Object);
             // UE_LOG(LogTemp, Log, TEXT("Locate %s for %s"), *Env->GetName(), *ObjectBase->GetFName().ToString());
             Env->TryBind(Object);
-            Env->TryReplaceInputs(Object);
+            //Env->TryReplaceInputs(Object);
         }
 
         virtual void NotifyUObjectDeleted(const UObjectBase* Object, int32 Index) override
         {
             // UE_LOG(LogTemp, Log, TEXT("NotifyUObjectDeleted : %p"), Object);
+            if (!bIsActive)
+                return;
+
+            if (FClassRegistry::StaticUnregister(Object))
+                return;
+
+            FEnumRegistry::StaticUnregister(Object);
         }
 
         virtual void OnUObjectArrayShutdown() override
@@ -213,24 +226,24 @@ namespace UnLua
 
         void OnPreBeginPIE(bool bIsSimulating)
         {
-            SetActive(true);
+            //SetActive(true);
         }
 
         void OnPostPIEStarted(bool bIsSimulating)
         {
-            UEditorEngine* EditorEngine = Cast<UEditorEngine>(GEngine);
-            if (EditorEngine)
-                PostLoadMapWithWorld(EditorEngine->PlayWorld);
+            // UEditorEngine* EditorEngine = Cast<UEditorEngine>(GEngine);
+            // if (EditorEngine)
+            //     PostLoadMapWithWorld(EditorEngine->PlayWorld);
         }
 
         void OnEndPIE(bool bIsSimulating)
         {
-            // SetActive(false);
+             //SetActive(false);
         }
 
         void OnEndPlayMap()
         {
-            SetActive(false);
+            //SetActive(false);
         }
 
 #endif

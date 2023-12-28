@@ -32,3 +32,15 @@ void UUnLuaFunctionLibrary::HotReload()
 {
     IUnLuaModule::Get().HotReload();
 }
+
+void UUnLuaFunctionLibrary::OpenPreGarbageCollect(bool bOpen){
+    UnLua::FLuaEnv::GOpenPreGarbageCollect = bOpen;
+}
+
+void UUnLuaFunctionLibrary::SetLuaGCType(int32 InType){
+    UnLua::FLuaEnv::GLuaGCType = InType;
+}
+
+int32 UUnLuaFunctionLibrary::GetLuaGCType(){
+    return UnLua::FLuaEnv::GLuaGCType;
+}
