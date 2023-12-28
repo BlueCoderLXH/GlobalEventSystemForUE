@@ -8,7 +8,7 @@ local do_require = function()
     require 'GlobalEventSystem.Enums'
     require 'GlobalEventSystem.GlobalEventSystem'
 
-    print("Preload OK!")
+    print("Preload Lua OK!")
 end
 
 do_require()
