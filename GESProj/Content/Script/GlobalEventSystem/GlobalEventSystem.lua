@@ -4,7 +4,7 @@
 --- DateTime: 2023/12/18 15:10
 ---
 
---- Global event system
+--- Global event system for lua
 local GlobalEventSystem = {
     --- GES Event Data Type
     Bool = "Bool",
@@ -73,7 +73,7 @@ function GlobalEventSystem.Dispatch(EventName, ...)
         elseif TypeName == GES.TSet then
             EventData:PushSet(EventParam)
         end
-        printf("[lxh_test] GES.Dispatch[%d] %s %s", i, tostring(TypeName), tostring(EventParam))
+        printf("GES.Dispatch[%d] %s %s", i, tostring(TypeName), tostring(EventParam))
     end
 
     UE4.UGESBPLibrary.DispatchEventLua(EventData)

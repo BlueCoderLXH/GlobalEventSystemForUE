@@ -12,45 +12,28 @@ end
 function M:ReceiveBeginPlay()
     self.Overridden.ReceiveBeginPlay(self)
 
-    printf("BP_GESTest:ReceiveBeginPlay")
+    printf("ReceiveBeginPlay")
 
-    --GlobalEventSystem.On(Event.MyTestEvent, function(EventData)
-    --    self:OnMyTestEvent(EventData)
-    --end, true)
-
-    GES.Register("MyTestEvent", { self, self.OnMyTestEvent})
-
-    --GlobalEventSystem.Unregister("MyTestEvent", {self, self.OnMyTestEvent})
-
-    local ArrayValue = UE4.TArray(UE4.int32)
-    ArrayValue:Add(10)
-    ArrayValue:Add(5)
-    ArrayValue:Add(1)
-
-    local EnumValue = UE4.EGESEventDataCppType.EDT_Integer
-
-    local TestStruct = UE4.FGESTestStruct()
-    TestStruct.IntValue = 120
-    TestStruct.StrValue = "HelloLua"
-
-    GES.Dispatch("MyTestEvent", { GES.TArray, ArrayValue}, { GES.Enum, EnumValue}, { GES.UStruct, TestStruct})
+    self:LuaDoTest_MapTestEvent()
 end
 
-function M:OnMyTestEvent(EventData)
-    printf("BP_GESTest:OnMyTestEvent Start")
+function M:LuaDoTest_MapTestEvent()
+    GES.Register("MapTestEvent", {self, self.OnMapTestEvent})
 
-    local ArrayValue = EventData:GetArray(UE4.int32, 0)
-    for i=1, ArrayValue:Num() do
-        printf("BP_GESTest:OnMyTestEvent ArrayValue[%d] = %d", i, ArrayValue:Get(i))
-    end
+    local MapValue = UE4.TMap(UE4.int32, UE4.FVector)
+    MapValue:Add(520, UE4.FVector(1, 10, 100))
+    MapValue:Add(521, UE4.FVector(5, 52, 520))
 
-    local EnumValue = EventData:GetEnum(1)
-    printf("BP_GESTest:OnMyTestEvent Enum:%s IsEqualTo:[EDT_Integer, %s]", tostring(EnumValue), tostring(EnumValue == UE4.EGESEventDataCppType.EDT_Integer))
+    GES.Dispatch("MapTestEvent", {GES.TMap, MapValue})
+end
 
-    local TestStruct = EventData:GetStruct(2)
-    printf("BP_GESTest:OnMyTestEvent Struct:{%d, %s}", TestStruct.IntValue, TestStruct.StrValue)
+function M:OnMapTestEvent(EventData)
+    printf("OnMapTestEvent Start")
 
-    printf("BP_GESTest:OnMyTestEvent End")
+    local MapValue = EventData:GetMap(UE4.int32, UE4.FVector, 0)
+    dump_map(MapValue)
+
+    printf("OnMapTestEvent End")
 end
 
 return M

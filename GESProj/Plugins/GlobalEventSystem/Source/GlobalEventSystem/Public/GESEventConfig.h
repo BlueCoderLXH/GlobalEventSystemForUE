@@ -31,8 +31,8 @@ enum class EGESContainerType : uint8
 {
 	EDCT_None = 0,
 	EDCT_Array,
+	EDCT_Set,
 	EDCT_Map,
-	EDCT_Set
 };
 
 USTRUCT(Blueprintable, BlueprintType)
@@ -41,14 +41,20 @@ struct GLOBALEVENTSYSTEM_API FGESEventDataType
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere)
+	EGESContainerType ContainerType = EGESContainerType::EDCT_None;
+
+	UPROPERTY(EditAnywhere)
 	EGESEventDataCppType CppType = EGESEventDataCppType::EDT_None;
 	
 	UPROPERTY(EditAnywhere)
 	FName SubTypeName = NAME_None;
 
 	UPROPERTY(EditAnywhere)
-	EGESContainerType ContainerType = EGESContainerType::EDCT_None;
-
+	EGESEventDataCppType ValueType = EGESEventDataCppType::EDT_None;
+	
+	UPROPERTY(EditAnywhere)
+	FName ValueSubTypeName = NAME_None;	
+	
 	FGESEventDataType() {}
 	FGESEventDataType(
 		const EGESEventDataCppType InCppType,
@@ -62,9 +68,37 @@ struct GLOBALEVENTSYSTEM_API FGESEventDataType
 
 	FName GetTypeName() const
 	{
-		switch (CppType)
+		return GetTypeNameInner(CppType);
+	}
+
+	UObject* GetSubTypeObject() const
+	{
+		return GetSubTypeObjectInner(CppType, SubTypeName);
+	}
+
+	FName GetValueTypeName() const
+	{
+		return GetTypeNameInner(ValueType);
+	}
+
+	UObject* GetValueSubTypeObject() const
+	{
+		return GetSubTypeObjectInner(ValueType, ValueSubTypeName);
+	}	
+
+	EPinContainerType GetPinContainerType() const
+	{
+		return static_cast<EPinContainerType>((static_cast<int32>(ContainerType)));
+	}
+
+private:
+	static FName GetTypeNameInner(const EGESEventDataCppType InCppType)
+	{
+		switch (InCppType)
 		{
 		case EGESEventDataCppType::EDT_None:
+			return TEXT("");
+			
 		case EGESEventDataCppType::EDT_Any:
 		case EGESEventDataCppType::EDT_Null:
 			check(0);
@@ -97,29 +131,24 @@ struct GLOBALEVENTSYSTEM_API FGESEventDataType
 		return NAME_None;
 	}
 
-	UObject* GetSubTypeObject() const
+	static UObject* GetSubTypeObjectInner(const EGESEventDataCppType InCppType, const FName InSubTypeName)
 	{
-		if (CppType == EGESEventDataCppType::EDT_Struct && !SubTypeName.IsNone())
+		if (InCppType == EGESEventDataCppType::EDT_Struct && !InSubTypeName.IsNone())
 		{
-			UScriptStruct* ScriptStructPtr = FindObject<UScriptStruct>(ANY_PACKAGE, *SubTypeName.ToString());
+			UScriptStruct* ScriptStructPtr = FindObject<UScriptStruct>(ANY_PACKAGE, *InSubTypeName.ToString());
 			check(ScriptStructPtr);
 			return ScriptStructPtr;
 		}
 
-		if (CppType == EGESEventDataCppType::EDT_Enum && !SubTypeName.IsNone())
+		if (InCppType == EGESEventDataCppType::EDT_Enum && !InSubTypeName.IsNone())
 		{
-			UEnum* ScriptEnumPtr = FindObject<UEnum>(ANY_PACKAGE, *SubTypeName.ToString(), true);
+			UEnum* ScriptEnumPtr = FindObject<UEnum>(ANY_PACKAGE, *InSubTypeName.ToString(), true);
 			check(ScriptEnumPtr);
 			return ScriptEnumPtr;
 		}
 		
 		return nullptr;
-	}
-
-	EPinContainerType GetPinContainerType() const
-	{
-		return static_cast<EPinContainerType>((static_cast<int32>(ContainerType)));
-	}
+	}	
 };
 
 USTRUCT(Blueprintable, BlueprintType)

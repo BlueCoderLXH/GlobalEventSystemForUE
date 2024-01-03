@@ -101,6 +101,8 @@ bool UK2Node_GESEventNodeBase::OnEventTypePinValueChanged(UEdGraphPin* Pin)
 			PinType.PinCategory = EventDataTypes[Index].GetTypeName();
 			PinType.PinSubCategoryObject = EventDataTypes[Index].GetSubTypeObject();
 			PinType.ContainerType = EventDataTypes[Index].GetPinContainerType();
+			PinType.PinValueType.TerminalCategory = EventDataTypes[Index].GetValueTypeName();
+			PinType.PinValueType.TerminalSubCategoryObject = EventDataTypes[Index].GetValueSubTypeObject();
 			EventDataPinInfos.Add({GetEventDataPinName(Index), PinType});
 		}
 		AllocateEventDataPins();
