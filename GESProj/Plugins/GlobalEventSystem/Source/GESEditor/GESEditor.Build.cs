@@ -1,8 +1,8 @@
 using UnrealBuildTool;
 
-public class GlobalEventSystemEditor : ModuleRules
+public class GESEditor : ModuleRules
 {
-	public GlobalEventSystemEditor(ReadOnlyTargetRules Target) : base(Target)
+	public GESEditor(ReadOnlyTargetRules Target) : base(Target)
 	{
 		OptimizeCode = CodeOptimization.Never;
 		
@@ -18,9 +18,8 @@ public class GlobalEventSystemEditor : ModuleRules
 			"UnrealEd",
 			"Kismet",
 			"BlueprintGraph",
-			"GlobalEventSystem",
 			"KismetCompiler",
-			"GlobalEventSystem",
+			"GES",
 			"UnLua",
 			"Lua"
 		});

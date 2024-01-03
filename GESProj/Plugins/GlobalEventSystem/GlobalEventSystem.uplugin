@@ -17,12 +17,12 @@
 	"EnabledByDefault": true,
 	"Modules": [
 		{
-			"Name": "GlobalEventSystem",
+			"Name": "GES",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "GlobalEventSystemEditor",
+			"Name": "GESEditor",
 			"Type": "Runtime",
 			"LoadingPhase": "PostEngineInit"
 		}

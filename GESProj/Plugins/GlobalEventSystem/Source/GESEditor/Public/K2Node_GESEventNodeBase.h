@@ -7,7 +7,7 @@
 #include "K2Node_GESEventNodeBase.generated.h"
 
 UCLASS(Abstract)
-class GLOBALEVENTSYSTEMEDITOR_API UK2Node_GESEventNodeBase : public UK2Node
+class GESEDITOR_API UK2Node_GESEventNodeBase : public UK2Node
 {
 	GENERATED_BODY()
 

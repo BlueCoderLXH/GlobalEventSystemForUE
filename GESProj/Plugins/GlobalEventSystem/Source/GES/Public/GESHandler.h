@@ -4,23 +4,23 @@
 
 #include "GESEventData.h"
 
-DEFINE_LOG_CATEGORY_STATIC(LogGlobalEventSystem, Log, All);
+DEFINE_LOG_CATEGORY_STATIC(LogGES, Log, All);
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FGlobalEventListener, const FGESEventDataArray&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FGESListener, const FGESEventDataArray&);
 
-typedef void (*FGlobalEventStaticDelegate)(const FGESEventDataArray&);
+typedef void (*FGESStaticDelegate)(const FGESEventDataArray&);
 
-struct FGlobalEventCallbackKey
+struct FGESCallbackKey
 {
-    FGlobalEventCallbackKey(const void* InCallbackPtr) {
+    FGESCallbackKey(const void* InCallbackPtr) {
         HashCode = HashCombine(PointerHash(nullptr), PointerHash(InCallbackPtr));
     }
 
-    FGlobalEventCallbackKey(const void* InTarget, const void* InCallbackPtr) {
+    FGESCallbackKey(const void* InTarget, const void* InCallbackPtr) {
         HashCode = HashCombine(PointerHash(InTarget), PointerHash(InCallbackPtr));
     }
 
-    bool operator==(const FGlobalEventCallbackKey& Other) const {
+    bool operator==(const FGESCallbackKey& Other) const {
         return HashCode == Other.HashCode;
     }
 
@@ -32,30 +32,30 @@ private:
     uint32 HashCode;
 };
 
-inline uint32 GetTypeHash(const FGlobalEventCallbackKey& Key) {
+inline uint32 GetTypeHash(const FGESCallbackKey& Key) {
     return Key.GetHashCode();
 }
 
 /**
- * FGameEventListeners
- * The collection of FGameEventListener
+ * FGESListeners
+ * The collection of FGESListener
  */
-class GLOBALEVENTSYSTEM_API FGlobalEventListeners
+class GES_API FGESListeners
 {
 private:
     FGESEventType EventID;
 
-    FGlobalEventListener Listeners;
+    FGESListener Listeners;
 
-    TMap<FGlobalEventCallbackKey, FDelegateHandle> HandleMap;
+    TMap<FGESCallbackKey, FDelegateHandle> HandleMap;
     
 public:
     void Init(const FGESEventType& InEventID) {
         EventID = InEventID;
     }
 
-    bool Register(const FGlobalEventStaticDelegate& InCallback);
-    bool Unregister(const FGlobalEventStaticDelegate& InCallback);
+    bool Register(const FGESStaticDelegate& InCallback);
+    bool Unregister(const FGESStaticDelegate& InCallback);
 
     template<typename ClassType>
     bool Register(
@@ -82,7 +82,7 @@ private:
     bool RegisterInner(void* InTarget, void* InCallback, std::function<FDelegateHandle()> BindListener);
     bool UnregisterInner(void* InTarget, void* InCallback, std::function<void(const FDelegateHandle&)> UnBindListener);
 
-    FGlobalEventListener& GetListener(const UObject* WorldContext = nullptr) { return Listeners; }
+    FGESListener& GetListener(const UObject* WorldContext = nullptr) { return Listeners; }
 
     template<typename DstType, typename SrcType>
     static DstType PointerCast(SrcType SrcPtr) {
@@ -91,21 +91,21 @@ private:
 };
 
 /**
- * FGameEventHandler
- * Handler the event action:
+ * FGESHandler
+ * Handle the event action:
  * - Register()
  * - Unregister()
  * - Dispatch()
  */
-class GLOBALEVENTSYSTEM_API FGlobalEventHandler
+class GES_API FGESHandler
 {
 public:
     bool Register(
         const FGESEventType& InEventID,
-        const FGlobalEventStaticDelegate InStaticCallback);
+        const FGESStaticDelegate InStaticCallback);
     bool Unregister(
         const FGESEventType& InEventID,
-        const FGlobalEventStaticDelegate InStaticCallback);
+        const FGESStaticDelegate InStaticCallback);
 
     template<typename ClassType>
     bool Register(
@@ -139,5 +139,5 @@ public:
     void Clear();
 
 private:
-    TMap<FGESEventType, FGlobalEventListeners> EventMap;
+    TMap<FGESEventType, FGESListeners> EventMap;
 };

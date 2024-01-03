@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class GlobalEventSystem : ModuleRules
+public class GES : ModuleRules
 {
-	public GlobalEventSystem(ReadOnlyTargetRules Target) : base(Target)
+	public GES(ReadOnlyTargetRules Target) : base(Target)
 	{
 		OptimizeCode = CodeOptimization.Never;
 

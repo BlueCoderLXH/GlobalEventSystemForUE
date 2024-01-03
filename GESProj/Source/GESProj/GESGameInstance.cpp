@@ -3,14 +3,12 @@
 
 #include "GESGameInstance.h"
 
+#include "GES.h"
 #include "UnLuaBase.h"
 
 void UGESGameInstance::Init()
 {
-	UnLua::Startup();
-
-	lua_State* L = UnLua::GetState();
-	UnLua::RunFile(L, TEXT("Preload.lua"));
+	FGES::Init();
 
 	Super::Init();
 }

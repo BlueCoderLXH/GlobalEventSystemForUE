@@ -3,37 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GlobalEventSystem.h"
+#include "GES.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "GESBPLibrary.generated.h"
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FGESDelegateForBP, UPARAM(ref) FGESEventDataArray&, EventDataArray);
 
 /**
- * Only for test, will be removed in the future
- */
-USTRUCT(BlueprintType)
-struct FGESTestStruct
-{
-	GENERATED_BODY()
-
-	FGESTestStruct() {}
-
-	FGESTestStruct(int32 InInt, FString InStr) : IntValue(InInt), StrValue(InStr) {}
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 IntValue;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString StrValue;
-};
-
-/**
  * UGlobalEventSystemBPLibrary
  * Define
  */
 UCLASS()
-class GLOBALEVENTSYSTEMEDITOR_API UGESBPLibrary : public UBlueprintFunctionLibrary
+class GESEDITOR_API UGESBPLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
@@ -70,12 +51,24 @@ public:
 	static void GESConvertEventData(UPARAM(ref) FGESEventDataArray& EventDataArray);
 	DECLARE_FUNCTION(execGESConvertEventData);
 
-	UFUNCTION(BlueprintCallable, Category="GES|DispatchEventLua")
+	/*
+	 * DispatchEventLua
+	 * Dispatch event from lua
+	 */
+	UFUNCTION(BlueprintCallable, Category="GES_Lua|DispatchEvent")
 	static void DispatchEventLua(UPARAM(ref) const FGESEventDataArray& EventData);
 
-	UFUNCTION(BlueprintCallable, Category="GES|RegisterEventLua")
+	/*
+	 * RegisterEventLua
+	 * Register event from lua
+	 */	
+	UFUNCTION(BlueprintCallable, Category="GES_Lua|RegisterEvent")
 	static void RegisterEventLua(const FName EventType, FGESDelegateForBP EventDelegate);
 
-	UFUNCTION(BlueprintCallable, Category="GES|UnregisterEventLua")
+	/*
+	 * UnregisterEventLua
+	 * Unregister event from lua
+	 */		
+	UFUNCTION(BlueprintCallable, Category="GES_Lua|UnregisterEvent")
 	static void UnregisterEventLua(const FName EventType, FGESDelegateForBP EventDelegate);
 };

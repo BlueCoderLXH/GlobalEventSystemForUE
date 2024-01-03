@@ -12,7 +12,7 @@ typedef FName FGESEventType;
  * Wrap the event parameter with supported type
  */
 USTRUCT(BlueprintType)
-struct GLOBALEVENTSYSTEM_API FGESEventData
+struct GES_API FGESEventData
 {
 	GENERATED_BODY()
 	
@@ -210,29 +210,29 @@ public:
 	template<typename T>
 	const TArray<T>& GetArray() const
 	{
-		checkf(GetContainerType() == EGESContainerType::Array, TEXT("FGESEventDataWrapper:GetArray Type:%s isn't a TArray"), *GetTypeString());
+		checkf(GetContainerType() == EGESContainerType::TArray, TEXT("FGESEventDataWrapper:GetArray Type:%s isn't a TArray"), *GetTypeString());
 		return FMagicUnion::ConvertToAddr<TArray<T>>(Value);
 	}
 
 	template<typename KeyType, typename ValueType>
 	const TMap<KeyType, ValueType>& GetMap() const
 	{
-		checkf(GetContainerType() == EGESContainerType::Map, TEXT("FGESEventDataWrapper:GetMap Type:%s isn't a TMap"), *GetTypeString());
+		checkf(GetContainerType() == EGESContainerType::TMap, TEXT("FGESEventDataWrapper:GetMap Type:%s isn't a TMap"), *GetTypeString());
 		return FMagicUnion::ConvertToAddr<TMap<KeyType, ValueType>>(Value);
 	}
 
 	template<typename T>
 	const TSet<T>& GetSet() const
 	{
-		checkf(GetContainerType() == EGESContainerType::Set, TEXT("FGESEventDataWrapper:GetSet Type:%s isn't a TSet"), *GetTypeString());
+		checkf(GetContainerType() == EGESContainerType::TSet, TEXT("FGESEventDataWrapper:GetSet Type:%s isn't a TSet"), *GetTypeString());
 		return FMagicUnion::ConvertToAddr<TSet<T>>(Value);
 	}
 
 	const void* GetContainerRawPtr() const
 	{
-		checkf(GetContainerType() == EGESContainerType::Array ||
-			GetContainerType() == EGESContainerType::Map ||
-			GetContainerType() == EGESContainerType::Set, TEXT("FGESEventDataWrapper:GetContainerRawPtr Type:%s isn't a Container"), *GetTypeString());
+		checkf(GetContainerType() == EGESContainerType::TArray ||
+			GetContainerType() == EGESContainerType::TMap ||
+			GetContainerType() == EGESContainerType::TSet, TEXT("FGESEventDataWrapper:GetContainerRawPtr Type:%s isn't a Container"), *GetTypeString());
 		return FMagicUnion::ConvertToRawAddr(Value);
 	}
 
@@ -249,13 +249,13 @@ private:
 				case EGESContainerType::None:
 					Ret = TEXT("None");
 					break;
-				case EGESContainerType::Array:
+				case EGESContainerType::TArray:
 					Ret = TEXT("Array");
 					break;
-				case EGESContainerType::Map:
+				case EGESContainerType::TMap:
 					Ret = TEXT("Map");
 					break;
-				case EGESContainerType::Set:
+				case EGESContainerType::TSet:
 					Ret = TEXT("Set");
 					break;
 				}
@@ -308,7 +308,7 @@ private:
  * The array of FGESEventDataItem
  */
 USTRUCT(BlueprintType)
-struct GLOBALEVENTSYSTEM_API FGESEventDataArray
+struct GES_API FGESEventDataArray
 {
 	GENERATED_BODY()
 
@@ -326,7 +326,7 @@ public:
 	{
 		EventID = InEventID;
 
-		UGESEventConfigHelper::FindEvent(EventID, EventConfigItem);
+		FGESEventConfigHelper::FindEvent(EventID, EventConfigItem);
 	}
 	
 	const FGESEventType& GetEventID() const { return EventID; }
@@ -524,55 +524,55 @@ public:
 	template<typename T>
 	void PushParam(const TArray<T>& ArrayValue)
 	{
-		PushParamInternal(&ArrayValue, EGESCppType::None, EGESContainerType::Array);
+		PushParamInternal(&ArrayValue, EGESCppType::None, EGESContainerType::TArray);
 	}
 
 	template<typename T>
 	void PushParam(TArray<T>& ArrayValue)
 	{
-		PushParamInternal(&ArrayValue, EGESCppType::None, EGESContainerType::Array);
+		PushParamInternal(&ArrayValue, EGESCppType::None, EGESContainerType::TArray);
 	}
 
 	template<typename T>
 	void PushParam(TArray<T>&& SetValue)
 	{
-		PushParamInternal(&SetValue, EGESCppType::None, EGESContainerType::Array);
+		PushParamInternal(&SetValue, EGESCppType::None, EGESContainerType::TArray);
 	}
 
 	template<typename KeyType, typename ValueType>
 	void PushParam(const TMap<KeyType, ValueType>& MapValue)
 	{
-		PushParamInternal(&MapValue, EGESCppType::None, EGESContainerType::Map);
+		PushParamInternal(&MapValue, EGESCppType::None, EGESContainerType::TMap);
 	}
 
 	template<typename KeyType, typename ValueType>
 	void PushParam(TMap<KeyType, ValueType>& MapValue)
 	{
-		PushParamInternal(&MapValue, EGESCppType::None, EGESContainerType::Map);
+		PushParamInternal(&MapValue, EGESCppType::None, EGESContainerType::TMap);
 	}
 
 	template<typename KeyType, typename ValueType>
 	void PushParam(TMap<KeyType, ValueType>&& MapValue)
 	{
-		PushParamInternal(&MapValue, EGESCppType::None, EGESContainerType::Map);
+		PushParamInternal(&MapValue, EGESCppType::None, EGESContainerType::TMap);
 	}
 
 	template<typename T>
 	void PushParam(const TSet<T>& SetValue)
 	{
-		PushParamInternal(&SetValue, EGESCppType::None, EGESContainerType::Set);
+		PushParamInternal(&SetValue, EGESCppType::None, EGESContainerType::TSet);
 	}
 
 	template<typename T>
 	void PushParam(TSet<T>& SetValue)
 	{
-		PushParamInternal(&SetValue, EGESCppType::None, EGESContainerType::Set);
+		PushParamInternal(&SetValue, EGESCppType::None, EGESContainerType::TSet);
 	}
 
 	template<typename T>
 	void PushParam(TSet<T>&& SetValue)
 	{
-		PushParamInternal(&SetValue, EGESCppType::None, EGESContainerType::Set);
+		PushParamInternal(&SetValue, EGESCppType::None, EGESContainerType::TSet);
 	}	
 
 	void* GetNull(const int32 Index) const

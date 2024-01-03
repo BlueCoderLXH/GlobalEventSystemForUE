@@ -72,7 +72,7 @@ void UK2Node_GESRegisterEvent::ExpandNode(FKismetCompilerContext& CompilerContex
 			return;
 		}
 
-		if (!UGESEventConfigHelper::FindEvent(EventTypeValue))
+		if (!FGESEventConfigHelper::FindEvent(EventTypeValue))
 		{
 			CompilerContext.MessageLog.Error(*FText::Format(LOCTEXT("InternalConnectionError", "Event:{0} hasn't been configured @@"),
 				FText::FromString(EventTypeValue.ToString())).ToString(), this);

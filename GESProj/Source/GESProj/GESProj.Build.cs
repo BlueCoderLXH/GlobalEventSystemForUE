@@ -18,7 +18,7 @@ public class GESProj : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{
-			"GlobalEventSystem",
+			"GES",
 			"UnLua",
 			"Lua"
 		});

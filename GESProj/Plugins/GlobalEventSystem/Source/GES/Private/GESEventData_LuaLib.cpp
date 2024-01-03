@@ -142,7 +142,7 @@ static int32 FGESEventDataArray_PushArray(lua_State* L)
 	// [1] = Self, [2] = TArray
 	FGESEventDataArray* EventDataArray = FGESEventDataArray_GetSelf(L, 2);
 	const void* ArrayRawPtr = UnLua::GetScriptContainerPointer(L, 2);
-	EventDataArray->PushParamWithType({EGESCppType::None, EGESContainerType::Array}, ArrayRawPtr);
+	EventDataArray->PushParamWithType({EGESCppType::None, EGESContainerType::TArray}, ArrayRawPtr);
 	return 1;
 }
 
@@ -151,7 +151,7 @@ static int32 FGESEventDataArray_PushMap(lua_State* L)
 	// [1] = Self, [2] = TMap
 	FGESEventDataArray* EventDataArray = FGESEventDataArray_GetSelf(L, 2);
 	const void* MapRawPtr = UnLua::GetScriptContainerPointer(L, 2);
-	EventDataArray->PushParamWithType({EGESCppType::None, EGESContainerType::Map}, MapRawPtr);
+	EventDataArray->PushParamWithType({EGESCppType::None, EGESContainerType::TMap}, MapRawPtr);
 	return 1;
 }
 
@@ -160,7 +160,7 @@ static int32 FGESEventDataArray_PushSet(lua_State* L)
 	// [1] = Self, [2] = TSet
 	FGESEventDataArray* EventDataArray = FGESEventDataArray_GetSelf(L, 2);
 	const void* SetRawPtr = UnLua::GetScriptContainerPointer(L, 2);
-	EventDataArray->PushParamWithType({EGESCppType::None, EGESContainerType::Map}, SetRawPtr);
+	EventDataArray->PushParamWithType({EGESCppType::None, EGESContainerType::TMap}, SetRawPtr);
 	return 1;
 }
 

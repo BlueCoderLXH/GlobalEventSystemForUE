@@ -3,9 +3,9 @@
 #include "Engine.h"
 #include "Modules/ModuleInterface.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogGlobalEventSystemEditor, All, All)
+DECLARE_LOG_CATEGORY_EXTERN(LogGESEditor, All, All)
 
-class FGlobalEventSystemEditorModule : public IModuleInterface
+class FGESEditorModule : public IModuleInterface
 {
 public:
 	virtual void StartupModule() override;

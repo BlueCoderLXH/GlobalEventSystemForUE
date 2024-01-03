@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "UnLuaBase.h"
+#include "UnLuaLegacy.h"
 #include "UObject/Object.h"
 #include "GESEventConfig.generated.h"
 
@@ -28,13 +30,13 @@ UENUM(BlueprintType)
 enum class EGESContainerType : uint8
 {
 	None = 0,
-	Array,
-	Set,
-	Map,
+	TArray,
+	TSet,
+	TMap,
 };
 
 USTRUCT(BlueprintType)
-struct GLOBALEVENTSYSTEM_API FGESEventDataType
+struct GES_API FGESEventDataType
 {
 	GENERATED_BODY()
 
@@ -151,7 +153,7 @@ private:
 };
 
 USTRUCT(BlueprintType)
-struct GLOBALEVENTSYSTEM_API FGESEventConfigItem
+struct GES_API FGESEventConfigItem
 {
 	GENERATED_BODY()
 	
@@ -166,58 +168,39 @@ struct GLOBALEVENTSYSTEM_API FGESEventConfigItem
 	int32 GetEventDataNum() const { return EventDataTypes.Num(); }
 };
 
-UCLASS(Blueprintable, BlueprintType)
-class GLOBALEVENTSYSTEM_API UGESEventConfig : public UObject
+USTRUCT(BlueprintType)
+struct GES_API FGESEventConfig
 {
 	GENERATED_BODY()
-
-public:
+	
 	UPROPERTY(EditAnywhere)
 	TArray<FGESEventConfigItem> Events;
+
+	bool IsValid() const { return Events.Num() > 0; }
+	void Clear() { Events.Empty(); }
 };
 
-UCLASS(DefaultConfig, Config=GlobalEventSystem)
-class GLOBALEVENTSYSTEM_API UGESEventConfigHelper : public UObject
+struct GES_API FGESEventConfigHelper
 {
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(Config)
-	FString EventConfigClassPath;
-
-	static const UGESEventConfig* Init()
+	static void Init()
 	{
-		const UGESEventConfigHelper* EventConfigHelper = Cast<UGESEventConfigHelper>(StaticClass()->GetDefaultObject());
-		if (!EventConfigHelper)
-		{
-			return nullptr;
-		}
+		Get();
+	}
 
-		const FSoftClassPath EventConfigClassPath(EventConfigHelper->EventConfigClassPath);
-		const UClass* EventConfigClass = EventConfigClassPath.ResolveClass();
-		if (!EventConfigClass)
-		{
-			EventConfigClass = EventConfigClassPath.TryLoadClass<UGESEventConfig>();
-		}
-		
-		if (!IsValid(EventConfigClass))
-		{
-			return nullptr;
-		}
-		
-		const UGESEventConfig* EventConfig = Cast<UGESEventConfig>(EventConfigClass->GetDefaultObject());
-		return EventConfig;
+	static void Clear()
+	{
+		Get().Clear();
 	}
 
 	static bool GetConfig(TArray<FGESEventConfigItem>& OutEvents)
 	{
-		const UGESEventConfig* EventConfig = Init();
-		if (!IsValid(EventConfig))
+		const FGESEventConfig& EventConfig = Get();
+		if (!EventConfig.IsValid())
 		{
 			return false;
 		}
 
-		OutEvents = EventConfig->Events;
+		OutEvents = EventConfig.Events;
 		return true;
 	}
 
@@ -239,8 +222,6 @@ public:
 			return EventConfigItem.EventType == EventName;
 		});
 
-		// check(FindEventConfigItemPtr);
-
 		if (FindEventConfigItemPtr)
 		{
 			OutEventConfig = *FindEventConfigItemPtr;
@@ -253,5 +234,24 @@ public:
 	{
 		FGESEventConfigItem OutEventConfig;
 		return FindEvent(EventName, OutEventConfig);
+	}
+
+private:
+	static FGESEventConfig& Get()
+	{
+		static FGESEventConfig EventConfig;
+
+		if (!EventConfig.IsValid())
+		{
+			lua_State* L = UnLua::GetState();
+
+			const auto LuaRetResult = UnLua::Call(UnLua::GetState(), "Global_GetCppEvents");
+			if (LuaRetResult.Num() > 0)
+			{
+				EventConfig = LuaRetResult[0].Value<FGESEventConfig>();
+			}
+		}
+		
+		return EventConfig;	
 	}
 };

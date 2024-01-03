@@ -1,7 +1,7 @@
-#include "..\Public\GlobalEventHandler.h"
+#include "GESHandler.h"
 
 //---------- FGameEventListeners ----------
-bool FGlobalEventListeners::Register(const FGlobalEventStaticDelegate& InCallback)
+bool FGESListeners::Register(const FGESStaticDelegate& InCallback)
 {
 	auto BindListener = [&]() -> FDelegateHandle
 	{
@@ -11,7 +11,7 @@ bool FGlobalEventListeners::Register(const FGlobalEventStaticDelegate& InCallbac
 	return RegisterInner(nullptr, PointerCast<void*>(InCallback), BindListener);
 }
 
-bool FGlobalEventListeners::Unregister(const FGlobalEventStaticDelegate& InCallback)
+bool FGESListeners::Unregister(const FGESStaticDelegate& InCallback)
 {
 	auto UnBindListener = [&] (const FDelegateHandle& DelegateHandle) -> void {
 		GetListener().Remove(DelegateHandle);
@@ -21,7 +21,7 @@ bool FGlobalEventListeners::Unregister(const FGlobalEventStaticDelegate& InCallb
 }
 
 template <typename ClassType>
-bool FGlobalEventListeners::Register(
+bool FGESListeners::Register(
 	std::enable_if_t<std::is_base_of<UObject, ClassType>::value, ClassType*> InTarget,
 	void (ClassType::*InCallback)(const FGESEventDataArray&))
 {
@@ -33,7 +33,7 @@ bool FGlobalEventListeners::Register(
 }
 
 template <typename ClassType>
-bool FGlobalEventListeners::Unregister(
+bool FGESListeners::Unregister(
 	std::enable_if_t<std::is_base_of<UObject, ClassType>::value, ClassType*> InTarget,
 	void (ClassType::*InCallback)(const FGESEventDataArray&))
 {
@@ -45,7 +45,7 @@ bool FGlobalEventListeners::Unregister(
 }
 
 template <typename ClassType>
-bool FGlobalEventListeners::RegisterRaw(ClassType* InTarget, void (ClassType::*InCallback)(const FGESEventDataArray&))
+bool FGESListeners::RegisterRaw(ClassType* InTarget, void (ClassType::*InCallback)(const FGESEventDataArray&))
 {
 	auto BindListener = [&] () -> FDelegateHandle {
 		return GetListener().AddRaw(InTarget, InCallback);
@@ -55,7 +55,7 @@ bool FGlobalEventListeners::RegisterRaw(ClassType* InTarget, void (ClassType::*I
 }
 
 template <typename ClassType>
-bool FGlobalEventListeners::UnregisterRaw(ClassType* InTarget, void (ClassType::*InCallback)(const FGESEventDataArray&))
+bool FGESListeners::UnregisterRaw(ClassType* InTarget, void (ClassType::*InCallback)(const FGESEventDataArray&))
 {
 	auto UnBindListener = [&] (const FDelegateHandle& DelegateHandle) -> void {
 		GetListener().Remove(DelegateHandle);
@@ -64,7 +64,7 @@ bool FGlobalEventListeners::UnregisterRaw(ClassType* InTarget, void (ClassType::
 	return UnregisterInner(InTarget, PointerCast<void*>(InCallback), UnBindListener);
 }
 
-bool FGlobalEventListeners::RegisterBP(UObject* InTarget, const FName InFunctionName)
+bool FGESListeners::RegisterBP(UObject* InTarget, const FName InFunctionName)
 {
 	const UFunction* BPFunction = InTarget->FindFunctionChecked(InFunctionName);
         
@@ -75,7 +75,7 @@ bool FGlobalEventListeners::RegisterBP(UObject* InTarget, const FName InFunction
 	return RegisterInner(InTarget, PointerCast<void*>(BPFunction->GetNativeFunc()), BindListener);
 }
 
-bool FGlobalEventListeners::UnregisterBP(UObject* InTarget, const FName InFunctionName)
+bool FGESListeners::UnregisterBP(UObject* InTarget, const FName InFunctionName)
 {
 	const UFunction* BPFunction = InTarget->FindFunctionChecked(InFunctionName);
 
@@ -86,11 +86,11 @@ bool FGlobalEventListeners::UnregisterBP(UObject* InTarget, const FName InFuncti
 	return UnregisterInner(InTarget, PointerCast<void*>(BPFunction->GetNativeFunc()), UnBindListener);
 }
 
-bool FGlobalEventListeners::RegisterInner(void* InTarget, void* InCallback, std::function<FDelegateHandle()> BindListener)
+bool FGESListeners::RegisterInner(void* InTarget, void* InCallback, std::function<FDelegateHandle()> BindListener)
 {
-	const FGlobalEventCallbackKey FuncKey(InTarget, InCallback);
+	const FGESCallbackKey FuncKey(InTarget, InCallback);
 	if (HandleMap.Find(FuncKey)) {
-		UE_LOG(LogGlobalEventSystem, Warning, TEXT("Register an existent callback for event:%s"), *EventID.ToString());
+		UE_LOG(LogGES, Warning, TEXT("Register an existent callback for event:%s"), *EventID.ToString());
 		return false;
 	}
 
@@ -99,11 +99,11 @@ bool FGlobalEventListeners::RegisterInner(void* InTarget, void* InCallback, std:
 	return true;
 }
 
-bool FGlobalEventListeners::UnregisterInner(void* InTarget, void* InCallback, std::function<void(const FDelegateHandle&)> UnBindListener)
+bool FGESListeners::UnregisterInner(void* InTarget, void* InCallback, std::function<void(const FDelegateHandle&)> UnBindListener)
 {
-	const FGlobalEventCallbackKey FuncKey(InTarget, InCallback);
+	const FGESCallbackKey FuncKey(InTarget, InCallback);
 	if (!HandleMap.Find(FuncKey)) {
-		UE_LOG(LogGlobalEventSystem, Warning, TEXT("Unregister an inexistent callback for event:%s"), *EventID.ToString());
+		UE_LOG(LogGES, Warning, TEXT("Unregister an inexistent callback for event:%s"), *EventID.ToString());
 		return false;
 	}
 
@@ -113,7 +113,7 @@ bool FGlobalEventListeners::UnregisterInner(void* InTarget, void* InCallback, st
 	return true;
 }
 
-bool FGlobalEventListeners::Dispatch(const FGESEventDataArray& EventData)
+bool FGESListeners::Dispatch(const FGESEventDataArray& EventData)
 {
 	if (!GetListener().IsBound())
 	{
@@ -124,18 +124,18 @@ bool FGlobalEventListeners::Dispatch(const FGESEventDataArray& EventData)
 	return true;
 }
 
-void FGlobalEventListeners::Clear()
+void FGESListeners::Clear()
 {
 	Listeners.Clear();
 	HandleMap.Empty();
 }
 
 //---------- FGameEventHandler ----------
-bool FGlobalEventHandler::Register(
+bool FGESHandler::Register(
 	const FGESEventType& InEventID,
-	const FGlobalEventStaticDelegate InStaticCallback)
+	const FGESStaticDelegate InStaticCallback)
 {
-	FGlobalEventListeners& ListenersPtr = EventMap.FindOrAdd(InEventID);
+	FGESListeners& ListenersPtr = EventMap.FindOrAdd(InEventID);
 	ListenersPtr.Init(InEventID);
 
 	if (!ListenersPtr.Register(InStaticCallback))
@@ -146,11 +146,11 @@ bool FGlobalEventHandler::Register(
 	return true;
 }
 
-bool FGlobalEventHandler::Unregister(
+bool FGESHandler::Unregister(
 	const FGESEventType& InEventID,
-	const FGlobalEventStaticDelegate InStaticCallback)
+	const FGESStaticDelegate InStaticCallback)
 {
-	FGlobalEventListeners* ListenersPtr = EventMap.Find(InEventID);
+	FGESListeners* ListenersPtr = EventMap.Find(InEventID);
 	if (!ListenersPtr)
 	{
 		return false;
@@ -160,13 +160,13 @@ bool FGlobalEventHandler::Unregister(
 }
 
 template <typename ClassType>
-bool FGlobalEventHandler::Register(
+bool FGESHandler::Register(
 	const FGESEventType& InEventID,
 	std::enable_if_t<std::is_base_of<UObject, ClassType>::value, ClassType*> InTarget,
 	void (ClassType::*InCallback)(const FGESEventDataArray&))
 {
         
-	FGlobalEventListeners& ListenersPtr = EventMap.FindOrAdd(InEventID);
+	FGESListeners& ListenersPtr = EventMap.FindOrAdd(InEventID);
 	ListenersPtr.Init(InEventID);
 
 	if (!ListenersPtr.Register(InTarget, InCallback)) {
@@ -177,12 +177,12 @@ bool FGlobalEventHandler::Register(
 }
 
 template <typename ClassType>
-bool FGlobalEventHandler::Unregister(
+bool FGESHandler::Unregister(
 	const FGESEventType& InEventID,
 	std::enable_if_t<std::is_base_of<UObject, ClassType>::value, ClassType*> InTarget,
 	void (ClassType::*InCallback)(const FGESEventDataArray&))
 {
-	FGlobalEventListeners* ListenersPtr = EventMap.Find(InEventID);
+	FGESListeners* ListenersPtr = EventMap.Find(InEventID);
 	if (!ListenersPtr) {
 		return false;
 	}
@@ -191,11 +191,11 @@ bool FGlobalEventHandler::Unregister(
 }
 
 template <typename ClassType>
-bool FGlobalEventHandler::RegisterRaw(
+bool FGESHandler::RegisterRaw(
 	const FGESEventType& InEventID, ClassType* InTarget,
 	void (ClassType::*InCallback)(const FGESEventDataArray&))
 {
-	FGlobalEventListeners& ListenersPtr = EventMap.FindOrAdd(InEventID);
+	FGESListeners& ListenersPtr = EventMap.FindOrAdd(InEventID);
 	ListenersPtr.Init(InEventID);
 
 	if (!ListenersPtr.RegisterRaw(InTarget, InCallback)) {
@@ -206,12 +206,12 @@ bool FGlobalEventHandler::RegisterRaw(
 }
 
 template <typename ClassType>
-bool FGlobalEventHandler::UnregisterRaw(
+bool FGESHandler::UnregisterRaw(
 	const FGESEventType& InEventID,
 	ClassType* InTarget, 
 	void (ClassType::*InCallback)(const FGESEventDataArray&))
 {
-	FGlobalEventListeners* ListenersPtr = EventMap.Find(InEventID);
+	FGESListeners* ListenersPtr = EventMap.Find(InEventID);
 	if (!ListenersPtr) {
 		return false;
 	}
@@ -219,9 +219,9 @@ bool FGlobalEventHandler::UnregisterRaw(
 	return ListenersPtr->UnregisterRaw(InTarget, InCallback);
 }
 
-bool FGlobalEventHandler::RegisterBP(const FGESEventType& InEventID, const UObject* InTarget, const FName InFunctionName)
+bool FGESHandler::RegisterBP(const FGESEventType& InEventID, const UObject* InTarget, const FName InFunctionName)
 {
-	FGlobalEventListeners& ListenersPtr = EventMap.FindOrAdd(InEventID);
+	FGESListeners& ListenersPtr = EventMap.FindOrAdd(InEventID);
 	ListenersPtr.Init(InEventID);
 
 	if (!ListenersPtr.RegisterBP(const_cast<UObject*>(InTarget), InFunctionName))
@@ -232,9 +232,9 @@ bool FGlobalEventHandler::RegisterBP(const FGESEventType& InEventID, const UObje
 	return true;
 }
 
-bool FGlobalEventHandler::UnregisterBP(const FGESEventType& InEventID, const UObject* InTarget, const FName InFunctionName)
+bool FGESHandler::UnregisterBP(const FGESEventType& InEventID, const UObject* InTarget, const FName InFunctionName)
 {
-	FGlobalEventListeners* ListenersPtr = EventMap.Find(InEventID);
+	FGESListeners* ListenersPtr = EventMap.Find(InEventID);
 	if (!ListenersPtr) {
 		return false;
 	}
@@ -243,7 +243,7 @@ bool FGlobalEventHandler::UnregisterBP(const FGESEventType& InEventID, const UOb
 }
 
 
-bool FGlobalEventHandler::Dispatch(const FGESEventDataArray& EventData)
+bool FGESHandler::Dispatch(const FGESEventDataArray& EventData)
 {
 	const auto ListenersPtr = EventMap.Find(EventData.GetEventID());
 	if (!ListenersPtr)
@@ -254,7 +254,7 @@ bool FGlobalEventHandler::Dispatch(const FGESEventDataArray& EventData)
 	return ListenersPtr->Dispatch(EventData);
 }
 
-void FGlobalEventHandler::Clear()
+void FGESHandler::Clear()
 {
 	for (auto Listeners : EventMap)
 	{

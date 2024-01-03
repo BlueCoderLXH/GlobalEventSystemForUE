@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "..\Public\K2Node_GESEventNodeBase.h"
+#include "K2Node_GESEventNodeBase.h"
 
 #include "BlueprintActionDatabaseRegistrar.h"
 #include "BlueprintNodeSpawner.h"
@@ -91,7 +91,7 @@ bool UK2Node_GESEventNodeBase::OnEventTypePinValueChanged(UEdGraphPin* Pin)
 	EventDataPinInfos.Reset();
 
 	FGESEventConfigItem EventItem;
-	if (UGESEventConfigHelper::FindEvent(EventTypeValue, EventItem))
+	if (FGESEventConfigHelper::FindEvent(EventTypeValue, EventItem))
 	{
 		const TArray<FGESEventDataType>& EventDataTypes = EventItem.EventDataTypes;
 		// Create new event data pins

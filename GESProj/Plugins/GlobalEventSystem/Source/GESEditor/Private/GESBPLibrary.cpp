@@ -4,7 +4,7 @@
 
 #include "Engine.h"
 #include "GESEditorCommon.h"
-#include "GlobalEventSystem.h"
+#include "GES.h"
 
 using namespace GESEditorConstant;
 
@@ -17,13 +17,13 @@ DEFINE_FUNCTION(UGESBPLibrary::execGESDispatchEvent)
 {
 	P_GET_PROPERTY(FNameProperty, Z_Param_EventType);
 
-	UE_LOG(LogGlobalEventSystem, Verbose, TEXT("DispatchEvent EventType:%s"), *Z_Param_EventType.ToString());
+	UE_LOG(LogGES, Verbose, TEXT("DispatchEvent EventType:%s"), *Z_Param_EventType.ToString());
 
 	FGESEventDataArray EventData;
 	EventData.SetEventID(Z_Param_EventType);
 
 	FGESEventConfigItem EventConfig;
-	UGESEventConfigHelper::FindEvent(Z_Param_EventType, EventConfig);
+	FGESEventConfigHelper::FindEvent(Z_Param_EventType, EventConfig);
 	
 	int32 EventDataIndex = -1;
 	while (++EventDataIndex < EventConfig.EventDataTypes.Num())
@@ -41,7 +41,7 @@ DEFINE_FUNCTION(UGESBPLibrary::execGESDispatchEvent)
 
 	P_FINISH;
 
-	FGlobalEventSystem::DispatchFromBP(EventData);
+	FGES::DispatchFromBP(EventData);
 }
 
 void UGESBPLibrary::GESDispatchEventInternal(FProperty* PropertyPtr, const void* DataPtr, const FGESEventDataType& Type, FGESEventDataArray& EventDataArray)
@@ -52,17 +52,17 @@ void UGESBPLibrary::GESDispatchEventInternal(FProperty* PropertyPtr, const void*
 	if (CastField<FArrayProperty>(PropertyPtr))
 	{
 		TargetEventDataType = Type.CppType;
-		TargetContainerType = EGESContainerType::Array;
+		TargetContainerType = EGESContainerType::TArray;
 	}
 	else if (CastField<FMapProperty>(PropertyPtr))
 	{
 		TargetEventDataType = Type.CppType;
-		TargetContainerType = EGESContainerType::Map;
+		TargetContainerType = EGESContainerType::TMap;
 	}
 	else if (CastField<FSetProperty>(PropertyPtr))
 	{
 		TargetEventDataType = Type.CppType;
-		TargetContainerType = EGESContainerType::Set;
+		TargetContainerType = EGESContainerType::TSet;
 	}
 	else
 	{
@@ -122,7 +122,7 @@ void UGESBPLibrary::GESDispatchEventInternal(FProperty* PropertyPtr, const void*
 
 void UGESBPLibrary::GESRegisterEvent(FName EventType, FGESDelegateForBP EventDelegate)
 {
-	FGlobalEventSystem::RegisterBP(EventType, EventDelegate.GetUObject(), EventDelegate.GetFunctionName());
+	FGES::RegisterBP(EventType, EventDelegate.GetUObject(), EventDelegate.GetFunctionName());
 }
 
 void UGESBPLibrary::GESUnregisterEvent(FName EventType)
@@ -139,7 +139,7 @@ DEFINE_FUNCTION(UGESBPLibrary::execGESUnregisterEvent)
 	const UObject* DelegateOwner = Stack.Object;
 	check(IsValid(DelegateOwner));
 
-	FGlobalEventSystem::UnregisterBP(Z_Param_EventName, DelegateOwner, GetCustomEventFuncName(Z_Param_EventName));
+	FGES::UnregisterBP(Z_Param_EventName, DelegateOwner, GetCustomEventFuncName(Z_Param_EventName));
 	
 	P_FINISH;
 }
@@ -234,17 +234,17 @@ DEFINE_FUNCTION(UGESBPLibrary::execGESConvertEventData)
 
 			const FProperty* ContainerProperty = nullptr;
 			
-			if (ContainerType == EGESContainerType::Array)
+			if (ContainerType == EGESContainerType::TArray)
 			{
 				Stack.StepCompiledIn<FArrayProperty>(nullptr);
 				ContainerProperty = CastField<FArrayProperty>(Stack.MostRecentProperty);
 			}
-			else if (ContainerType == EGESContainerType::Map)
+			else if (ContainerType == EGESContainerType::TMap)
 			{
 				Stack.StepCompiledIn<FMapProperty>(nullptr);
 				ContainerProperty = CastField<FMapProperty>(Stack.MostRecentProperty);
 			}
-			else if (ContainerType == EGESContainerType::Set)
+			else if (ContainerType == EGESContainerType::TSet)
 			{
 				Stack.StepCompiledIn<FSetProperty>(nullptr);
 				ContainerProperty = CastField<FSetProperty>(Stack.MostRecentProperty);
@@ -263,15 +263,15 @@ DEFINE_FUNCTION(UGESBPLibrary::execGESConvertEventData)
 
 void UGESBPLibrary::RegisterEventLua(const FName EventType, FGESDelegateForBP EventDelegate)
 {
-	FGlobalEventSystem::RegisterBP(EventType, EventDelegate.GetUObject(), EventDelegate.GetFunctionName());	
+	FGES::RegisterBP(EventType, EventDelegate.GetUObject(), EventDelegate.GetFunctionName());	
 }
 
 void UGESBPLibrary::DispatchEventLua(const FGESEventDataArray& EventData)
 {
-	FGlobalEventSystem::DispatchFromBP(EventData);
+	FGES::DispatchFromBP(EventData);
 }
 
 void UGESBPLibrary::UnregisterEventLua(const FName EventType, FGESDelegateForBP EventDelegate)
 {
-	FGlobalEventSystem::UnregisterBP(EventType, EventDelegate.GetUObject(), EventDelegate.GetFunctionName());
+	FGES::UnregisterBP(EventType, EventDelegate.GetUObject(), EventDelegate.GetFunctionName());
 }
