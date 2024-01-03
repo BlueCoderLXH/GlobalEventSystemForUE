@@ -39,7 +39,7 @@ struct GLOBALEVENTSYSTEM_API FGESEventData
 		Value = FMagicUnion::ConvertToInt64(const_cast<void*>(InValuePtr));
 	}
 	
-	const EGESEventDataCppType& GetCppType() const { return Type.CppType; }
+	const EGESCppType& GetCppType() const { return Type.CppType; }
 	
 	const EGESContainerType& GetContainerType() const { return Type.ContainerType; }
 
@@ -97,149 +97,142 @@ private:
 public:
 	void* GetNull() const
 	{
-		checkf(GetCppType() == EGESEventDataCppType::EDT_Null && !Value, TEXT("FGESEventDataWrapper:GetNull Type:%s isn't a nullptr"), *GetTypeString());
+		checkf(GetCppType() == EGESCppType::Null && !Value, TEXT("FGESEventDataWrapper:GetNull Type:%s isn't a nullptr"), *GetTypeString());
 		return GetValueRawPtr();		
 	}
 	
 	bool GetBool() const
 	{
-		checkf(GetCppType() == EGESEventDataCppType::EDT_Bool, TEXT("FGESEventDataWrapper:GetBool Type:%s isn't a bool"), *GetTypeString());
+		checkf(GetCppType() == EGESCppType::Bool, TEXT("FGESEventDataWrapper:GetBool Type:%s isn't a bool"), *GetTypeString());
 		return FMagicUnion::ConvertToAddr<bool>(Value);
 	}
 
 	int8 GetByte() const
 	{
-		checkf(GetCppType() == EGESEventDataCppType::EDT_Integer, TEXT("FGESEventDataWrapper:GetInteger Type:%s isn't a int"), *GetTypeString());
+		checkf(GetCppType() == EGESCppType::Integer, TEXT("FGESEventDataWrapper:GetInteger Type:%s isn't a int"), *GetTypeString());
 		return FMagicUnion::ConvertToAddr<int8>(Value);
 	}
 
 	int16 GetShort() const
 	{
-		checkf(GetCppType() == EGESEventDataCppType::EDT_Integer, TEXT("FGESEventDataWrapper:GetInteger Type:%s isn't a int"), *GetTypeString());
+		checkf(GetCppType() == EGESCppType::Integer, TEXT("FGESEventDataWrapper:GetInteger Type:%s isn't a int"), *GetTypeString());
 		return FMagicUnion::ConvertToAddr<int16>(Value);;		
 	}
 
 	int32 GetInt() const
 	{
-		checkf(GetCppType() == EGESEventDataCppType::EDT_Integer, TEXT("FGESEventDataWrapper:GetInteger Type:%s isn't a int"), *GetTypeString());
+		checkf(GetCppType() == EGESCppType::Integer, TEXT("FGESEventDataWrapper:GetInteger Type:%s isn't a int"), *GetTypeString());
 		return FMagicUnion::ConvertToAddr<int32>(Value);
 	}
 
 	int64 GetLong() const
 	{
-		checkf(GetCppType() == EGESEventDataCppType::EDT_Integer, TEXT("FGESEventDataWrapper:GetInteger Type:%s isn't a int"), *GetTypeString());
+		checkf(GetCppType() == EGESCppType::Integer, TEXT("FGESEventDataWrapper:GetInteger Type:%s isn't a int"), *GetTypeString());
 		return FMagicUnion::ConvertToAddr<int64>(Value);
 	}
 
 	float GetFloat() const
 	{
-		checkf(GetCppType() == EGESEventDataCppType::EDT_Float, TEXT("FGESEventDataWrapper:GetFloat Type:%s isn't a float"), *GetTypeString());
+		checkf(GetCppType() == EGESCppType::Float, TEXT("FGESEventDataWrapper:GetFloat Type:%s isn't a float"), *GetTypeString());
 		return FMagicUnion::ConvertToAddr<float>(Value);
 	}
 
 	double GetDouble() const
 	{
-		checkf(GetCppType() == EGESEventDataCppType::EDT_Float, TEXT("FGESEventDataWrapper:GetDouble Type:%s isn't a float"), *GetTypeString());
+		checkf(GetCppType() == EGESCppType::Float, TEXT("FGESEventDataWrapper:GetDouble Type:%s isn't a float"), *GetTypeString());
 		return FMagicUnion::ConvertToAddr<double>(Value);
 	}
 
 	const FString& GetString() const
 	{
-		checkf(GetCppType() == EGESEventDataCppType::EDT_String, TEXT("FGESEventDataWrapper:GetString Type:%s isn't a FString"), *GetTypeString());
+		checkf(GetCppType() == EGESCppType::FString, TEXT("FGESEventDataWrapper:GetString Type:%s isn't a FString"), *GetTypeString());
 		return FMagicUnion::ConvertToAddr<FString>(Value);
 	}
 
 	const FName& GetName() const
 	{
-		checkf(GetCppType() == EGESEventDataCppType::EDT_Name, TEXT("FGESEventDataWrapper:GetString Type:%s isn't a FString"), *GetTypeString());
+		checkf(GetCppType() == EGESCppType::FName, TEXT("FGESEventDataWrapper:GetString Type:%s isn't a FString"), *GetTypeString());
 		return FMagicUnion::ConvertToAddr<FName>(Value);
 	}
 
 	const FText& GetText() const
 	{
-		checkf(GetCppType() == EGESEventDataCppType::EDT_Text, TEXT("FGESEventDataWrapper:GetString Type:%s isn't a FString"), *GetTypeString());
+		checkf(GetCppType() == EGESCppType::FText, TEXT("FGESEventDataWrapper:GetString Type:%s isn't a FString"), *GetTypeString());
 		return FMagicUnion::ConvertToAddr<FText>(Value);
 	}
 
 	template<typename T=UObject>
 	std::enable_if_t<std::is_base_of<UObject, T>::value, T*> GetUObject() const
 	{
-		checkf(GetCppType() == EGESEventDataCppType::EDT_Object, TEXT("FGESEventDataWrapper:GetObject Type:%s isn't a UObject"), *GetTypeString());
+		checkf(GetCppType() == EGESCppType::UObject, TEXT("FGESEventDataWrapper:GetObject Type:%s isn't a UObject"), *GetTypeString());
 		return FMagicUnion::ConvertToAddr<T*>(Value);
-	}
-
-	const FSoftObjectPtr& GetSoftObject() const
-	{
-		checkf(GetCppType() == EGESEventDataCppType::EDT_SoftObject ||
-			GetCppType() == EGESEventDataCppType::EDT_SoftClass, TEXT("FGESEventDataWrapper:GetSoftObject Type:%s isn't a SoftObject/SoftClass"), *GetTypeString());
-		return FMagicUnion::ConvertToAddr<FSoftObjectPtr>(Value);		
 	}
 
 	UClass* GetClass() const
 	{
-		checkf(GetCppType() == EGESEventDataCppType::EDT_Class, TEXT("FGESEventDataWrapper:GetClass Type:%s isn't a UClass"), *GetTypeString());
+		checkf(GetCppType() == EGESCppType::UClass, TEXT("FGESEventDataWrapper:GetClass Type:%s isn't a UClass"), *GetTypeString());
 		return FMagicUnion::ConvertToAddr<UClass*>(Value);
 	}
 	
 	template<typename T>
 	T& GetStruct() const
 	{
-		checkf(GetCppType() == EGESEventDataCppType::EDT_Struct, TEXT("FGESEventDataWrapper:GetStruct Type:%s isn't a Struct"), *GetTypeString());
+		checkf(GetCppType() == EGESCppType::UStruct, TEXT("FGESEventDataWrapper:GetStruct Type:%s isn't a Struct"), *GetTypeString());
 		return FMagicUnion::ConvertToAddr<T>(Value);
 	}
 
 	const void* GetStructRawPtr() const
 	{
-		checkf(GetCppType() == EGESEventDataCppType::EDT_Struct, TEXT("FGESEventDataWrapper:GetStructRawPtr Type:%s isn't a Struct"), *GetTypeString());
+		checkf(GetCppType() == EGESCppType::UStruct, TEXT("FGESEventDataWrapper:GetStructRawPtr Type:%s isn't a Struct"), *GetTypeString());
 		return FMagicUnion::ConvertToRawAddr(Value);
 	}
 
 	template<typename T>
 	T& GetEnum() const
 	{
-		checkf(GetCppType() == EGESEventDataCppType::EDT_Enum, TEXT("FGESEventDataWrapper:GetEnum Type:%s isn't a Enum"), *GetTypeString());
+		checkf(GetCppType() == EGESCppType::UEnum, TEXT("FGESEventDataWrapper:GetEnum Type:%s isn't a Enum"), *GetTypeString());
 		return FMagicUnion::ConvertToAddr<T>(Value);
 	}
 
 	const void* GetEnumRawPtr() const
 	{
-		checkf(GetCppType() == EGESEventDataCppType::EDT_Enum, TEXT("FGESEventDataWrapper:GetEnumRawPtr Type:%s isn't a Enum"), *GetTypeString());
+		checkf(GetCppType() == EGESCppType::UEnum, TEXT("FGESEventDataWrapper:GetEnumRawPtr Type:%s isn't a Enum"), *GetTypeString());
 		return FMagicUnion::ConvertToRawAddr(Value);
 	}
 
 	template<typename T>
 	T* GetAny() const
 	{
-		checkf(GetCppType() == EGESEventDataCppType::EDT_Any, TEXT("FGESEventDataWrapper:GetAny Type:%s isn't a AnyObject"), *GetTypeString());
+		checkf(GetCppType() == EGESCppType::Any, TEXT("FGESEventDataWrapper:GetAny Type:%s isn't a AnyObject"), *GetTypeString());
 		return FMagicUnion::ConvertToAddr<T>(Value);
 	}
 
 	template<typename T>
 	const TArray<T>& GetArray() const
 	{
-		checkf(GetContainerType() == EGESContainerType::EDCT_Array, TEXT("FGESEventDataWrapper:GetArray Type:%s isn't a TArray"), *GetTypeString());
+		checkf(GetContainerType() == EGESContainerType::Array, TEXT("FGESEventDataWrapper:GetArray Type:%s isn't a TArray"), *GetTypeString());
 		return FMagicUnion::ConvertToAddr<TArray<T>>(Value);
 	}
 
 	template<typename KeyType, typename ValueType>
 	const TMap<KeyType, ValueType>& GetMap() const
 	{
-		checkf(GetContainerType() == EGESContainerType::EDCT_Map, TEXT("FGESEventDataWrapper:GetMap Type:%s isn't a TMap"), *GetTypeString());
+		checkf(GetContainerType() == EGESContainerType::Map, TEXT("FGESEventDataWrapper:GetMap Type:%s isn't a TMap"), *GetTypeString());
 		return FMagicUnion::ConvertToAddr<TMap<KeyType, ValueType>>(Value);
 	}
 
 	template<typename T>
 	const TSet<T>& GetSet() const
 	{
-		checkf(GetContainerType() == EGESContainerType::EDCT_Set, TEXT("FGESEventDataWrapper:GetSet Type:%s isn't a TSet"), *GetTypeString());
+		checkf(GetContainerType() == EGESContainerType::Set, TEXT("FGESEventDataWrapper:GetSet Type:%s isn't a TSet"), *GetTypeString());
 		return FMagicUnion::ConvertToAddr<TSet<T>>(Value);
 	}
 
 	const void* GetContainerRawPtr() const
 	{
-		checkf(GetContainerType() == EGESContainerType::EDCT_Array ||
-			GetContainerType() == EGESContainerType::EDCT_Map ||
-			GetContainerType() == EGESContainerType::EDCT_Set, TEXT("FGESEventDataWrapper:GetContainerRawPtr Type:%s isn't a Container"), *GetTypeString());
+		checkf(GetContainerType() == EGESContainerType::Array ||
+			GetContainerType() == EGESContainerType::Map ||
+			GetContainerType() == EGESContainerType::Set, TEXT("FGESEventDataWrapper:GetContainerRawPtr Type:%s isn't a Container"), *GetTypeString());
 		return FMagicUnion::ConvertToRawAddr(Value);
 	}
 
@@ -249,66 +242,60 @@ private:
 		FString Ret;
 		switch (GetCppType())
 		{
-		case EGESEventDataCppType::EDT_None:
+		case EGESCppType::None:
 			{
 				switch (GetContainerType())
 				{
-				case EGESContainerType::EDCT_None:
+				case EGESContainerType::None:
 					Ret = TEXT("None");
 					break;
-				case EGESContainerType::EDCT_Array:
+				case EGESContainerType::Array:
 					Ret = TEXT("Array");
 					break;
-				case EGESContainerType::EDCT_Map:
+				case EGESContainerType::Map:
 					Ret = TEXT("Map");
 					break;
-				case EGESContainerType::EDCT_Set:
+				case EGESContainerType::Set:
 					Ret = TEXT("Set");
 					break;
 				}
 			}
 			break;
-		case EGESEventDataCppType::EDT_Any:
+		case EGESCppType::Any:
 			Ret = TEXT("Any");
 			break;
-		case EGESEventDataCppType::EDT_Null:
+		case EGESCppType::Null:
 			Ret = TEXT("Null");
 			break;
-		case EGESEventDataCppType::EDT_Bool:
+		case EGESCppType::Bool:
 			Ret = TEXT("Bool");
 			break;
-		case EGESEventDataCppType::EDT_Integer:
+		case EGESCppType::Integer:
 			Ret = TEXT("Integer");
 			break;			
-		case EGESEventDataCppType::EDT_Float:
+		case EGESCppType::Float:
 			Ret = TEXT("Float");
 			break;
-		case EGESEventDataCppType::EDT_String:
+		case EGESCppType::FString:
 			Ret = TEXT("FString");
 			break;
-		case EGESEventDataCppType::EDT_Name:
+		case EGESCppType::FName:
 			Ret = TEXT("FName");
 			break;
-		case EGESEventDataCppType::EDT_Text:
+		case EGESCppType::FText:
 			Ret = TEXT("FText");
 			break;
-		case EGESEventDataCppType::EDT_Enum:
+		case EGESCppType::UEnum:
 			Ret = TEXT("UEnum");
 			break;
-		case EGESEventDataCppType::EDT_Struct:
+		case EGESCppType::UStruct:
 			Ret = TEXT("UStruct");
 			break;
-		case EGESEventDataCppType::EDT_Object:
+		case EGESCppType::UObject:
 			Ret = TEXT("UObject");
 			break;
-		case EGESEventDataCppType::EDT_SoftObject:
-			Ret = TEXT("FSoftObject");
-			break;
-		case EGESEventDataCppType::EDT_Class:
+		case EGESCppType::UClass:
 			Ret = TEXT("UClass");
-			break;
-		case EGESEventDataCppType::EDT_SoftClass:
-			Ret = TEXT("FSoftClass");
 			break;
 		}
 		return Ret;
@@ -377,215 +364,215 @@ public:
 	template<typename T>
 	void PushParam(const T& Any)
 	{
-		PushParamInternal(&Any, EGESEventDataCppType::EDT_Any);
+		PushParamInternal(&Any, EGESCppType::Any);
 	}
 
 	template<typename T>
 	void PushParam(T& Any)
 	{
-		PushParamInternal(&Any, EGESEventDataCppType::EDT_Any);
+		PushParamInternal(&Any, EGESCppType::Any);
 	}
 
 	template<typename T>
 	void PushParam(T&& Any)
 	{
-		PushParamInternal(&Any, EGESEventDataCppType::EDT_Any);
+		PushParamInternal(&Any, EGESCppType::Any);
 	}	
 
 	template<typename T>
 	void PushParam(const T* Any)
 	{
-		PushParamInternal(Any, EGESEventDataCppType::EDT_Any);
+		PushParamInternal(Any, EGESCppType::Any);
 	}
 
 	template<typename T>
 	void PushParam(T* Any)
 	{
-		PushParamInternal(Any, EGESEventDataCppType::EDT_Any);
+		PushParamInternal(Any, EGESCppType::Any);
 	}
 
 	void PushParam(std::nullptr_t NullPtr)
 	{
-		PushParamInternal(nullptr, EGESEventDataCppType::EDT_Object);
+		PushParamInternal(nullptr, EGESCppType::UObject);
 	}
 
 	void PushParam(const UObject* Object)
 	{
-		PushParamInternal(Object, EGESEventDataCppType::EDT_Object);
+		PushParamInternal(Object, EGESCppType::UObject);
 	}
 
 	void PushParam(UObject* Object)
 	{
-		PushParamInternal(Object, EGESEventDataCppType::EDT_Object);
+		PushParamInternal(Object, EGESCppType::UObject);
 	}
 
 	void PushParam(bool& bValue)
 	{
-		PushParamInternal(&bValue, EGESEventDataCppType::EDT_Bool);
+		PushParamInternal(&bValue, EGESCppType::Bool);
 	}	
 
 	void PushParam(const bool& bValue)
 	{
-		PushParamInternal(&bValue, EGESEventDataCppType::EDT_Bool);
+		PushParamInternal(&bValue, EGESCppType::Bool);
 	}
 
 	void PushParam(int8& ByteValue)
 	{
-		PushParamInternal(&ByteValue, EGESEventDataCppType::EDT_Integer);
+		PushParamInternal(&ByteValue, EGESCppType::Integer);
 	}
 	
 	void PushParam(const int8& ByteValue)
 	{
-		PushParamInternal(&ByteValue, EGESEventDataCppType::EDT_Integer);
+		PushParamInternal(&ByteValue, EGESCppType::Integer);
 	}
 
 	void PushParam(int16& ShortValue)
 	{
-		PushParamInternal(&ShortValue, EGESEventDataCppType::EDT_Integer);
+		PushParamInternal(&ShortValue, EGESCppType::Integer);
 	}
 	
 	void PushParam(const int16& ShortValue)
 	{
-		PushParamInternal(&ShortValue, EGESEventDataCppType::EDT_Integer);
+		PushParamInternal(&ShortValue, EGESCppType::Integer);
 	}
 
 	void PushParam(int32& IntValue)
 	{
-		PushParamInternal(&IntValue, EGESEventDataCppType::EDT_Integer);
+		PushParamInternal(&IntValue, EGESCppType::Integer);
 	}	
 	
 	void PushParam(const int32& IntValue)
 	{
-		PushParamInternal(&IntValue, EGESEventDataCppType::EDT_Integer);
+		PushParamInternal(&IntValue, EGESCppType::Integer);
 	}
 
 	void PushParam(int64& LongValue)
 	{
-		PushParamInternal(&LongValue, EGESEventDataCppType::EDT_Integer);
+		PushParamInternal(&LongValue, EGESCppType::Integer);
 	}
 	
 	void PushParam(const int64& LongValue)
 	{
-		PushParamInternal(&LongValue, EGESEventDataCppType::EDT_Integer);
+		PushParamInternal(&LongValue, EGESCppType::Integer);
 	}
 
 	void PushParam(float& FloatValue)
 	{
-		PushParamInternal(&FloatValue, EGESEventDataCppType::EDT_Float);
+		PushParamInternal(&FloatValue, EGESCppType::Float);
 	}	
 	
 	void PushParam(const float& FloatValue)
 	{
-		PushParamInternal(&FloatValue, EGESEventDataCppType::EDT_Float);
+		PushParamInternal(&FloatValue, EGESCppType::Float);
 	}
 
 	void PushParam(double& DoubleValue)
 	{
-		PushParamInternal(&DoubleValue, EGESEventDataCppType::EDT_Float);
+		PushParamInternal(&DoubleValue, EGESCppType::Float);
 	}	
 	
 	void PushParam(const double& DoubleValue)
 	{
-		PushParamInternal(&DoubleValue, EGESEventDataCppType::EDT_Float);
+		PushParamInternal(&DoubleValue, EGESCppType::Float);
 	}
 
 	void PushParam(const FString& StrValue)
 	{
-		PushParamInternal(&StrValue, EGESEventDataCppType::EDT_String);
+		PushParamInternal(&StrValue, EGESCppType::FString);
 	}
 
 	void PushParam(FString& StrValue)
 	{
-		PushParamInternal(&StrValue, EGESEventDataCppType::EDT_String);
+		PushParamInternal(&StrValue, EGESCppType::FString);
 	}
 
 	void PushParam(FString&& StrValue)
 	{
-		PushParamInternal(&StrValue, EGESEventDataCppType::EDT_String);
+		PushParamInternal(&StrValue, EGESCppType::FString);
 	}	
 
 	void PushParam(const FName& NameValue)
 	{
-		PushParamInternal(&NameValue, EGESEventDataCppType::EDT_Name);
+		PushParamInternal(&NameValue, EGESCppType::FName);
 	}
 
 	void PushParam(FName& NameValue)
 	{
-		PushParamInternal(&NameValue, EGESEventDataCppType::EDT_Name);
+		PushParamInternal(&NameValue, EGESCppType::FName);
 	}
 
 	void PushParam(FName&& NameValue)
 	{
-		PushParamInternal(&NameValue, EGESEventDataCppType::EDT_Name);
+		PushParamInternal(&NameValue, EGESCppType::FName);
 	}
 
 	void PushParam(const FText& TextValue)
 	{
-		PushParamInternal(&TextValue, EGESEventDataCppType::EDT_Text);
+		PushParamInternal(&TextValue, EGESCppType::FText);
 	}
 
 	void PushParam(FText& TextValue)
 	{
-		PushParamInternal(&TextValue, EGESEventDataCppType::EDT_Text);
+		PushParamInternal(&TextValue, EGESCppType::FText);
 	}
 
 	void PushParam(FText&& TextValue)
 	{
-		PushParamInternal(&TextValue, EGESEventDataCppType::EDT_Text);
+		PushParamInternal(&TextValue, EGESCppType::FText);
 	}	
 
 	template<typename T>
 	void PushParam(const TArray<T>& ArrayValue)
 	{
-		PushParamInternal(&ArrayValue, EGESEventDataCppType::EDT_None, EGESContainerType::EDCT_Array);
+		PushParamInternal(&ArrayValue, EGESCppType::None, EGESContainerType::Array);
 	}
 
 	template<typename T>
 	void PushParam(TArray<T>& ArrayValue)
 	{
-		PushParamInternal(&ArrayValue, EGESEventDataCppType::EDT_None, EGESContainerType::EDCT_Array);
+		PushParamInternal(&ArrayValue, EGESCppType::None, EGESContainerType::Array);
 	}
 
 	template<typename T>
 	void PushParam(TArray<T>&& SetValue)
 	{
-		PushParamInternal(&SetValue, EGESEventDataCppType::EDT_None, EGESContainerType::EDCT_Array);
+		PushParamInternal(&SetValue, EGESCppType::None, EGESContainerType::Array);
 	}
 
 	template<typename KeyType, typename ValueType>
 	void PushParam(const TMap<KeyType, ValueType>& MapValue)
 	{
-		PushParamInternal(&MapValue, EGESEventDataCppType::EDT_None, EGESContainerType::EDCT_Map);
+		PushParamInternal(&MapValue, EGESCppType::None, EGESContainerType::Map);
 	}
 
 	template<typename KeyType, typename ValueType>
 	void PushParam(TMap<KeyType, ValueType>& MapValue)
 	{
-		PushParamInternal(&MapValue, EGESEventDataCppType::EDT_None, EGESContainerType::EDCT_Map);
+		PushParamInternal(&MapValue, EGESCppType::None, EGESContainerType::Map);
 	}
 
 	template<typename KeyType, typename ValueType>
 	void PushParam(TMap<KeyType, ValueType>&& MapValue)
 	{
-		PushParamInternal(&MapValue, EGESEventDataCppType::EDT_None, EGESContainerType::EDCT_Map);
+		PushParamInternal(&MapValue, EGESCppType::None, EGESContainerType::Map);
 	}
 
 	template<typename T>
 	void PushParam(const TSet<T>& SetValue)
 	{
-		PushParamInternal(&SetValue, EGESEventDataCppType::EDT_None, EGESContainerType::EDCT_Set);
+		PushParamInternal(&SetValue, EGESCppType::None, EGESContainerType::Set);
 	}
 
 	template<typename T>
 	void PushParam(TSet<T>& SetValue)
 	{
-		PushParamInternal(&SetValue, EGESEventDataCppType::EDT_None, EGESContainerType::EDCT_Set);
+		PushParamInternal(&SetValue, EGESCppType::None, EGESContainerType::Set);
 	}
 
 	template<typename T>
 	void PushParam(TSet<T>&& SetValue)
 	{
-		PushParamInternal(&SetValue, EGESEventDataCppType::EDT_None, EGESContainerType::EDCT_Set);
+		PushParamInternal(&SetValue, EGESCppType::None, EGESContainerType::Set);
 	}	
 
 	void* GetNull(const int32 Index) const
@@ -647,11 +634,6 @@ public:
 	std::enable_if_t<std::is_base_of<UObject, T>::value, T*> GetUObject(const int32 Index) const
 	{
 		return GetParam(Index).GetUObject<T>();
-	}
-
-	const FSoftObjectPtr& GetSoftObject(const int32 Index) const
-	{
-		return GetParam(Index).GetSoftObject();
 	}
 
 	UClass* GetClass(const int32 Index) const
@@ -723,19 +705,19 @@ public:
 		check(EventConfigItem.IsValid());
 		check(EventConfigItem.EventDataTypes.IsValidIndex(Index));
 
-		return EventConfigItem.EventDataTypes[Index].SubTypeName;
+		return EventConfigItem.EventDataTypes[Index].CppSubTypeName;
 	}
 
 private:
-	void PushParamInternal(const void* InValuePtr, const EGESEventDataCppType InCppType, const EGESContainerType InContainerType = EGESContainerType::EDCT_None)
+	void PushParamInternal(const void* InValuePtr, const EGESCppType InCppType, const EGESContainerType InContainerType = EGESContainerType::None)
 	{
 		const int32 Index = Params.Num();
 		
 		checkf(EventConfigItem.EventDataTypes.IsValidIndex(Index), TEXT("The number of params for event:%s doesn't match!"), *EventID.ToString());
 
 		const FGESEventDataType& Type = EventConfigItem.EventDataTypes[Index];
-		const bool bIsTypeValid = (InCppType == EGESEventDataCppType::EDT_Any || InCppType == Type.CppType) &&
-			(InContainerType != EGESContainerType::EDCT_None || InContainerType == Type.ContainerType);
+		const bool bIsTypeValid = (InCppType == EGESCppType::Any || InCppType == Type.CppType) &&
+			(InContainerType != EGESContainerType::None || InContainerType == Type.ContainerType);
 		checkf(bIsTypeValid, TEXT("The event data type for event:%s doesn't match!"), *EventID.ToString());
 
 		Params.Add({Type, InValuePtr});

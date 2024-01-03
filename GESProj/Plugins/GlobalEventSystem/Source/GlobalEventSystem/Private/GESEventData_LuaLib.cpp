@@ -115,7 +115,7 @@ static int32 FGESEventDataArray_PushEnum(lua_State* L)
 	// [1] = Self, [2] = UEnum(int)
 	FGESEventDataArray* EventDataArray = FGESEventDataArray_GetSelf(L, 2);
 	InternalInt = lua_tointeger(L, 2);
-	EventDataArray->PushParamWithType({EGESEventDataCppType::EDT_Enum}, &InternalInt);
+	EventDataArray->PushParamWithType({EGESCppType::UEnum}, &InternalInt);
 	return 1;
 }
 
@@ -124,7 +124,7 @@ static int32 FGESEventDataArray_PushStruct(lua_State* L)
 	// [1] = Self, [2] = UStruct
 	FGESEventDataArray* EventDataArray = FGESEventDataArray_GetSelf(L, 2);
 	const void* StructRawPtr = UnLua::GetPointer(L, 2);
-	EventDataArray->PushParamWithType({EGESEventDataCppType::EDT_Struct}, StructRawPtr);
+	EventDataArray->PushParamWithType({EGESCppType::UStruct}, StructRawPtr);
 	return 1;
 }
 
@@ -142,7 +142,7 @@ static int32 FGESEventDataArray_PushArray(lua_State* L)
 	// [1] = Self, [2] = TArray
 	FGESEventDataArray* EventDataArray = FGESEventDataArray_GetSelf(L, 2);
 	const void* ArrayRawPtr = UnLua::GetScriptContainerPointer(L, 2);
-	EventDataArray->PushParamWithType({EGESEventDataCppType::EDT_None, EGESContainerType::EDCT_Array}, ArrayRawPtr);
+	EventDataArray->PushParamWithType({EGESCppType::None, EGESContainerType::Array}, ArrayRawPtr);
 	return 1;
 }
 
@@ -151,7 +151,7 @@ static int32 FGESEventDataArray_PushMap(lua_State* L)
 	// [1] = Self, [2] = TMap
 	FGESEventDataArray* EventDataArray = FGESEventDataArray_GetSelf(L, 2);
 	const void* MapRawPtr = UnLua::GetScriptContainerPointer(L, 2);
-	EventDataArray->PushParamWithType({EGESEventDataCppType::EDT_None, EGESContainerType::EDCT_Map}, MapRawPtr);
+	EventDataArray->PushParamWithType({EGESCppType::None, EGESContainerType::Map}, MapRawPtr);
 	return 1;
 }
 
@@ -160,7 +160,7 @@ static int32 FGESEventDataArray_PushSet(lua_State* L)
 	// [1] = Self, [2] = TSet
 	FGESEventDataArray* EventDataArray = FGESEventDataArray_GetSelf(L, 2);
 	const void* SetRawPtr = UnLua::GetScriptContainerPointer(L, 2);
-	EventDataArray->PushParamWithType({EGESEventDataCppType::EDT_None, EGESContainerType::EDCT_Map}, SetRawPtr);
+	EventDataArray->PushParamWithType({EGESCppType::None, EGESContainerType::Map}, SetRawPtr);
 	return 1;
 }
 

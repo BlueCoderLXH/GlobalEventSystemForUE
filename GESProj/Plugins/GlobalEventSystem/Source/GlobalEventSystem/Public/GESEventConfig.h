@@ -7,63 +7,66 @@
 #include "GESEventConfig.generated.h"
 
 UENUM(BlueprintType)
-enum class EGESEventDataCppType : uint8
+enum class EGESCppType : uint8
 {
-	EDT_None = 0,
-	EDT_Any UMETA(Hidden),
-	EDT_Null UMETA(Hidden),
-	EDT_Bool,
-	EDT_Integer,
-	EDT_Float,
-	EDT_String,
-	EDT_Name,
-	EDT_Text,
-	EDT_Enum,
-	EDT_Struct,
-	EDT_Object,
-	EDT_SoftObject,
-	EDT_Class,
-	EDT_SoftClass,
+	None = 0,
+	Any UMETA(Hidden),
+	Null UMETA(Hidden),
+	Bool,
+	Integer,
+	Float,
+	FString,
+	FName,
+	FText,
+	UEnum,
+	UStruct,
+	UObject,
+	UClass,
 };
 
 UENUM(BlueprintType)
 enum class EGESContainerType : uint8
 {
-	EDCT_None = 0,
-	EDCT_Array,
-	EDCT_Set,
-	EDCT_Map,
+	None = 0,
+	Array,
+	Set,
+	Map,
 };
 
-USTRUCT(Blueprintable, BlueprintType)
+USTRUCT(BlueprintType)
 struct GLOBALEVENTSYSTEM_API FGESEventDataType
 {
 	GENERATED_BODY()
 
+	// ContainerType, TArray/TSet/TMap 
 	UPROPERTY(EditAnywhere)
-	EGESContainerType ContainerType = EGESContainerType::EDCT_None;
+	EGESContainerType ContainerType = EGESContainerType::None;
 
+	// CppType
 	UPROPERTY(EditAnywhere)
-	EGESEventDataCppType CppType = EGESEventDataCppType::EDT_None;
-	
-	UPROPERTY(EditAnywhere)
-	FName SubTypeName = NAME_None;
+	EGESCppType CppType = EGESCppType::None;
 
+	// CppType's sub type for UEnum or UStruct
 	UPROPERTY(EditAnywhere)
-	EGESEventDataCppType ValueType = EGESEventDataCppType::EDT_None;
-	
+	FName CppSubTypeName = NAME_None;
+
+	// Only if it is a TMap, 'CppType' is for the key, 'ValueType' is for the value; Otherwise, ValueType is meaningless
+	UPROPERTY(EditAnywhere)
+	EGESCppType ValueType = EGESCppType::None;
+
+	// ValueType's sub type for UEnum or UStruct
 	UPROPERTY(EditAnywhere)
 	FName ValueSubTypeName = NAME_None;	
 	
 	FGESEventDataType() {}
 	FGESEventDataType(
-		const EGESEventDataCppType InCppType,
-		const EGESContainerType InContainerType = EGESContainerType::EDCT_None,
+		const EGESCppType InCppType,
+		const EGESContainerType InContainerType = EGESContainerType::None,
 		const FName& InSubTypeName = NAME_None)
 	{
 		CppType = InCppType;
 		ContainerType = InContainerType;
-		SubTypeName = InSubTypeName;
+		CppSubTypeName = InSubTypeName;
 	}
 
 	FName GetTypeName() const
@@ -73,7 +76,7 @@ struct GLOBALEVENTSYSTEM_API FGESEventDataType
 
 	UObject* GetSubTypeObject() const
 	{
-		return GetSubTypeObjectInner(CppType, SubTypeName);
+		return GetSubTypeObjectInner(CppType, CppSubTypeName);
 	}
 
 	FName GetValueTypeName() const
@@ -92,55 +95,51 @@ struct GLOBALEVENTSYSTEM_API FGESEventDataType
 	}
 
 private:
-	static FName GetTypeNameInner(const EGESEventDataCppType InCppType)
+	static FName GetTypeNameInner(const EGESCppType InCppType)
 	{
 		switch (InCppType)
 		{
-		case EGESEventDataCppType::EDT_None:
+		case EGESCppType::None:
 			return TEXT("");
 			
-		case EGESEventDataCppType::EDT_Any:
-		case EGESEventDataCppType::EDT_Null:
+		case EGESCppType::Any:
+		case EGESCppType::Null:
 			check(0);
 			
-		case EGESEventDataCppType::EDT_Bool:
+		case EGESCppType::Bool:
 			return TEXT("bool");
-		case EGESEventDataCppType::EDT_Integer:
+		case EGESCppType::Integer:
 			return TEXT("int");
-		case EGESEventDataCppType::EDT_Float:
+		case EGESCppType::Float:
 			return TEXT("float");
-		case EGESEventDataCppType::EDT_String:
+		case EGESCppType::FString:
 			return TEXT("string");
-		case EGESEventDataCppType::EDT_Name:
+		case EGESCppType::FName:
 			return TEXT("name");
-		case EGESEventDataCppType::EDT_Text:
+		case EGESCppType::FText:
 			return TEXT("text");
-		case EGESEventDataCppType::EDT_Enum:
+		case EGESCppType::UEnum:
 			return TEXT("byte");
-		case EGESEventDataCppType::EDT_Struct:
+		case EGESCppType::UStruct:
 			return TEXT("struct");
-		case EGESEventDataCppType::EDT_Object:
+		case EGESCppType::UObject:
 			return TEXT("object");
-		case EGESEventDataCppType::EDT_SoftObject:
-			return TEXT("softobject");
-		case EGESEventDataCppType::EDT_Class:
+		case EGESCppType::UClass:
 			return TEXT("class");
-		case EGESEventDataCppType::EDT_SoftClass:
-			return TEXT("softclass");
 		}
 		return NAME_None;
 	}
 
-	static UObject* GetSubTypeObjectInner(const EGESEventDataCppType InCppType, const FName InSubTypeName)
+	static UObject* GetSubTypeObjectInner(const EGESCppType InCppType, const FName InSubTypeName)
 	{
-		if (InCppType == EGESEventDataCppType::EDT_Struct && !InSubTypeName.IsNone())
+		if (InCppType == EGESCppType::UStruct && !InSubTypeName.IsNone())
 		{
 			UScriptStruct* ScriptStructPtr = FindObject<UScriptStruct>(ANY_PACKAGE, *InSubTypeName.ToString());
 			check(ScriptStructPtr);
 			return ScriptStructPtr;
 		}
 
-		if (InCppType == EGESEventDataCppType::EDT_Enum && !InSubTypeName.IsNone())
+		if (InCppType == EGESCppType::UEnum && !InSubTypeName.IsNone())
 		{
 			UEnum* ScriptEnumPtr = FindObject<UEnum>(ANY_PACKAGE, *InSubTypeName.ToString(), true);
 			check(ScriptEnumPtr);
@@ -148,10 +147,10 @@ private:
 		}
 		
 		return nullptr;
-	}	
+	}
 };
 
-USTRUCT(Blueprintable, BlueprintType)
+USTRUCT(BlueprintType)
 struct GLOBALEVENTSYSTEM_API FGESEventConfigItem
 {
 	GENERATED_BODY()

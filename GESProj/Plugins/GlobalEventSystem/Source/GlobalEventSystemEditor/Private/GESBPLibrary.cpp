@@ -46,79 +46,71 @@ DEFINE_FUNCTION(UGESBPLibrary::execGESDispatchEvent)
 
 void UGESBPLibrary::GESDispatchEventInternal(FProperty* PropertyPtr, const void* DataPtr, const FGESEventDataType& Type, FGESEventDataArray& EventDataArray)
 {
-	EGESEventDataCppType TargetEventDataType = EGESEventDataCppType::EDT_None;
-	EGESContainerType TargetContainerType = EGESContainerType::EDCT_None;
+	EGESCppType TargetEventDataType = EGESCppType::None;
+	EGESContainerType TargetContainerType = EGESContainerType::None;
 
 	if (CastField<FArrayProperty>(PropertyPtr))
 	{
 		TargetEventDataType = Type.CppType;
-		TargetContainerType = EGESContainerType::EDCT_Array;
+		TargetContainerType = EGESContainerType::Array;
 	}
 	else if (CastField<FMapProperty>(PropertyPtr))
 	{
 		TargetEventDataType = Type.CppType;
-		TargetContainerType = EGESContainerType::EDCT_Map;
+		TargetContainerType = EGESContainerType::Map;
 	}
 	else if (CastField<FSetProperty>(PropertyPtr))
 	{
 		TargetEventDataType = Type.CppType;
-		TargetContainerType = EGESContainerType::EDCT_Set;
+		TargetContainerType = EGESContainerType::Set;
 	}
 	else
 	{
 		if (CastField<FBoolProperty>(PropertyPtr))
 		{
-			TargetEventDataType = EGESEventDataCppType::EDT_Bool;
+			TargetEventDataType = EGESCppType::Bool;
 		}
 		else if (const FNumericProperty* NumberProperty = CastField<FNumericProperty>(PropertyPtr))
 		{
 			if (NumberProperty->IsInteger())
 			{
-				TargetEventDataType = EGESEventDataCppType::EDT_Integer;
+				TargetEventDataType = EGESCppType::Integer;
 			}
 			else if (NumberProperty->IsFloatingPoint())
 			{
-				TargetEventDataType = EGESEventDataCppType::EDT_Float;
+				TargetEventDataType = EGESCppType::Float;
 			}
 		}
 		else if (CastField<FStrProperty>(PropertyPtr))
 		{
-			TargetEventDataType = EGESEventDataCppType::EDT_String;
+			TargetEventDataType = EGESCppType::FString;
 		}
 		else if (CastField<FNameProperty>(PropertyPtr))
 		{
-			TargetEventDataType = EGESEventDataCppType::EDT_Name;
+			TargetEventDataType = EGESCppType::FName;
 		}
 		else if (CastField<FTextProperty>(PropertyPtr))
 		{
-			TargetEventDataType = EGESEventDataCppType::EDT_Text;
+			TargetEventDataType = EGESCppType::FText;
 		}
 		else if (CastField<FEnumProperty>(PropertyPtr))
 		{
-			TargetEventDataType = EGESEventDataCppType::EDT_Enum;
+			TargetEventDataType = EGESCppType::UEnum;
 		}
 		else if (CastField<FStructProperty>(PropertyPtr))
 		{
-			TargetEventDataType = EGESEventDataCppType::EDT_Struct;
+			TargetEventDataType = EGESCppType::UStruct;
 		}
 		else if (CastField<FObjectProperty>(PropertyPtr))
 		{
-			TargetEventDataType = EGESEventDataCppType::EDT_Object;
-		}
-		else if (CastField<FSoftObjectProperty>(PropertyPtr))
-		{
-			TargetEventDataType = EGESEventDataCppType::EDT_SoftObject;
+			TargetEventDataType = EGESCppType::UObject;
 		}
 		else if (CastField<FClassProperty>(PropertyPtr))
 		{
-			TargetEventDataType = EGESEventDataCppType::EDT_Class;
-		}
-		else if (CastField<FSoftClassProperty>(PropertyPtr))
-		{
-			TargetEventDataType = EGESEventDataCppType::EDT_SoftClass;
+			TargetEventDataType = EGESCppType::UClass;
 		}
 
-		checkf(TargetEventDataType != EGESEventDataCppType::EDT_None,
+		checkf(TargetEventDataType != EGESCppType::None,
 			TEXT("[GESDispatchEventInternal] EventDataType:None is unsupported EventType:%s"), *EventDataArray.GetEventID().ToString());	
 	}
 
@@ -164,41 +156,41 @@ DEFINE_FUNCTION(UGESBPLibrary::execGESConvertEventData)
 	for (int32 Index = 0; Index < EventDataArray.GetNum(); Index++)
 	{
 		const FGESEventData& EventData = EventDataArray.GetParam(Index);
-		const EGESEventDataCppType CppType = EventData.GetCppType();
+		const EGESCppType CppType = EventData.GetCppType();
 		const EGESContainerType ContainerType = EventData.GetContainerType();
-		if (ContainerType == EGESContainerType::EDCT_None)
+		if (ContainerType == EGESContainerType::None)
 		{
-			if (CppType == EGESEventDataCppType::EDT_Bool)
+			if (CppType == EGESCppType::Bool)
 			{
 				const bool BoolValue = EventData.GetBool();
 				P_GET_PROPERTY_REF(FBoolProperty, Z_Param_Bool);
 				Z_Param_Bool = BoolValue;
 			}
-			else if (CppType == EGESEventDataCppType::EDT_Integer)
+			else if (CppType == EGESCppType::Integer)
 			{
 				const int32 IntValue = EventData.GetInt();
 				P_GET_PROPERTY_REF(FIntProperty, Z_Param_Int);
 				Z_Param_Int = IntValue;
 			}
-			else if (CppType == EGESEventDataCppType::EDT_String)
+			else if (CppType == EGESCppType::FString)
 			{
 				const FString& StrValue = EventData.GetString();
 				P_GET_PROPERTY_REF(FStrProperty, Z_Param_String);
 				Z_Param_String = StrValue;
 			}
-			else if (CppType == EGESEventDataCppType::EDT_Name)
+			else if (CppType == EGESCppType::FName)
 			{
 				const FName& NameValue = EventData.GetName();
 				P_GET_PROPERTY_REF(FNameProperty, Z_Param_Name);
 				Z_Param_Name = NameValue;
 			}
-			else if (CppType == EGESEventDataCppType::EDT_Text)
+			else if (CppType == EGESCppType::FText)
 			{
 				const FText& TextValue = EventData.GetText();
 				P_GET_PROPERTY_REF(FTextProperty, Z_Param_Text);
 				Z_Param_Text = TextValue;
 			}
-			else if (CppType == EGESEventDataCppType::EDT_Enum)
+			else if (CppType == EGESCppType::UEnum)
 			{
 				Stack.StepCompiledIn<FByteProperty>(nullptr);
 
@@ -210,7 +202,7 @@ DEFINE_FUNCTION(UGESBPLibrary::execGESConvertEventData)
 
 				OutEnumProp->CopyCompleteValue(OutEnumDataPtr, SourceDataRawPtr);
 			}
-			else if (CppType == EGESEventDataCppType::EDT_Struct)
+			else if (CppType == EGESCppType::UStruct)
 			{
 				Stack.StepCompiledIn<FStructProperty>(nullptr);
 				
@@ -222,29 +214,17 @@ DEFINE_FUNCTION(UGESBPLibrary::execGESConvertEventData)
 
 				OutStructProp->CopyCompleteValue(OutStructDataPtr, SourceDataRawPtr);
 			}
-			else if (CppType == EGESEventDataCppType::EDT_Object)
+			else if (CppType == EGESCppType::UObject)
 			{
 				UObject* ObjValue = EventData.GetUObject();
 				P_GET_PROPERTY_REF(FObjectProperty, Z_Param_Object);
 				Z_Param_Object = ObjValue;
 			}
-			else if (CppType == EGESEventDataCppType::EDT_SoftObject)
-			{
-				const FSoftObjectPtr& SoftObjValue = EventData.GetSoftObject();
-				P_GET_PROPERTY_REF(FSoftObjectProperty, Z_Param_SoftObject);
-				Z_Param_SoftObject = SoftObjValue;
-			}
-			else if (CppType == EGESEventDataCppType::EDT_Class)
+			else if (CppType == EGESCppType::UClass)
 			{
 				UClass* ClassValue = EventData.GetUObject<UClass>();
 				P_GET_PROPERTY_REF(FClassProperty, Z_Param_Class);
 				Z_Param_Class = ClassValue;
-			}
-			else if (CppType == EGESEventDataCppType::EDT_SoftClass)
-			{
-				const FSoftObjectPtr& SoftClassValue = EventData.GetSoftObject();
-				P_GET_PROPERTY_REF(FSoftClassProperty, Z_Param_SoftClass);
-				Z_Param_SoftClass = SoftClassValue;
 			}
 		}
 		else
@@ -254,17 +234,17 @@ DEFINE_FUNCTION(UGESBPLibrary::execGESConvertEventData)
 
 			const FProperty* ContainerProperty = nullptr;
 			
-			if (ContainerType == EGESContainerType::EDCT_Array)
+			if (ContainerType == EGESContainerType::Array)
 			{
 				Stack.StepCompiledIn<FArrayProperty>(nullptr);
 				ContainerProperty = CastField<FArrayProperty>(Stack.MostRecentProperty);
 			}
-			else if (ContainerType == EGESContainerType::EDCT_Map)
+			else if (ContainerType == EGESContainerType::Map)
 			{
 				Stack.StepCompiledIn<FMapProperty>(nullptr);
 				ContainerProperty = CastField<FMapProperty>(Stack.MostRecentProperty);
 			}
-			else if (ContainerType == EGESContainerType::EDCT_Set)
+			else if (ContainerType == EGESContainerType::Set)
 			{
 				Stack.StepCompiledIn<FSetProperty>(nullptr);
 				ContainerProperty = CastField<FSetProperty>(Stack.MostRecentProperty);
