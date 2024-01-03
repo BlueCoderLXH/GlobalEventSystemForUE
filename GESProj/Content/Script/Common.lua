@@ -7,7 +7,7 @@
 local PrintUEString = UE.UKismetSystemLibrary.PrintString
 
 function printf(formatString, ...)
-    print(string.format("[Lua_GESTest]" .. formatString, ...))
+    print(string.format("[Lua_GESTest] " .. formatString, ...))
 end
 
 function print_screen(text, color, duration)

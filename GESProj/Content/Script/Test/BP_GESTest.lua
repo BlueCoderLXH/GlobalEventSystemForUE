@@ -18,13 +18,13 @@ function M:ReceiveBeginPlay()
 end
 
 function M:LuaDoTest_MapTestEvent()
-    GES.Register("MapTestEvent", {self, self.OnMapTestEvent})
+    GES.Register(CppEvents.MapTestEvent, {self, self.OnMapTestEvent})
 
     local MapValue = UE4.TMap(UE4.int32, UE4.FVector)
     MapValue:Add(520, UE4.FVector(1, 10, 100))
     MapValue:Add(521, UE4.FVector(5, 52, 520))
 
-    GES.Dispatch("MapTestEvent", {GES.TMap, MapValue})
+    GES.Dispatch(CppEvents.MapTestEvent, {GES.TMap, MapValue})
 end
 
 function M:OnMapTestEvent(EventData)

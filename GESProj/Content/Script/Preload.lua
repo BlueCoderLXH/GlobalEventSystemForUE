@@ -5,7 +5,7 @@
 ---
 local do_require = function()
     require "Common"
-    require 'GlobalEventSystem.Enums'
+    require 'GlobalEventSystem.CppEvents'
     require 'GlobalEventSystem.GlobalEventSystem'
 
     print("Preload Lua OK!")

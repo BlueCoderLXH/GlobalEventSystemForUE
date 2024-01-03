@@ -7,43 +7,43 @@
 --- Global event system for lua
 local GlobalEventSystem = {
     --- GES Event Data Type
-    Bool = "Bool",
+    Bool    = "Bool",
     Integer = "Integer",
-    Float = "Float",
+    Float   = "Float",
     FString = "FString",
-    FName = "FName",
-    FText = "FText",
-    Enum = "Enum",
+    FName   = "FName",
+    FText   = "FText",
+    Enum    = "Enum",
     UStruct = "UStruct",
     UObject = "UObject",
-    TArray = "TArray",
-    TMap = "TMap",
-    TSet = "TSet",
+    TArray  = "TArray",
+    TMap    = "TMap",
+    TSet    = "TSet",
     --- GES Event Data Type
 }
 GES = GlobalEventSystem
 
 --- Register global event for lua
---- @param string EventName ID Name, defined in blueprint
+--- @param table CppEvent Cpp event, defined in 'CppEvents.lua'
 --- @param delegate Callback Lua Callback for this event, eg. {self, self.CallbackName}
-function GlobalEventSystem.Register(EventName, Callback)
-    UE4.UGESBPLibrary.RegisterEventLua(EventName, Callback)
+function GlobalEventSystem.Register(CppEvent, Callback)
+    UE4.UGESBPLibrary.RegisterEventLua(CppEvent.Name, Callback)
 end
 
 --- Unregister global event for lua
---- @param string EventName Event ID Name, defined in blueprint
+--- @param table CppEvent Cpp event, defined in 'CppEvents.lua'
 --- @param delegate Callback Lua Callback for this event, eg. {self, self.CallbackName}
-function GlobalEventSystem.Unregister(EventName, Callback)
-    UE4.UGESBPLibrary.UnregisterEventLua(EventName, Callback)
+function GlobalEventSystem.Unregister(CppEvent, Callback)
+    UE4.UGESBPLibrary.UnregisterEventLua(CppEvent.Name, Callback)
 end
 
 --- Dispatch global event from lua
---- @param string EventName Event ID Name, defined in blueprint
---- @param args ... Event params, eg. {ParamTypeName, Param}
-function GlobalEventSystem.Dispatch(EventName, ...)
+--- @param table CppEvent Cpp event, defined in 'CppEvents.lua'
+--- @param args ... Event params, eg. { ParamTypeName, Param }
+function GlobalEventSystem.Dispatch(CppEvent, ...)
     local EventParams = {...}
     local EventData = UE4.FGESEventDataArray()
-    EventData:SetEventID(EventName)
+    EventData:SetEventID(CppEvent.Name)
 
     for i,v in ipairs(EventParams) do
         local TypeName = v[1]
