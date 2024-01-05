@@ -165,13 +165,13 @@ public:
 	std::enable_if_t<std::is_base_of<UObject, T>::value, T*> GetUObject() const
 	{
 		checkf(GetCppType() == EGESCppType::UObject, TEXT("FGESEventDataWrapper:GetObject Type:%s isn't a UObject"), *GetTypeString());
-		return FMagicUnion::ConvertToAddr<T*>(Value);
+		return &FMagicUnion::ConvertToAddr<T>(Value);
 	}
 
 	UClass* GetClass() const
 	{
 		checkf(GetCppType() == EGESCppType::UClass, TEXT("FGESEventDataWrapper:GetClass Type:%s isn't a UClass"), *GetTypeString());
-		return FMagicUnion::ConvertToAddr<UClass*>(Value);
+		return &FMagicUnion::ConvertToAddr<UClass>(Value);
 	}
 	
 	template<typename T>
@@ -358,7 +358,7 @@ public:
 
 	void PushParamWithType(const FGESEventDataType& InType, void* InValuePtr)
 	{
-		Params.Add({InType, InValuePtr});
+		PushParamInternal(InValuePtr, InType.CppType, InType.ContainerType);
 	}
 
 	template<typename T>

@@ -15,14 +15,12 @@ void UGESGameInstance::Init()
 
 void UGESGameInstance::OnStart()
 {
-	// UnLua::Startup();
-	
 	Super::OnStart();
 }
 
 void UGESGameInstance::Shutdown()
 {
-	UnLua::Shutdown();
+	FGES::Clear();
 	
 	Super::Shutdown();
 }

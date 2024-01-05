@@ -66,7 +66,7 @@ static int32 FGESEventDataArray_PushInteger(lua_State* L)
 
 static int32 FGESEventDataArray_PushFloat(lua_State* L)
 {
-	static double InternalFloat; // avoid destruction
+	static float InternalFloat; // avoid destruction
 	
 	// [1] = Self, [2] = int
 	FGESEventDataArray* EventDataArray = FGESEventDataArray_GetSelf(L, 2);
@@ -142,7 +142,7 @@ static int32 FGESEventDataArray_PushArray(lua_State* L)
 	// [1] = Self, [2] = TArray
 	FGESEventDataArray* EventDataArray = FGESEventDataArray_GetSelf(L, 2);
 	const void* ArrayRawPtr = UnLua::GetScriptContainerPointer(L, 2);
-	EventDataArray->PushParamWithType({EGESCppType::None, EGESContainerType::TArray}, ArrayRawPtr);
+	EventDataArray->PushParamWithType({EGESCppType::Any, EGESContainerType::TArray}, ArrayRawPtr);
 	return 1;
 }
 
@@ -151,7 +151,7 @@ static int32 FGESEventDataArray_PushMap(lua_State* L)
 	// [1] = Self, [2] = TMap
 	FGESEventDataArray* EventDataArray = FGESEventDataArray_GetSelf(L, 2);
 	const void* MapRawPtr = UnLua::GetScriptContainerPointer(L, 2);
-	EventDataArray->PushParamWithType({EGESCppType::None, EGESContainerType::TMap}, MapRawPtr);
+	EventDataArray->PushParamWithType({EGESCppType::Any, EGESContainerType::TMap}, MapRawPtr);
 	return 1;
 }
 
@@ -160,7 +160,7 @@ static int32 FGESEventDataArray_PushSet(lua_State* L)
 	// [1] = Self, [2] = TSet
 	FGESEventDataArray* EventDataArray = FGESEventDataArray_GetSelf(L, 2);
 	const void* SetRawPtr = UnLua::GetScriptContainerPointer(L, 2);
-	EventDataArray->PushParamWithType({EGESCppType::None, EGESContainerType::TMap}, SetRawPtr);
+	EventDataArray->PushParamWithType({EGESCppType::Any, EGESContainerType::TSet}, SetRawPtr);
 	return 1;
 }
 
@@ -375,7 +375,7 @@ static const luaL_Reg FGESEventDataArrayLib[] =
 	{"PushInteger",	FGESEventDataArray_PushInteger	},
 	{"PushFloat",		FGESEventDataArray_PushFloat	},
 	{"PushString",	FGESEventDataArray_PushString	},
-	{"PushFName",		FGESEventDataArray_PushName	},
+	{"PushName",		FGESEventDataArray_PushName	},
 	{"PushText",		FGESEventDataArray_PushText	},
 	{"PushEnum",		FGESEventDataArray_PushEnum	},
 	{"PushStruct",	FGESEventDataArray_PushStruct	},
@@ -388,7 +388,7 @@ static const luaL_Reg FGESEventDataArrayLib[] =
 	{"GetInteger",	FGESEventDataArray_GetInteger	},
 	{"GetFloat",		FGESEventDataArray_GetFloat	},
 	{"GetString",		FGESEventDataArray_GetString	},
-	{"GetFName",		FGESEventDataArray_GetName		},
+	{"GetName",		FGESEventDataArray_GetName		},
 	{"GetText",		FGESEventDataArray_GetText		},
 	{"GetEnum",		FGESEventDataArray_GetEnum		},
 	{"GetStruct",		FGESEventDataArray_GetStruct	},

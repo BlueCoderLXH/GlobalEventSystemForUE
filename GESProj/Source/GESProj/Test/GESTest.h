@@ -14,8 +14,8 @@ class GESPROJ_API AGESTest : public AActor
 public:
 	AGESTest();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TFieldPath<FProperty> AnyProperty;
+	UPROPERTY(EditAnywhere)
+	FString TestStr;
 
 protected:
 	virtual void BeginPlay() override;

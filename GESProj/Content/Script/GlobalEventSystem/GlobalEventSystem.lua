@@ -10,15 +10,15 @@ local GlobalEventSystem = {
     Bool    = "Bool",
     Integer = "Integer",
     Float   = "Float",
-    FString = "FString",
-    FName   = "FName",
-    FText   = "FText",
+    String  = "FString",
+    Name    = "FName",
+    Text    = "FText",
     Enum    = "Enum",
-    UStruct = "UStruct",
-    UObject = "UObject",
-    TArray  = "TArray",
-    TMap    = "TMap",
-    TSet    = "TSet",
+    Struct  = "UStruct",
+    Object  = "UObject",
+    Array   = "TArray",
+    Map     = "TMap",
+    Set     = "TSet",
     --- GES Event Data Type
 }
 GES = GlobalEventSystem
@@ -54,26 +54,28 @@ function GlobalEventSystem.Dispatch(CppEvent, ...)
             EventData:PushInteger(EventParam)
         elseif TypeName == GES.Float then
             EventData:PushFloat(EventParam)
-        elseif TypeName == GES.FString then
+        elseif TypeName == GES.String then
             EventData:PushString(EventParam)
-        elseif TypeName == GES.FName then
+        elseif TypeName == GES.Name then
             EventData:PushName(EventParam)
-        elseif TypeName == GES.FText then
+        elseif TypeName == GES.Text then
             EventData:PushText(EventParam)
         elseif TypeName == GES.Enum then
             EventData:PushEnum(EventParam)
-        elseif TypeName == GES.UStruct then
+        elseif TypeName == GES.Struct then
             EventData:PushStruct(EventParam)
-        elseif TypeName == GES.UObject then
+        elseif TypeName == GES.Object then
             EventData:PushObject(EventParam)
-        elseif TypeName == GES.TArray then
+        elseif TypeName == GES.Array then
             EventData:PushArray(EventParam)
-        elseif TypeName == GES.TMap then
+        elseif TypeName == GES.Map then
             EventData:PushMap(EventParam)
-        elseif TypeName == GES.TSet then
+        elseif TypeName == GES.Set then
             EventData:PushSet(EventParam)
+        else
+            printf_e("GES.Dispatch unsupported EventType:%s", tostring(TypeName))
         end
-        printf("GES.Dispatch[%d] %s %s", i, tostring(TypeName), tostring(EventParam))
+        --printf("GES.Dispatch EventName:%s DataType:%s Value:%s", tostring(CppEvent.Name), tostring(TypeName), tostring(EventParam))
     end
 
     UE4.UGESBPLibrary.DispatchEventLua(EventData)

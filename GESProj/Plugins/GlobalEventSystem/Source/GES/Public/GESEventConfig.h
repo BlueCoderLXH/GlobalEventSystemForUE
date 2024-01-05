@@ -143,9 +143,16 @@ private:
 
 		if (InCppType == EGESCppType::UEnum && !InSubTypeName.IsNone())
 		{
-			UEnum* ScriptEnumPtr = FindObject<UEnum>(ANY_PACKAGE, *InSubTypeName.ToString(), true);
+			UEnum* ScriptEnumPtr = FindObject<UEnum>(ANY_PACKAGE, *InSubTypeName.ToString());
 			check(ScriptEnumPtr);
 			return ScriptEnumPtr;
+		}
+
+		if (InCppType == EGESCppType::UObject && !InSubTypeName.IsNone())
+		{
+			UClass* ScriptClassPtr = FindObject<UClass>(ANY_PACKAGE, *InSubTypeName.ToString());
+			check(ScriptClassPtr);
+			return ScriptClassPtr;
 		}
 		
 		return nullptr;

@@ -10,6 +10,10 @@ function printf(formatString, ...)
     print(string.format("[Lua_GESTest] " .. formatString, ...))
 end
 
+function printf_e(formatString, ...)
+    error(string.format("[Lua_GESTest] " .. formatString, ...))
+end
+
 function print_screen(text, color, duration)
     color = color or UE.FLinearColor(1, 1, 1, 1)
     duration = duration or 10
@@ -21,6 +25,16 @@ function dump_map(map)
     for i = 1, keys:Length() do
         local key = keys:Get(i)
         local value = map:Find(key)
-        printf("MapValue[%s]=%s", tostring(key), tostring(value))
+        printf("MapValue[%s]={%s}", tostring(key), tostring(value))
     end
+end
+
+function BeginTest(EventName)
+    printf("================================================================================")
+    printf("%s Start", EventName)
+end
+
+function EndTest(EventName)
+    printf("%s End", EventName)
+    --printf("============================================================")
 end

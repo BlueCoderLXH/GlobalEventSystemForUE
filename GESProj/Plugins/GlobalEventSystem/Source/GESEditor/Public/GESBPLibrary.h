@@ -10,8 +10,8 @@
 DECLARE_DYNAMIC_DELEGATE_OneParam(FGESDelegateForBP, UPARAM(ref) FGESEventDataArray&, EventDataArray);
 
 /**
- * UGlobalEventSystemBPLibrary
- * Define
+ * UGESBPLibrary
+ * Implement GES bp utility function
  */
 UCLASS()
 class GESEDITOR_API UGESBPLibrary : public UBlueprintFunctionLibrary

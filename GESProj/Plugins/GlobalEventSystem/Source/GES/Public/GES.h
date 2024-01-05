@@ -12,19 +12,31 @@ class GES_API FGES final
 public:
 	static void Init()
 	{
+		if (bInit) return;
+		
 		UnLua::Startup();
 
 		lua_State* L = UnLua::GetState();
 		UnLua::RunFile(L, TEXT("Preload.lua"));
 		
 		FGESEventConfigHelper::Init();
+
+		bInit = true;
 	}
 
 	static void Clear()
 	{
+		if (!bInit) return;
+		
+		UnLua::Shutdown();
+		
 		GetHandler().Clear();
 
+#if !WITH_EDITOR
 		FGESEventConfigHelper::Clear();
+#endif
+
+		bInit = false;
 	}
 
 	/**
@@ -266,4 +278,6 @@ private:
 
 		return true;
 	}
+
+	static bool bInit;
 };
