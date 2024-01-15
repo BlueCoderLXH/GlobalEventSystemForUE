@@ -52,7 +52,7 @@ struct GES_API FGESEventDataType
 	UPROPERTY(EditAnywhere)
 	FName CppSubTypeName = NAME_None;
 
-	// Only if it is a TMap, 'CppType' is for the key, 'ValueType' is for the value; Otherwise, ValueType is meaningless
+	// Only if it is a TMap<key, value>, 'CppType' is for the key, 'ValueType' is for the value; Otherwise, ValueType is meaningless should be 'None'
 	UPROPERTY(EditAnywhere)
 	EGESCppType ValueType = EGESCppType::None;
 
@@ -148,7 +148,7 @@ private:
 			return ScriptEnumPtr;
 		}
 
-		if (InCppType == EGESCppType::UObject && !InSubTypeName.IsNone())
+		if ((InCppType == EGESCppType::UObject || InCppType == EGESCppType::UClass) && !InSubTypeName.IsNone())
 		{
 			UClass* ScriptClassPtr = FindObject<UClass>(ANY_PACKAGE, *InSubTypeName.ToString());
 			check(ScriptClassPtr);

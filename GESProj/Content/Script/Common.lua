@@ -29,6 +29,14 @@ function dump_map(map)
     end
 end
 
+function GetObjectName(Obj)
+    return UE4.UKismetSystemLibrary.GetObjectName(Obj)
+end
+
+function LoadClass(ClassPath)
+    return UE4.LoadClass(ClassPath)
+end
+
 function BeginTest(EventName)
     printf("================================================================================")
     printf("%s Start", EventName)

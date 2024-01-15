@@ -137,6 +137,16 @@ static int32 FGESEventDataArray_PushObject(lua_State* L)
 	return 1;
 }
 
+static int32 FGESEventDataArray_PushClass(lua_State* L)
+{
+	// [1] = Self, [2] = UClass
+	FGESEventDataArray* EventDataArray = FGESEventDataArray_GetSelf(L, 2);
+	UClass* ClassPtr = Cast<UClass>(UnLua::GetUObject(L, 2));
+	check(ClassPtr);
+	EventDataArray->PushParam(ClassPtr);
+	return 1;
+}
+
 static int32 FGESEventDataArray_PushArray(lua_State* L)
 {
 	// [1] = Self, [2] = TArray
@@ -280,6 +290,17 @@ static int32 FGESEventDataArray_GetObject(lua_State* L)
 	return UnLua::PushUObject(L, ObjPtr);
 }
 
+static int32 FGESEventDataArray_GetClass(lua_State* L)
+{
+	// [1] = Self, [2] = Index
+	const FGESEventDataArray* EventDataArray = FGESEventDataArray_GetSelf(L, 2);
+
+	const int32 EventIndex = lua_tointeger(L, 2);
+	UClass* ClassPtr = EventDataArray->GetClass(EventIndex);
+
+	return UnLua::PushUObject(L, ClassPtr);
+}
+
 static int32 FGESEventDataArray_GetArray(lua_State* L)
 {
 	// [1] = Self, [2] = ElementType, [3] = Index
@@ -380,6 +401,7 @@ static const luaL_Reg FGESEventDataArrayLib[] =
 	{"PushEnum",		FGESEventDataArray_PushEnum	},
 	{"PushStruct",	FGESEventDataArray_PushStruct	},
 	{"PushObject",	FGESEventDataArray_PushObject	},
+	{"PushClass",		FGESEventDataArray_PushClass	},
 	{"PushArray",		FGESEventDataArray_PushArray	},
 	{"PushMap",		FGESEventDataArray_PushMap		},
 	{"PushSet",		FGESEventDataArray_PushSet		},
@@ -393,6 +415,7 @@ static const luaL_Reg FGESEventDataArrayLib[] =
 	{"GetEnum",		FGESEventDataArray_GetEnum		},
 	{"GetStruct",		FGESEventDataArray_GetStruct	},
 	{"GetObject",		FGESEventDataArray_GetObject	},
+	{"GetClass",		FGESEventDataArray_GetClass	},
 	{"GetArray",		FGESEventDataArray_GetArray	},
 	{"GetMap",		FGESEventDataArray_GetMap		},
 	{"GetSet",		FGESEventDataArray_GetSet		},

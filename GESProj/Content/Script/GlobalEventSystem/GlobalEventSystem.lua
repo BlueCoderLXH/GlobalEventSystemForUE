@@ -16,6 +16,7 @@ local GlobalEventSystem = {
     Enum    = "Enum",
     Struct  = "UStruct",
     Object  = "UObject",
+    Class   = "UClass",
     Array   = "TArray",
     Map     = "TMap",
     Set     = "TSet",
@@ -27,6 +28,13 @@ GES = GlobalEventSystem
 --- @param table CppEvent Cpp event, defined in 'CppEvents.lua'
 --- @param delegate Callback Lua Callback for this event, eg. {self, self.CallbackName}
 function GlobalEventSystem.Register(CppEvent, Callback)
+    if (CppEvent.Name == nil or Callback[1] == nil or Callback[2] == nil) then
+        printf_e("GlobalEventSystem.Register failed for Event:%s Obj:%s Func:%s", CppEvent.Name, GetObjectName(Callback[1]), tostring(Callback[2]))
+        return
+    end
+
+    printf("GlobalEventSystem.Register Event:%s Obj:%s Func:%s", CppEvent.Name, GetObjectName(Callback[1]), tostring(Callback[2]))
+
     UE4.UGESBPLibrary.RegisterEventLua(CppEvent.Name, Callback)
 end
 
@@ -34,6 +42,13 @@ end
 --- @param table CppEvent Cpp event, defined in 'CppEvents.lua'
 --- @param delegate Callback Lua Callback for this event, eg. {self, self.CallbackName}
 function GlobalEventSystem.Unregister(CppEvent, Callback)
+    if (CppEvent.Name == nil or Callback[1] == nil or Callback[2] == nil) then
+        printf_e("GlobalEventSystem.Unregister failed for Event:%s Obj:%s Func:%s", CppEvent.Name, GetObjectName(Callback[1]), tostring(Callback[2]))
+        return
+    end
+
+    printf("GlobalEventSystem.Unregister Event:%s Obj:%s Func:%s", CppEvent.Name, GetObjectName(Callback[1]), tostring(Callback[2]))
+
     UE4.UGESBPLibrary.UnregisterEventLua(CppEvent.Name, Callback)
 end
 
@@ -66,6 +81,8 @@ function GlobalEventSystem.Dispatch(CppEvent, ...)
             EventData:PushStruct(EventParam)
         elseif TypeName == GES.Object then
             EventData:PushObject(EventParam)
+        elseif TypeName == GES.Class then
+            EventData:PushClass(EventParam)
         elseif TypeName == GES.Array then
             EventData:PushArray(EventParam)
         elseif TypeName == GES.Map then

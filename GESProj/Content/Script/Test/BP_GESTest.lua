@@ -14,29 +14,87 @@ function M:ReceiveBeginPlay()
 
     printf("--------------------ReceiveBeginPlay Lua GES Test Start-------------------------")
 
-    self:LuaDoTest_BoolTestEvent()
-    self:LuaDoTest_IntegerTestEvent()
-    self:LuaDoTest_FloatTestEvent()
-    self:LuaDoTest_StringTestEvent()
-    self:LuaDoTest_NameTestEvent()
-    self:LuaDoTest_TextTestEvent()
-    self:LuaDoTest_EnumTestEvent()
-    self:LuaDoTest_StructTestEvent()
-    self:LuaDoTest_ObjectTestEvent()
-    self:LuaDoTest_ArrayTestEvent()
-    self:LuaDoTest_SetTestEvent()
-    self:LuaDoTest_MapTestEvent()
+    self:LuaDoTest_Register()
+    self:LuaDoTest_Dispatch()
 
     printf("--------------------ReceiveBeginPlay Lua GES Test End---------------------------")
 end
 
---- Bool Test
-function M:LuaDoTest_BoolTestEvent()
-    GES.Register(CppEvents.BoolTestEvent, { self, self.OnBoolTestEvent})
+function M:ReceiveEndPlay()
+    printf("--------------------ReceiveEndPlay Lua GES Test Start-------------------------")
 
-    GES.Dispatch(CppEvents.BoolTestEvent, { GES.Bool, true })
+    self:LuaDoTest_Unregister()
+
+    self.Overridden.ReceiveEndPlay(self)
+
+    printf("--------------------ReceiveEndPlay Lua GES Test End---------------------------")
 end
 
+function M:LuaDoTest_Register()
+    --GES.Register(CppEvents.BoolTestEvent, { self, self.OnBoolTestEvent })
+    --GES.Register(CppEvents.IntegerTestEvent, { self, self.OnIntegerTestEvent })
+    --GES.Register(CppEvents.FloatTestEvent, { self, self.OnFloatTestEvent })
+    --GES.Register(CppEvents.NameTestEvent, { self, self.OnNameTestEvent })
+    --GES.Register(CppEvents.StringTestEvent, { self, self.OnStringTestEvent })
+    --GES.Register(CppEvents.TextTestEvent, { self, self.OnTextTestEvent })
+    --GES.Register(CppEvents.EnumTestEvent, { self, self.OnEnumTestEvent })
+    --GES.Register(CppEvents.StructTestEvent, { self, self.OnStructTestEvent })
+    --GES.Register(CppEvents.ObjectTestEvent, { self, self.OnObjectTestEvent })
+    GES.Register(CppEvents.ClassTestEvent, { self, self.OnClassTestEvent })
+    --GES.Register(CppEvents.ArrayTestEvent, { self, self.OnArrayTestEvent })
+    --GES.Register(CppEvents.SetTestEvent, { self, self.OnSetTestEvent })
+    --GES.Register(CppEvents.MapTestEvent, { self, self.OnMapTestEvent })
+end
+
+function M:LuaDoTest_Dispatch()
+    --GES.Dispatch(CppEvents.BoolTestEvent, { GES.Bool, true })
+    --GES.Dispatch(CppEvents.IntegerTestEvent, { GES.Integer, 520 })
+    --GES.Dispatch(CppEvents.FloatTestEvent, { GES.Float, 520.1314 })
+    --GES.Dispatch(CppEvents.StringTestEvent, { GES.String, "FString" })
+    --GES.Dispatch(CppEvents.NameTestEvent, { GES.Name, "FName" })
+    --GES.Dispatch(CppEvents.TextTestEvent, { GES.Text, "FText" })
+    --GES.Dispatch(CppEvents.EnumTestEvent, { GES.Enum, UE4.EGESCppType.UEnum })
+    --GES.Dispatch(CppEvents.StructTestEvent, { GES.Struct, UE4.FVector(5, 52, 520) })
+    --
+    --self.TestStr = "Hello GESTest"
+    --GES.Dispatch(CppEvents.ObjectTestEvent, { GES.Object, self })
+
+    local ClassPtr = LoadClass("/Game/Blueprints/BP_GESTest.BP_GESTest_C")
+    GES.Dispatch(CppEvents.ClassTestEvent, { GES.Class, ClassPtr })
+
+    --local ArrayValue = UE4.TArray(UE4.int32)
+    --ArrayValue:Add(520)
+    --ArrayValue:Add(521)
+    --GES.Dispatch(CppEvents.ArrayTestEvent, { GES.Array, ArrayValue })
+    --
+    --local SetValue = UE4.TSet(UE4.int32)
+    --SetValue:Add(520)
+    --SetValue:Add(521)
+    --GES.Dispatch(CppEvents.SetTestEvent, { GES.Set, SetValue })
+    --
+    --local MapValue = UE4.TMap(UE4.int32, UE4.FVector)
+    --MapValue:Add(520, UE4.FVector(1, 10, 100))
+    --MapValue:Add(521, UE4.FVector(5, 52, 520))
+    --GES.Dispatch(CppEvents.MapTestEvent, { GES.Map, MapValue })
+end
+
+function M:LuaDoTest_Unregister()
+    --GES.Unregister(CppEvents.BoolTestEvent, { self, self.OnBoolTestEvent })
+    --GES.Unregister(CppEvents.IntegerTestEvent, { self, self.OnIntegerTestEvent })
+    --GES.Unregister(CppEvents.FloatTestEvent, { self, self.OnFloatTestEvent })
+    --GES.Unregister(CppEvents.StringTestEvent, { self, self.OnStringTestEvent })
+    --GES.Unregister(CppEvents.NameTestEvent, { self, self.OnNameTestEvent })
+    --GES.Unregister(CppEvents.TextTestEvent, { self, self.OnTextTestEvent })
+    --GES.Unregister(CppEvents.EnumTestEvent, { self, self.OnEnumTestEvent })
+    --GES.Unregister(CppEvents.StructTestEvent, { self, self.OnStructTestEvent })
+    --GES.Unregister(CppEvents.ObjectTestEvent, { self, self.OnObjectTestEvent })
+    GES.Unregister(CppEvents.ClassTestEvent, { self, self.OnClassTestEvent })
+    --GES.Unregister(CppEvents.ArrayTestEvent, { self, self.OnArrayTestEvent })
+    --GES.Unregister(CppEvents.SetTestEvent, { self, self.OnSetTestEvent })
+    --GES.Unregister(CppEvents.MapTestEvent, { self, self.OnMapTestEvent })
+end
+
+--- Bool Test
 function M:OnBoolTestEvent(EventData)
     BeginTest("OnBoolTestEvent")
 
@@ -47,12 +105,6 @@ function M:OnBoolTestEvent(EventData)
 end
 
 --- Integer Test
-function M:LuaDoTest_IntegerTestEvent()
-    GES.Register(CppEvents.IntegerTestEvent, { self, self.OnIntegerTestEvent})
-
-    GES.Dispatch(CppEvents.IntegerTestEvent, { GES.Integer, 520 })
-end
-
 function M:OnIntegerTestEvent(EventData)
     BeginTest("OnIntegerTestEvent")
 
@@ -63,12 +115,6 @@ function M:OnIntegerTestEvent(EventData)
 end
 
 --- Float Test
-function M:LuaDoTest_FloatTestEvent()
-    GES.Register(CppEvents.FloatTestEvent, { self, self.OnFloatTestEvent})
-
-    GES.Dispatch(CppEvents.FloatTestEvent, { GES.Float, 520.1314 })
-end
-
 function M:OnFloatTestEvent(EventData)
     BeginTest("OnFloatTestEvent")
 
@@ -79,12 +125,6 @@ function M:OnFloatTestEvent(EventData)
 end
 
 --- FString Test
-function M:LuaDoTest_StringTestEvent()
-    GES.Register(CppEvents.StringTestEvent, { self, self.OnStringTestEvent})
-
-    GES.Dispatch(CppEvents.StringTestEvent, { GES.String, "FString" })
-end
-
 function M:OnStringTestEvent(EventData)
     BeginTest("OnStringTestEvent")
 
@@ -95,12 +135,6 @@ function M:OnStringTestEvent(EventData)
 end
 
 --- FName Test
-function M:LuaDoTest_NameTestEvent()
-    GES.Register(CppEvents.NameTestEvent, { self, self.OnNameTestEvent})
-
-    GES.Dispatch(CppEvents.NameTestEvent, { GES.Name, "FName" })
-end
-
 function M:OnNameTestEvent(EventData)
     BeginTest("OnNameTestEvent")
 
@@ -111,12 +145,6 @@ function M:OnNameTestEvent(EventData)
 end
 
 --- FText Test
-function M:LuaDoTest_TextTestEvent()
-    GES.Register(CppEvents.TextTestEvent, { self, self.OnTextTestEvent})
-
-    GES.Dispatch(CppEvents.TextTestEvent, { GES.Text, "FText" })
-end
-
 function M:OnTextTestEvent(EventData)
     BeginTest("OnTextTestEvent")
 
@@ -127,12 +155,6 @@ function M:OnTextTestEvent(EventData)
 end
 
 --- UEnum Test
-function M:LuaDoTest_EnumTestEvent()
-    GES.Register(CppEvents.EnumTestEvent, { self, self.OnEnumTestEvent})
-
-    GES.Dispatch(CppEvents.EnumTestEvent, { GES.Enum, UE4.EGESCppType.UEnum })
-end
-
 function M:OnEnumTestEvent(EventData)
     BeginTest("OnEnumTestEvent")
 
@@ -143,12 +165,6 @@ function M:OnEnumTestEvent(EventData)
 end
 
 --- UStruct Test
-function M:LuaDoTest_StructTestEvent()
-    GES.Register(CppEvents.StructTestEvent, { self, self.OnStructTestEvent })
-
-    GES.Dispatch(CppEvents.StructTestEvent, { GES.Struct, UE4.FVector(5, 52, 520) })
-end
-
 function M:OnStructTestEvent(EventData)
     BeginTest("OnStructTestEvent")
 
@@ -159,13 +175,6 @@ function M:OnStructTestEvent(EventData)
 end
 
 --- UObject Test
-function M:LuaDoTest_ObjectTestEvent()
-    GES.Register(CppEvents.ObjectTestEvent, { self, self.OnObjectTestEvent })
-
-    self.TestStr = "Hello GESTest"
-    GES.Dispatch(CppEvents.ObjectTestEvent, { GES.Object, self })
-end
-
 function M:OnObjectTestEvent(EventData)
     BeginTest("OnObjectTestEvent")
 
@@ -175,22 +184,22 @@ function M:OnObjectTestEvent(EventData)
     EndTest("OnObjectTestEvent")
 end
 
---- TArray Test
-function M:LuaDoTest_ArrayTestEvent()
-    GES.Register(CppEvents.ArrayTestEvent, { self, self.OnArrayTestEvent})
+--- UClass Test
+function M:OnClassTestEvent(EventData)
+    BeginTest("OnClassTestEvent")
 
-    local ArrayValue = UE4.TArray(UE4.int32)
-    ArrayValue:Add(520)
-    ArrayValue:Add(521)
+    local ClassValue = EventData:GetClass(0)
+    printf("OnClassTestEvent Class:%s", GetObjectName(ClassValue))
 
-    GES.Dispatch(CppEvents.ArrayTestEvent, { GES.Array, ArrayValue })
+    EndTest("OnClassTestEvent")
 end
 
+--- TArray Test
 function M:OnArrayTestEvent(EventData)
     BeginTest("OnArrayTestEvent")
 
     local ArrayValue = EventData:GetArray(UE4.int32, 0)
-    for i=1,ArrayValue:Num() do
+    for i = 1, ArrayValue:Num() do
         printf("ArrayValue[%d]=%d", i, ArrayValue:Get(i))
     end
 
@@ -198,22 +207,12 @@ function M:OnArrayTestEvent(EventData)
 end
 
 --- TSet Test
-function M:LuaDoTest_SetTestEvent()
-    GES.Register(CppEvents.SetTestEvent, { self, self.OnSetTestEvent})
-
-    local SetValue = UE4.TSet(UE4.int32)
-    SetValue:Add(520)
-    SetValue:Add(521)
-
-    GES.Dispatch(CppEvents.SetTestEvent, { GES.Set, SetValue })
-end
-
 function M:OnSetTestEvent(EventData)
     BeginTest("OnSetTestEvent")
 
     local SetValue = EventData:GetSet(UE4.int32, 0)
     local SetArray = SetValue:ToArray()
-    for i=1,SetArray:Num() do
+    for i = 1, SetArray:Num() do
         printf("SetValue %d", SetArray:Get(i))
     end
 
@@ -221,17 +220,7 @@ function M:OnSetTestEvent(EventData)
 end
 
 --- Map Test
-function M:LuaDoTest_MapTestEvent()
-    GES.Register(CppEvents.MapTestEvent, { self, self.OnTMapTestEvent })
-
-    local MapValue = UE4.TMap(UE4.int32, UE4.FVector)
-    MapValue:Add(520, UE4.FVector(1, 10, 100))
-    MapValue:Add(521, UE4.FVector(5, 52, 520))
-
-    GES.Dispatch(CppEvents.MapTestEvent, { GES.Map, MapValue})
-end
-
-function M:OnTMapTestEvent(EventData)
+function M:OnMapTestEvent(EventData)
     BeginTest("OnTMapTestEvent")
 
     local MapValue = EventData:GetMap(UE4.int32, UE4.FVector, 0)

@@ -16,11 +16,11 @@ local EDC = UE4.EGESCppType
 --    Name="",    -- Event name
 --    Data= {     -- Event data array
 --        [1] = {
---            ContainerType= CT.None,     -- Container type, see cpp type 'UE4.EGESContainerType'
---            CppType=EDC.None,           -- Cpp type, see cpp type 'UE4.EGESCppType'
---            CppSubTypeName="",          -- Cpp sub type name, UObject:UClass name, UStruct: Struct name without prefix 'F', UEnum: Enum name must with prefix 'E'
---            ValueType=EDC.None,         -- Only when ContainerType is TMap<Key, Value>, CppType & CppSubTypeName is used for 'Key', ValueType & ValueSubTypeName is used for 'Value'
---            ValueSubTypeName="",        -- TMap Value sub type
+--            ContainerType = CT.None,      -- Container type, see cpp type 'UE4.EGESContainerType'
+--            CppType = EDC.None,           -- Cpp type, see cpp type 'UE4.EGESCppType'
+--            CppSubTypeName = "",          -- Cpp sub type name, UObject:UClass name, UStruct: Struct name without prefix 'F', UEnum: Enum name must with prefix 'E'
+--            ValueType = EDC.None,         -- Only when ContainerType is TMap<Key, Value>, CppType & CppSubTypeName is used for 'Key', ValueType & ValueSubTypeName is used for 'Value'
+--            ValueSubTypeName = "",        -- TMap Value sub type
 --        },
 --        -- Add more if necessary, eg. [2], [3], ...
 --    }
@@ -66,7 +66,7 @@ CppEvents = {
     },
     ClassTestEvent = {
         Name = "ClassTestEvent",
-        Data = { [1] = { CppType=EDC.UClass,    CppSubTypeName="" }, },
+        Data = { [1] = { CppType=EDC.UClass,    CppSubTypeName="BP_GESTest_C" }, },
     },
     ArrayTestEvent = {
         Name = "ArrayTestEvent",

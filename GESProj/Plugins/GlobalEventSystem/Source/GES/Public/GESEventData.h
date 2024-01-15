@@ -406,6 +406,16 @@ public:
 		PushParamInternal(Object, EGESCppType::UObject);
 	}
 
+	void PushParam(const UClass* Class)
+	{
+		PushParamInternal(Class, EGESCppType::UClass);
+	}
+
+	void PushParam(UClass* Class)
+	{
+		PushParamInternal(Class, EGESCppType::UClass);
+	}
+
 	void PushParam(bool& bValue)
 	{
 		PushParamInternal(&bValue, EGESCppType::Bool);
