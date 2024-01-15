@@ -134,7 +134,7 @@ DEFINE_FUNCTION(UGESBPLibrary::execGESUnregisterEvent)
 {
 	P_GET_PROPERTY_REF(FNameProperty, Z_Param_EventName);
 
-	check(Z_Param_EventName.IsNone());
+	check(!Z_Param_EventName.IsNone());
 
 	const UObject* DelegateOwner = Stack.Object;
 	check(IsValid(DelegateOwner));
@@ -171,6 +171,12 @@ DEFINE_FUNCTION(UGESBPLibrary::execGESConvertEventData)
 				const int32 IntValue = EventData.GetInt();
 				P_GET_PROPERTY_REF(FIntProperty, Z_Param_Int);
 				Z_Param_Int = IntValue;
+			}
+			else if (CppType == EGESCppType::Float)
+			{
+				const float FloatValue = EventData.GetFloat();
+				P_GET_PROPERTY_REF(FFloatProperty, Z_Param_Float);
+				Z_Param_Float = FloatValue;
 			}
 			else if (CppType == EGESCppType::FString)
 			{
@@ -222,9 +228,13 @@ DEFINE_FUNCTION(UGESBPLibrary::execGESConvertEventData)
 			}
 			else if (CppType == EGESCppType::UClass)
 			{
-				UClass* ClassValue = EventData.GetUObject<UClass>();
+				UClass* ClassValue = EventData.GetClass();
 				P_GET_PROPERTY_REF(FClassProperty, Z_Param_Class);
 				Z_Param_Class = ClassValue;
+			}
+			else
+			{
+				checkf(0, TEXT("UGESBPLibrary::execGESConvertEventData Unsupported cpp type:%d"), CppType);
 			}
 		}
 		else
@@ -248,6 +258,10 @@ DEFINE_FUNCTION(UGESBPLibrary::execGESConvertEventData)
 			{
 				Stack.StepCompiledIn<FSetProperty>(nullptr);
 				ContainerProperty = CastField<FSetProperty>(Stack.MostRecentProperty);
+			}
+			else
+			{
+				checkf(0, TEXT("UGESBPLibrary::execGESConvertEventData Unsupported container type:%d"), ContainerType);
 			}
 
 			void* ContainerDataPtr = Stack.MostRecentPropertyAddress;
