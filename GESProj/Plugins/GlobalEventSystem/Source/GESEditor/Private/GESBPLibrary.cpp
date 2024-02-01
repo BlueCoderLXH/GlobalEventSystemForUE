@@ -24,19 +24,44 @@ DEFINE_FUNCTION(UGESBPLibrary::execGESDispatchEvent)
 
 	FGESEventConfigItem EventConfig;
 	FGESEventConfigHelper::FindEvent(Z_Param_EventType, EventConfig);
+
+	const TArray<FGESEventDataType>& EventDataTypes = EventConfig.EventDataTypes;
 	
 	int32 EventDataIndex = -1;
-	while (++EventDataIndex < EventConfig.EventDataTypes.Num())
+	while (++EventDataIndex < EventDataTypes.Num())
 	{
-		Stack.MostRecentProperty = nullptr;
-		Stack.MostRecentPropertyAddress = nullptr;
-		Stack.StepCompiledIn<FProperty>(nullptr);
+		const FGESEventDataType& EventDataType = EventDataTypes[EventDataIndex];
+		
+		// Object(include Class) should use this way to get it's value ptr
+		if (EventDataType.CppType == EGESCppType::UObject)
+		{
+			P_GET_PROPERTY(FObjectProperty, ObjectValue);
+			EventData.PushParamWithType(EventDataType, ObjectValue);
+		}
+		else if (EventDataType.CppType == EGESCppType::UClass)
+		{
+			P_GET_PROPERTY(FClassProperty, ClassValue);
+			EventData.PushParamWithType(EventDataType, ClassValue);
+		}
+		// Otherwise, get it directly and check type's validation
+		else
+		{
+			Stack.MostRecentProperty = nullptr;
+			Stack.MostRecentPropertyAddress = nullptr;
+			Stack.StepCompiledIn<FProperty>(nullptr);
 
-		if (!Stack.MostRecentProperty || !Stack.MostRecentPropertyAddress) break;
+			if (Stack.MostRecentPropertyAddress)
+			{
+				UClass* ClassValue = (UClass*)(Stack.MostRecentPropertyAddress);
+				UE_LOG(LogTemp, Verbose, TEXT(""));
+			}
 
-		P_NATIVE_BEGIN;
-		GESDispatchEventInternal(Stack.MostRecentProperty, Stack.MostRecentPropertyAddress, EventConfig.EventDataTypes[EventDataIndex], EventData);
-		P_NATIVE_END;
+			if (!Stack.MostRecentProperty || !Stack.MostRecentPropertyAddress) break;
+
+			P_NATIVE_BEGIN;
+			GESDispatchEventInternal(Stack.MostRecentProperty, Stack.MostRecentPropertyAddress, EventDataType, EventData);
+			P_NATIVE_END;
+		}
 	}
 
 	P_FINISH;
@@ -70,6 +95,11 @@ void UGESBPLibrary::GESDispatchEventInternal(FProperty* PropertyPtr, const void*
 		{
 			TargetEventDataType = EGESCppType::Bool;
 		}
+		// 'FByteProperty' inherits from 'FNumericProperty', so judge it before 'FNumericProperty' to make 'UEnum' type okay
+		else if (CastField<FEnumProperty>(PropertyPtr) || CastField<FByteProperty>(PropertyPtr))
+		{
+			TargetEventDataType = EGESCppType::UEnum;
+		}
 		else if (const FNumericProperty* NumberProperty = CastField<FNumericProperty>(PropertyPtr))
 		{
 			if (NumberProperty->IsInteger())
@@ -93,21 +123,18 @@ void UGESBPLibrary::GESDispatchEventInternal(FProperty* PropertyPtr, const void*
 		{
 			TargetEventDataType = EGESCppType::FText;
 		}
-		else if (CastField<FEnumProperty>(PropertyPtr))
-		{
-			TargetEventDataType = EGESCppType::UEnum;
-		}
 		else if (CastField<FStructProperty>(PropertyPtr))
 		{
 			TargetEventDataType = EGESCppType::UStruct;
 		}
-		else if (CastField<FObjectProperty>(PropertyPtr))
-		{
-			TargetEventDataType = EGESCppType::UObject;
-		}
+		// 'FClassProperty' inherits from 'FObjectProperty', so judge it before 'FObjectProperty' to make 'UClass' type okay
 		else if (CastField<FClassProperty>(PropertyPtr))
 		{
 			TargetEventDataType = EGESCppType::UClass;
+		}
+		else if (CastField<FObjectProperty>(PropertyPtr))
+		{
+			TargetEventDataType = EGESCppType::UObject;
 		}
 
 		checkf(TargetEventDataType != EGESCppType::None,
@@ -148,7 +175,6 @@ void UGESBPLibrary::GESConvertEventData(FGESEventDataArray& EventDataArray)
 {
 	check(0);
 }
-
 DEFINE_FUNCTION(UGESBPLibrary::execGESConvertEventData)
 {
 	P_GET_STRUCT_REF(FGESEventDataArray, EventDataArray);
@@ -274,6 +300,26 @@ DEFINE_FUNCTION(UGESBPLibrary::execGESConvertEventData)
 
 	P_FINISH;
 }
+
+void UGESBPLibrary::GESEmptyConnection()
+{
+	check(0);
+}
+DEFINE_FUNCTION(UGESBPLibrary::execGESEmptyConnection)
+{
+	// 'GESEmptyConnection' may have some input params, traverse all of them to make bp vm loop fine
+	while (true)
+	{
+		Stack.MostRecentProperty = nullptr;
+		Stack.MostRecentPropertyAddress = nullptr;
+		Stack.StepCompiledIn<FProperty>(nullptr);
+
+		if (!Stack.MostRecentProperty || !Stack.MostRecentPropertyAddress) break;
+	}
+	
+	P_FINISH;
+}
+
 
 void UGESBPLibrary::RegisterEventLua(const FName EventType, FGESDelegateForBP EventDelegate)
 {

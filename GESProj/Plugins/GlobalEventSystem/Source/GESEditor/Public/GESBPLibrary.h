@@ -52,6 +52,14 @@ public:
 	DECLARE_FUNCTION(execGESConvertEventData);
 
 	/*
+	 * GESEmptyConnection
+	 * Just for empty connection
+	 */
+	UFUNCTION(BlueprintCallable, CustomThunk, Category="GlobalEventSystem", meta=(Variadic, BlueprintInternalUseOnly="true"))
+	static void GESEmptyConnection();
+	DECLARE_FUNCTION(execGESEmptyConnection);
+
+	/*
 	 * DispatchEventLua
 	 * Dispatch event from lua
 	 */
@@ -71,4 +79,28 @@ public:
 	 */		
 	UFUNCTION(BlueprintCallable, Category="GES_Lua", meta=(BlueprintInternalUseOnly="true"))
 	static void UnregisterEventLua(const FName EventType, FGESDelegateForBP EventDelegate);
+
+	UFUNCTION(BlueprintPure, Category="GES_Utils", meta=(BlueprintInternalUseOnly="true"))
+	static FVector MakeLiteralVector(FVector Value);
+	
+	UFUNCTION(BlueprintPure, Category="GES_Utils", meta=(BlueprintInternalUseOnly="true"))
+	static FRotator MakeLiteralRotator(FRotator Value);
+
+	UFUNCTION(BlueprintPure, Category="GES_Utils", meta=(BlueprintInternalUseOnly="true"))
+	static UClass* MakeClass(UClass* Value);
 };
+
+FORCEINLINE FVector UGESBPLibrary::MakeLiteralVector(FVector Value)
+{
+	return Value;
+}
+
+FORCEINLINE FRotator UGESBPLibrary::MakeLiteralRotator(FRotator Value)
+{
+	return Value;
+}
+
+FORCEINLINE UClass* UGESBPLibrary::MakeClass(UClass* Value)
+{
+	return Value;
+}

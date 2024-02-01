@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "K2Node_CallFunction.h"
 #include "K2Node_GESEventNodeBase.h"
 #include "K2Node_GESDispatchEvent.generated.h"
 
@@ -20,4 +21,11 @@ public:
 	}
 	
 	virtual void ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;
+
+private:
+	static bool HandleEventDataPinDefaultConnection(
+		UEdGraphPin* SourcePin,
+		UEdGraphPin* TargetPin,
+		FKismetCompilerContext& CompilerContext,
+		UEdGraph* SourceGraph);
 };

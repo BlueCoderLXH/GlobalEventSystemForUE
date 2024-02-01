@@ -119,6 +119,14 @@ void UK2Node_GESRegisterEvent::ExpandNode(FKismetCompilerContext& CompilerContex
 		bIsErrorFree &= Schema->TryCreateConnection(CustomEventEventDataArrayPin, EventDataArrayPin);
 	}
 
+	// Create a UK2Node_CallFunction node for 'GESEmptyConnection' & 'EventData' pins
+	const FName EmptyConnectionFuncName = GET_FUNCTION_NAME_CHECKED(UGESBPLibrary, GESEmptyConnection);
+	UK2Node_CallFunction* EmptyConnectionFuncNode = CompilerContext.SpawnIntermediateNode<UK2Node_CallFunction>(this, SourceGraph);
+	{
+		EmptyConnectionFuncNode->FunctionReference.SetExternalMember(EmptyConnectionFuncName, UGESBPLibrary::StaticClass());
+		EmptyConnectionFuncNode->AllocateDefaultPins();
+	}
+
 	// Connect 'EventData' pins
 	{
 		for (int32 Index = 0; Index < EventDataPinInfos.Num(); Index++)
@@ -126,7 +134,14 @@ void UK2Node_GESRegisterEvent::ExpandNode(FKismetCompilerContext& CompilerContex
 			const FName& EventDataPinName = EventDataPinInfos[Index].PinName;
 			UEdGraphPin* EventDataPin = FindPinChecked(EventDataPinName);
 			UEdGraphPin* ConvertFuncEventDataPin = ConvertEventDataFuncNode->CreatePin(EGPD_Output, EventDataPin->PinType, EventDataPinName);
-			bIsErrorFree &= CompilerContext.MovePinLinksToIntermediate(*EventDataPin, *ConvertFuncEventDataPin).CanSafeConnect();			
+
+			bIsErrorFree &= CompilerContext.MovePinLinksToIntermediate(*EventDataPin, *ConvertFuncEventDataPin).CanSafeConnect();
+			
+			if (ConvertFuncEventDataPin->LinkedTo.Num() <= 0)
+			{
+				UEdGraphPin* EmptyConnectionEventDataPin = EmptyConnectionFuncNode->CreatePin(EGPD_Input, EventDataPin->PinType, EventDataPinName);
+				bIsErrorFree &= Schema->TryCreateConnection(EmptyConnectionEventDataPin, ConvertFuncEventDataPin);
+			}
 		}
 	}
 
@@ -137,11 +152,18 @@ void UK2Node_GESRegisterEvent::ExpandNode(FKismetCompilerContext& CompilerContex
 		bIsErrorFree &= Schema->TryCreateConnection(CustomEventEndPin, ConvertEventDataFuncExecPin);
 	}	
 
-	// Connect ConvertEventDataFuncEndPin to OnEventPin
+	// Connect ConvertEventDataThenPin to EmptyConnectionExecPin
 	{
-		UEdGraphPin* ConvertEventDataFuncEndPin = ConvertEventDataFuncNode->FindPinChecked(UEdGraphSchema_K2::PN_Then);
+		UEdGraphPin* ConvertEventDataThenPin = ConvertEventDataFuncNode->GetThenPin();
+		UEdGraphPin* EmptyConnectionExecPin = EmptyConnectionFuncNode->GetExecPin();
+		bIsErrorFree &= Schema->TryCreateConnection(ConvertEventDataThenPin, EmptyConnectionExecPin);
+	}
+	
+	// Connect EmptyConnectionThenPin to OnEventPin
+	{
+		UEdGraphPin* EmptyConnectionThenPin = EmptyConnectionFuncNode->GetThenPin();
 		UEdGraphPin* OnEventPin = FindPinChecked(OnEventPinName);
-		bIsErrorFree &= CompilerContext.MovePinLinksToIntermediate(*OnEventPin, *ConvertEventDataFuncEndPin).CanSafeConnect();
+		bIsErrorFree &= CompilerContext.MovePinLinksToIntermediate(*OnEventPin, *EmptyConnectionThenPin).CanSafeConnect();
 	}
 	
 	if (!bIsErrorFree)
