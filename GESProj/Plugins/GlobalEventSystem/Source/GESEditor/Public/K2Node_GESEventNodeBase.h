@@ -65,7 +65,9 @@ public:
 	virtual void PinDefaultValueChanged(UEdGraphPin* Pin) override;
 
 protected:
-	virtual bool OnEventTypePinValueChanged(UEdGraphPin* Pin);
+	virtual void ReconstructNode() override;
+	
+	virtual bool OnEventTypePinValueChanged(UEdGraphPin* Pin, bool bForce = false);
 
 	virtual void BeforeAllocateEventDataPins() {}
 	virtual void AllocateEventDataPins();

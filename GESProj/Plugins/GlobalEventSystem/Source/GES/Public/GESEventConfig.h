@@ -8,6 +8,14 @@
 #include "UObject/Object.h"
 #include "GESEventConfig.generated.h"
 
+static TAutoConsoleVariable<bool> CVarGESHotReloadConfig(
+	TEXT("ges.hotreload"),
+	false,
+	TEXT("Whether should hot reload ges cpp event config from lua.\n")
+	TEXT("  true = Hot reload ges config every time in editor\n")
+	TEXT("  false = Not hot reload"),
+	ECVF_Default);
+
 UENUM(BlueprintType)
 enum class EGESCppType : uint8
 {
@@ -248,9 +256,16 @@ private:
 	{
 		static FGESEventConfig EventConfig;
 
-		if (!EventConfig.IsValid())
+		// if with editor, hot reload cpp events config to make it more convenient
+		if (!EventConfig.IsValid() || CVarGESHotReloadConfig.GetValueOnGameThread())
 		{
 			lua_State* L = UnLua::GetState();
+			check(L);
+
+			if (CVarGESHotReloadConfig.GetValueOnGameThread())
+			{
+				UnLua::RunFile(L, TEXT("GlobalEventSystem/CppEvents.lua"));
+			}
 
 			const auto LuaRetResult = UnLua::Call(UnLua::GetState(), "Global_GetCppEvents");
 			if (LuaRetResult.Num() > 0)
@@ -259,6 +274,6 @@ private:
 			}
 		}
 		
-		return EventConfig;	
+		return EventConfig;
 	}
 };

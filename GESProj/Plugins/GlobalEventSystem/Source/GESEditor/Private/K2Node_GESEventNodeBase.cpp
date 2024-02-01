@@ -64,6 +64,18 @@ void UK2Node_GESEventNodeBase::AllocateEventDataPins()
 	}
 }
 
+void UK2Node_GESEventNodeBase::ReconstructNode()
+{
+	Super::ReconstructNode();
+
+	// If need hot reload config, refresh this node
+	if (CVarGESHotReloadConfig.GetValueOnGameThread())
+	{
+		UEdGraphPin* EventTypePin = FindPinChecked(EventTypePinName);
+		OnEventTypePinValueChanged(EventTypePin, true);
+	}
+}
+
 void UK2Node_GESEventNodeBase::PinDefaultValueChanged(UEdGraphPin* Pin)
 {
 	if (!Pin) return;
@@ -74,10 +86,10 @@ void UK2Node_GESEventNodeBase::PinDefaultValueChanged(UEdGraphPin* Pin)
 	}
 }
 
-bool UK2Node_GESEventNodeBase::OnEventTypePinValueChanged(UEdGraphPin* Pin)
+bool UK2Node_GESEventNodeBase::OnEventTypePinValueChanged(UEdGraphPin* Pin, bool bForce/* = false*/)
 {
 	const FName NewEventTypeValue = *Pin->GetDefaultAsString();
-	if (NewEventTypeValue == EventTypeValue) return false;
+	if (!bForce && NewEventTypeValue == EventTypeValue) return false;
 	
 	EventTypeValue = NewEventTypeValue;
 
