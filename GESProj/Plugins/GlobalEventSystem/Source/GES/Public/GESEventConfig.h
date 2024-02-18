@@ -197,9 +197,10 @@ struct GES_API FGESEventConfig
 
 struct GES_API FGESEventConfigHelper
 {
-	static void Init()
+	static bool Init()
 	{
-		Get();
+		const FGESEventConfig& EventConfig = Get();
+		return EventConfig.IsValid();
 	}
 
 	static void Clear()

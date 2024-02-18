@@ -4,9 +4,9 @@
 	"VersionName": "1.0",
 	"FriendlyName": "GlobalEventSystem",
 	"Description": "",
-	"Category": "Other",
+	"Category": "Scripting",
 	"CreatedBy": "lixiaohua",
-	"CreatedByURL": "",
+	"CreatedByURL": "https://github.com/BlueCoderLXH/GlobalEventSystemForUE",
 	"DocsURL": "",
 	"MarketplaceURL": "",
 	"SupportURL": "",
@@ -24,7 +24,7 @@
 		{
 			"Name": "GESEditor",
 			"Type": "Runtime",
-			"LoadingPhase": "PostEngineInit"
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [

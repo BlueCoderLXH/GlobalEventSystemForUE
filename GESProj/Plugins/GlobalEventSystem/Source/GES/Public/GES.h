@@ -14,12 +14,24 @@ public:
 	{
 		if (bInit) return;
 		
-		UnLua::Startup();
+		if (!UnLua::Startup())
+		{
+			UE_LOG(LogGES, Error, TEXT("Failed to call 'UnLua::Startup'"));
+			return;
+		}
 
 		lua_State* L = UnLua::GetState();
-		UnLua::RunFile(L, TEXT("Preload.lua"));
+		if (!UnLua::RunFile(L, TEXT("Preload.lua")))
+		{
+			UE_LOG(LogGES, Error, TEXT("Failed to call 'Preload.lua'"));
+			return;
+		}
 		
-		FGESEventConfigHelper::Init();
+		if (!FGESEventConfigHelper::Init())
+		{
+			UE_LOG(LogGES, Error, TEXT("Failed to init 'EventConfig'"));
+			return;			
+		}
 
 		bInit = true;
 	}

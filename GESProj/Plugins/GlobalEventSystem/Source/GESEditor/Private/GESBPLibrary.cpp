@@ -50,12 +50,6 @@ DEFINE_FUNCTION(UGESBPLibrary::execGESDispatchEvent)
 			Stack.MostRecentPropertyAddress = nullptr;
 			Stack.StepCompiledIn<FProperty>(nullptr);
 
-			if (Stack.MostRecentPropertyAddress)
-			{
-				UClass* ClassValue = (UClass*)(Stack.MostRecentPropertyAddress);
-				UE_LOG(LogTemp, Verbose, TEXT(""));
-			}
-
 			if (!Stack.MostRecentProperty || !Stack.MostRecentPropertyAddress) break;
 
 			P_NATIVE_BEGIN;
