@@ -54,8 +54,8 @@ public:
         EventID = InEventID;
     }
 
-    bool Register(const FGESStaticDelegate& InCallback);
-    bool Unregister(const FGESStaticDelegate& InCallback);
+    bool RegisterStatic(const FGESStaticDelegate& InCallback);
+    bool UnregisterStatic(const FGESStaticDelegate& InCallback);
 
     template<typename ClassType>
     bool Register(
@@ -100,10 +100,10 @@ private:
 class GES_API FGESHandler
 {
 public:
-    bool Register(
+    bool RegisterStatic(
         const FGESEventType& InEventID,
         const FGESStaticDelegate InStaticCallback);
-    bool Unregister(
+    bool UnregisterStatic(
         const FGESEventType& InEventID,
         const FGESStaticDelegate InStaticCallback);
 

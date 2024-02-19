@@ -60,7 +60,7 @@ DEFINE_FUNCTION(UGESBPLibrary::execGESDispatchEvent)
 
 	P_FINISH;
 
-	FGES::DispatchFromBP(EventData);
+	FGES::DispatchBP(EventData);
 }
 
 void UGESBPLibrary::GESDispatchEventInternal(FProperty* PropertyPtr, const void* DataPtr, const FGESEventDataType& Type, FGESEventDataArray& EventDataArray)
@@ -315,17 +315,17 @@ DEFINE_FUNCTION(UGESBPLibrary::execGESEmptyConnection)
 }
 
 
-void UGESBPLibrary::RegisterEventLua(const FName EventType, FGESDelegateForBP EventDelegate)
+void UGESBPLibrary::RegisterLua(const FName EventType, FGESDelegateForBP EventDelegate)
 {
 	FGES::RegisterBP(EventType, EventDelegate.GetUObject(), EventDelegate.GetFunctionName());	
 }
 
-void UGESBPLibrary::DispatchEventLua(const FGESEventDataArray& EventData)
+void UGESBPLibrary::DispatchLua(const FGESEventDataArray& EventData)
 {
-	FGES::DispatchFromBP(EventData);
+	FGES::DispatchBP(EventData);
 }
 
-void UGESBPLibrary::UnregisterEventLua(const FName EventType, FGESDelegateForBP EventDelegate)
+void UGESBPLibrary::UnregisterLua(const FName EventType, FGESDelegateForBP EventDelegate)
 {
 	FGES::UnregisterBP(EventType, EventDelegate.GetUObject(), EventDelegate.GetFunctionName());
 }

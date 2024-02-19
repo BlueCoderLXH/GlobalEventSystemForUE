@@ -1,7 +1,7 @@
 #include "GESHandler.h"
 
-//---------- FGameEventListeners ----------
-bool FGESListeners::Register(const FGESStaticDelegate& InCallback)
+//---------- FGESListeners ----------
+bool FGESListeners::RegisterStatic(const FGESStaticDelegate& InCallback)
 {
 	auto BindListener = [&]() -> FDelegateHandle
 	{
@@ -11,7 +11,7 @@ bool FGESListeners::Register(const FGESStaticDelegate& InCallback)
 	return RegisterInner(nullptr, PointerCast<void*>(InCallback), BindListener);
 }
 
-bool FGESListeners::Unregister(const FGESStaticDelegate& InCallback)
+bool FGESListeners::UnregisterStatic(const FGESStaticDelegate& InCallback)
 {
 	auto UnBindListener = [&] (const FDelegateHandle& DelegateHandle) -> void {
 		GetListener().Remove(DelegateHandle);
@@ -130,15 +130,15 @@ void FGESListeners::Clear()
 	HandleMap.Empty();
 }
 
-//---------- FGameEventHandler ----------
-bool FGESHandler::Register(
+//---------- FGESHandler ----------
+bool FGESHandler::RegisterStatic(
 	const FGESEventType& InEventID,
 	const FGESStaticDelegate InStaticCallback)
 {
 	FGESListeners& ListenersPtr = EventMap.FindOrAdd(InEventID);
 	ListenersPtr.Init(InEventID);
 
-	if (!ListenersPtr.Register(InStaticCallback))
+	if (!ListenersPtr.RegisterStatic(InStaticCallback))
 	{
 		return false;
 	}
@@ -146,7 +146,7 @@ bool FGESHandler::Register(
 	return true;
 }
 
-bool FGESHandler::Unregister(
+bool FGESHandler::UnregisterStatic(
 	const FGESEventType& InEventID,
 	const FGESStaticDelegate InStaticCallback)
 {
@@ -156,7 +156,7 @@ bool FGESHandler::Unregister(
 		return false;
 	}
 
-	return ListenersPtr->Unregister(InStaticCallback);
+	return ListenersPtr->UnregisterStatic(InStaticCallback);
 }
 
 template <typename ClassType>

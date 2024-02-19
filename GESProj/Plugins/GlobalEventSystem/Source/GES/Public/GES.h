@@ -5,11 +5,14 @@
 
 /**
  * FGES
- * Global event system
+ * Global Event System
  */
 class GES_API FGES final
 {
 public:
+	/**
+	 * @brief Init GES
+	 */
 	static void Init()
 	{
 		if (bInit) return;
@@ -36,6 +39,9 @@ public:
 		bInit = true;
 	}
 
+	/**
+	 * @brief Clear GES
+	 */
 	static void Clear()
 	{
 		if (!bInit) return;
@@ -52,11 +58,11 @@ public:
 	}
 
 	/**
-	 * 注册事件
-	 * @param InEventID FGameEventType 事件ID
-	 * @param InCallback FGameEventStaticDelegate 事件回调
+	 * @brief Register event for static function
+	 * @param InEventID Event ID
+	 * @param InCallback Static event callback
 	 */
-	static void Register(const FGESEventType& InEventID,
+	static void RegisterStatic(const FGESEventType& InEventID,
 	                     const FGESStaticDelegate InCallback)
 	{
 		if (!CheckEventID(InEventID))
@@ -64,17 +70,15 @@ public:
 			return;
 		}
 
-		GetHandler().Register(InEventID, InCallback);
+		GetHandler().RegisterStatic(InEventID, InCallback);
 	}
 
 	/**
-	 * 反注册事件
-	 * - 需要在特定的时期进行反注册，避免无效的事件回调
-	 *
-	 * @param InEventID FGameEventType 事件ID
-	 * @param InCallback FGameEventStaticDelegate 事件回调
+	 * @brief Unregister event for static function
+	 * @param InEventID Event ID
+	 * @param InCallback Static event callback
 	 */
-	static void Unregister(const FGESEventType& InEventID,
+	static void UnregisterStatic(const FGESEventType& InEventID,
 	                       const FGESStaticDelegate InCallback)
 	{
 		if (!CheckEventID(InEventID))
@@ -82,14 +86,14 @@ public:
 			return;
 		}
 
-		GetHandler().Unregister(InEventID, InCallback);
+		GetHandler().UnregisterStatic(InEventID, InCallback);
 	}
 
 	/**
-	 * 注册事件(UObject)
-	 * @param InEventID FGameEventType 事件ID
-	 * @param InTarget ClassType* 目标对象(必须是UObject)
-	 * @param InCallback ClassType::*InCallback 目标成员函数回调
+	 * @brief Register event for UObject
+	 * @param InEventID Event ID
+	 * @param InTarget Target object(Must be UObject)
+	 * @param InCallback ClassType::*InCallback Event callback
 	 */
 	template <typename ClassType>
 	static void Register(const FGESEventType& InEventID,
@@ -105,13 +109,11 @@ public:
 	}
 
 	/**
-	 * 反注册事件
-	 * - 需要在特定的时期进行反注册，避免无效的事件回调
-	 *
-	 * @param InEventID FGameEventType 事件ID
-	 * @param InTarget ClassType 目标对象
-	 * @param InCallback ClassType::*InCallback 目标成员函数回调
-	 */
+	 * @brief Unregister event for UObject
+	 * @param InEventID Event ID
+	 * @param InTarget Target object(Must be UObject)
+	 * @param InCallback ClassType::*InCallback Event callback
+	 */	
 	template <typename ClassType>
 	static void Unregister(const FGESEventType& InEventID,
 	                       std::enable_if_t<std::is_base_of<UObject, ClassType>::value, ClassType*> InTarget,
@@ -126,11 +128,11 @@ public:
 	}
 
 	/**
-	 * 注册事件(非UObject使用, 可能存在不安全性)
-	 * @param InEventID FGameEventType 事件ID
-	 * @param InTarget ClassType* 目标对象(非UObject)
-	 * @param InCallback ClassType::*InCallback 目标成员函数回调
-	 */
+	 * @brief Register event for None-UObject
+	 * @param InEventID Event ID
+	 * @param InTarget Target object(None-UObject)
+	 * @param InCallback ClassType::*InCallback Event callback
+	 */	
 	template <typename ClassType>
 	static void RegisterRaw(const FGESEventType& InEventID,
 	                        ClassType* InTarget,
@@ -145,13 +147,11 @@ public:
 	}
 
 	/**
-	 * 反注册事件(非UObject使用, 可能存在不安全性)
-	 * - 需要在特定的时期进行反注册，避免无效的事件回调
-	 *
-	 * @param InEventID FGameEventType 事件ID
-	 * @param InTarget ClassType 目标对象
-	 * @param InCallback ClassType::*InCallback 目标成员函数回调
-	 */
+	 * @brief Unregister event for None-UObject
+	 * @param InEventID Event ID
+	 * @param InTarget Target object(None-UObject)
+	 * @param InCallback ClassType::*InCallback Event callback
+	 */	
 	template <typename ClassType>
 	static void UnregisterRaw(const FGESEventType& InEventID,
 	                          ClassType* InTarget,
@@ -166,10 +166,10 @@ public:
 	}
 
 	/**
-	 * @brief 注册蓝图函数
-	 * @param InEventID FGameEventType 事件ID
-	 * @param InTarget 目标UObject对象
-	 * @param InFunctionName UObject绑定的UFunction名
+	 * @brief Register event for blueprint
+	 * @param InEventID Event ID
+	 * @param InTarget Target Object
+	 * @param InFunctionName Event callback name in 'InTarget', must be UFunction
 	 */
 	static void RegisterBP(const FGESEventType& InEventID,
 	                       const UObject* InTarget,
@@ -186,10 +186,10 @@ public:
 	}
 
 	/**
-	 * @brief 反注册蓝图函数
-	 * @param InEventID FGameEventType 事件ID
-	 * @param InTarget 目标UObject对象
-	 * @param InFunctionName UObject绑定的UFunction名
+	 * @brief Unregister event for blueprint
+	 * @param InEventID Event ID
+	 * @param InTarget Target Object
+	 * @param InFunctionName Event callback name in 'InTarget', must be UFunction
 	 */
 	static void UnregisterBP(const FGESEventType& InEventID,
 	                         const UObject* InTarget,
@@ -206,46 +206,35 @@ public:
 	}
 
 	/**
-	 * 触发事件(蓝图层)
-	 * @param EventData FGameEventData 事件数据对象
+	 * @brief Dispatch event from blueprint
+	 * @param EventData Event data array
 	 */
-	static void DispatchFromBP(const FGESEventDataArray& EventData)
+	static void DispatchBP(const FGESEventDataArray& EventData)
 	{
-		DispatchToCpp(EventData);
-	}	
-
-	/**
-	 * 触发事件到所有层(C++/Lua/BP)
-	 * @param EventID FGameEventType 事件ID
-	 * @param Args T&&... 事件数据, 变参
-	 */
-	template <typename... T>
-	static void DispatchToAll(const FGESEventType& EventID, T&&... Args)
-	{
-		DispatchToCpp(EventID, Forward<T>(Args)...);
+		Dispatch(EventData);
 	}
 
 	/**
-	 * 触发事件(仅C++)
-	 * @param EventID FGameEventType 事件ID
-	 * @param Args T&&... 事件数据, 变参
+	 * @brief Dispatch event from C++
+	 * @param EventID Event ID
+	 * @param Args T&&... Variadic params
 	 */
 	template <typename... T>
-	static void DispatchToCpp(const FGESEventType& EventID, T&&... Args)
+	static void Dispatch(const FGESEventType& EventID, T&&... Args)
 	{
 		FGESEventDataArray EventData;
 		EventData.SetEventID(EventID);
 
 		PushParams(EventData, Forward<T>(Args)...);
 
-		DispatchToCpp(EventData);
+		Dispatch(EventData);
 	}
 
 	/**
-	 * 触发事件(仅C++)
-	 * @param EventData FGameEventData 事件数据对象
+	 * @brief Dispatch event from C++
+	 * @param EventData Event data array
 	 */
-	static void DispatchToCpp(const FGESEventDataArray& EventData)
+	static void Dispatch(const FGESEventDataArray& EventData)
 	{
 		GetHandler().Dispatch(EventData);
 	}

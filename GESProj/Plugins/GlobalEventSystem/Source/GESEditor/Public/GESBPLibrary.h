@@ -64,21 +64,21 @@ public:
 	 * Dispatch event from lua
 	 */
 	UFUNCTION(BlueprintCallable, Category="GES_Lua", meta=(BlueprintInternalUseOnly="true"))
-	static void DispatchEventLua(UPARAM(ref) const FGESEventDataArray& EventData);
+	static void DispatchLua(UPARAM(ref) const FGESEventDataArray& EventData);
 
 	/*
 	 * RegisterEventLua
 	 * Register event from lua
 	 */	
 	UFUNCTION(BlueprintCallable, Category="GES_Lua", meta=(BlueprintInternalUseOnly="true"))
-	static void RegisterEventLua(const FName EventType, FGESDelegateForBP EventDelegate);
+	static void RegisterLua(const FName EventType, FGESDelegateForBP EventDelegate);
 
 	/*
 	 * UnregisterEventLua
 	 * Unregister event from lua
 	 */		
 	UFUNCTION(BlueprintCallable, Category="GES_Lua", meta=(BlueprintInternalUseOnly="true"))
-	static void UnregisterEventLua(const FName EventType, FGESDelegateForBP EventDelegate);
+	static void UnregisterLua(const FName EventType, FGESDelegateForBP EventDelegate);
 
 	UFUNCTION(BlueprintPure, Category="GES_Utils", meta=(BlueprintInternalUseOnly="true"))
 	static FVector MakeLiteralVector(FVector Value);

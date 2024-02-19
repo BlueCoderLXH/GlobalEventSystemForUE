@@ -35,7 +35,7 @@ function GlobalEventSystem.Register(CppEvent, Callback)
 
     printf("GlobalEventSystem.Register Event:%s Obj:%s Func:%s", CppEvent.Name, GetObjectName(Callback[1]), tostring(Callback[2]))
 
-    UE4.UGESBPLibrary.RegisterEventLua(CppEvent.Name, Callback)
+    UE4.UGESBPLibrary.RegisterLua(CppEvent.Name, Callback)
 end
 
 --- Unregister global event for lua
@@ -49,7 +49,7 @@ function GlobalEventSystem.Unregister(CppEvent, Callback)
 
     printf("GlobalEventSystem.Unregister Event:%s Obj:%s Func:%s", CppEvent.Name, GetObjectName(Callback[1]), tostring(Callback[2]))
 
-    UE4.UGESBPLibrary.UnregisterEventLua(CppEvent.Name, Callback)
+    UE4.UGESBPLibrary.UnregisterLua(CppEvent.Name, Callback)
 end
 
 --- Dispatch global event from lua
@@ -95,5 +95,5 @@ function GlobalEventSystem.Dispatch(CppEvent, ...)
         --printf("GES.Dispatch EventName:%s DataType:%s Value:%s", tostring(CppEvent.Name), tostring(TypeName), tostring(EventParam))
     end
 
-    UE4.UGESBPLibrary.DispatchEventLua(EventData)
+    UE4.UGESBPLibrary.DispatchLua(EventData)
 end
