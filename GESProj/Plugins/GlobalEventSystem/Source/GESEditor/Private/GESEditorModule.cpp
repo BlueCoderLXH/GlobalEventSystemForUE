@@ -4,8 +4,6 @@ DEFINE_LOG_CATEGORY(LogGESEditor)
 
 #define LOCTEXT_NAMESPACE "GlobalEventSystemEditor"
 
-IMPLEMENT_GAME_MODULE(FGESEditorModule, GESEditor);
-
 void FGESEditorModule::StartupModule()
 {
 	
@@ -18,3 +16,5 @@ void FGESEditorModule::ShutdownModule()
 }
 
 #undef LOCTEXT_NAMESPACE
+
+IMPLEMENT_MODULE(FGESEditorModule, GESEditor);
