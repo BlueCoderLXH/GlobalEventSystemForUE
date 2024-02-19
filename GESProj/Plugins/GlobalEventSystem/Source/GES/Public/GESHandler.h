@@ -54,22 +54,68 @@ public:
         EventID = InEventID;
     }
 
-    bool RegisterStatic(const FGESStaticDelegate& InCallback);
-    bool UnregisterStatic(const FGESStaticDelegate& InCallback);
+    bool RegisterStatic(const FGESStaticDelegate& InCallback)
+    {
+        auto BindListener = [&]() -> FDelegateHandle
+        {
+            return GetListener().AddStatic(InCallback);
+        };
+
+        return RegisterInner(nullptr, PointerCast<void*>(InCallback), BindListener);        
+    }
+    
+    bool UnregisterStatic(const FGESStaticDelegate& InCallback)
+    {
+        auto UnBindListener = [&] (const FDelegateHandle& DelegateHandle) -> void {
+            GetListener().Remove(DelegateHandle);
+        };
+
+        return UnregisterInner(nullptr, PointerCast<void*>(InCallback), UnBindListener);        
+    }
 
     template<typename ClassType>
     bool Register(
         std::enable_if_t<std::is_base_of<UObject, ClassType>::value, ClassType*> InTarget,
-        void (ClassType::* InCallback) (const FGESEventDataArray&));
+        void (ClassType::* InCallback) (const FGESEventDataArray&))
+    {
+        auto BindListener = [&] () -> FDelegateHandle {
+            return GetListener(InTarget).AddUObject(InTarget, InCallback);
+        };
+
+        return RegisterInner(InTarget, PointerCast<void*>(InCallback), BindListener);        
+    }
+    
     template<typename ClassType>
     bool Unregister(
         std::enable_if_t<std::is_base_of<UObject, ClassType>::value, ClassType*> InTarget,
-        void (ClassType::* InCallback) (const FGESEventDataArray&));
+        void (ClassType::* InCallback) (const FGESEventDataArray&))
+    {
+        auto UnBindListener = [&] (const FDelegateHandle& DelegateHandle) -> void {
+            GetListener(InTarget).Remove(DelegateHandle);
+        };
+
+        return UnregisterInner(InTarget, PointerCast<void*>(InCallback), UnBindListener);        
+    }
 
     template<typename ClassType>
-    bool RegisterRaw(ClassType* InTarget, void (ClassType::* InCallback) (const FGESEventDataArray&));
+    bool RegisterRaw(ClassType* InTarget, void (ClassType::* InCallback) (const FGESEventDataArray&))
+    {
+        auto BindListener = [&] () -> FDelegateHandle {
+            return GetListener().AddRaw(InTarget, InCallback);
+        };
+
+        return RegisterInner(InTarget, PointerCast<void*>(InCallback), BindListener);        
+    }
+    
     template<typename ClassType>
-    bool UnregisterRaw(ClassType* InTarget, void (ClassType::* InCallback) (const FGESEventDataArray&));
+    bool UnregisterRaw(ClassType* InTarget, void (ClassType::* InCallback) (const FGESEventDataArray&))
+    {
+        auto UnBindListener = [&] (const FDelegateHandle& DelegateHandle) -> void {
+            GetListener().Remove(DelegateHandle);
+        };
+
+        return UnregisterInner(InTarget, PointerCast<void*>(InCallback), UnBindListener);        
+    }
     
     bool RegisterBP(UObject* InTarget, const FName InFunctionName);
     bool UnregisterBP(UObject* InTarget, const FName InFunctionName);
@@ -102,30 +148,90 @@ class GES_API FGESHandler
 public:
     bool RegisterStatic(
         const FGESEventType& InEventID,
-        const FGESStaticDelegate InStaticCallback);
+        const FGESStaticDelegate InStaticCallback)
+    {
+        FGESListeners& ListenersPtr = EventMap.FindOrAdd(InEventID);
+        ListenersPtr.Init(InEventID);
+
+        if (!ListenersPtr.RegisterStatic(InStaticCallback))
+        {
+            return false;
+        }
+
+        return true;        
+    }
+    
     bool UnregisterStatic(
         const FGESEventType& InEventID,
-        const FGESStaticDelegate InStaticCallback);
+        const FGESStaticDelegate InStaticCallback)
+    {
+        FGESListeners* ListenersPtr = EventMap.Find(InEventID);
+        if (!ListenersPtr)
+        {
+            return false;
+        }
+
+        return ListenersPtr->UnregisterStatic(InStaticCallback);        
+    }
 
     template<typename ClassType>
     bool Register(
         const FGESEventType& InEventID,
         std::enable_if_t<std::is_base_of<UObject, ClassType>::value, ClassType*> InTarget,
-        void (ClassType::* InCallback) (const FGESEventDataArray&));
+        void (ClassType::* InCallback) (const FGESEventDataArray&))
+    {
+        
+        FGESListeners& ListenersPtr = EventMap.FindOrAdd(InEventID);
+        ListenersPtr.Init(InEventID);
+
+        if (!ListenersPtr.Register(InTarget, InCallback)) {
+            return false;
+        }
+        
+        return true;
+    }
+    
     template<typename ClassType>
     bool Unregister(
         const FGESEventType& InEventID,
         std::enable_if_t<std::is_base_of<UObject, ClassType>::value, ClassType*> InTarget,
-        void (ClassType::* InCallback) (const FGESEventDataArray&));
+        void (ClassType::* InCallback) (const FGESEventDataArray&))
+    {
+        FGESListeners* ListenersPtr = EventMap.Find(InEventID);
+        if (!ListenersPtr) {
+            return false;
+        }
+
+        return ListenersPtr->Unregister(InTarget, InCallback);
+    }
 
     template<typename ClassType>
     bool RegisterRaw(
         const FGESEventType& InEventID, ClassType* InTarget,
-        void (ClassType::* InCallback) (const FGESEventDataArray&));
+        void (ClassType::* InCallback) (const FGESEventDataArray&))
+    {
+        FGESListeners& ListenersPtr = EventMap.FindOrAdd(InEventID);
+        ListenersPtr.Init(InEventID);
+
+        if (!ListenersPtr.RegisterRaw(InTarget, InCallback)) {
+            return false;
+        }
+        
+        return true;        
+    }
+    
     template<typename ClassType>
     bool UnregisterRaw(
         const FGESEventType& InEventID, ClassType* InTarget,
-        void (ClassType::* InCallback) (const FGESEventDataArray&));
+        void (ClassType::* InCallback) (const FGESEventDataArray&))
+    {
+        FGESListeners* ListenersPtr = EventMap.Find(InEventID);
+        if (!ListenersPtr) {
+            return false;
+        }
+
+        return ListenersPtr->UnregisterRaw(InTarget, InCallback);
+    }
 
     bool RegisterBP(const FGESEventType& InEventID,
                     const UObject* InTarget,
