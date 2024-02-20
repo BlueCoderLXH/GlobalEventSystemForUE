@@ -7,11 +7,11 @@
 local PrintUEString = UE.UKismetSystemLibrary.PrintString
 
 function printf(formatString, ...)
-    print(string.format("[Lua_GESTest] " .. formatString, ...))
+    print(string.format("[GESTest_Lua] " .. formatString, ...))
 end
 
 function printf_e(formatString, ...)
-    error(string.format("[Lua_GESTest] " .. formatString, ...))
+    error(string.format("[GESTest_Lua] " .. formatString, ...))
 end
 
 function print_screen(text, color, duration)
@@ -38,11 +38,9 @@ function LoadClass(ClassPath)
 end
 
 function BeginTest(EventName)
-    printf("================================================================================")
     printf("%s Start", EventName)
 end
 
 function EndTest(EventName)
     printf("%s End", EventName)
-    --printf("============================================================")
 end
