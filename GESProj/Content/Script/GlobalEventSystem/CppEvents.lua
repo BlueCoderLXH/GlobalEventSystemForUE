@@ -22,7 +22,14 @@ local EDC = UE4.EGESCppType
 --            ValueType = EDC.None,         -- Only when ContainerType is TMap<Key, Value>, CppType & CppSubTypeName is used for 'Key', ValueType & ValueSubTypeName is used for 'Value'
 --            ValueSubTypeName = "",        -- TMap Value sub type
 --        },
---        -- Add more if necessary, eg. [2], [3], ...
+--        -- Add more if necessary
+--        [2] = {
+--            ...
+--        },
+--        [3] = {
+--            ...
+--        }
+--        ...
 --    }
 --}
 
