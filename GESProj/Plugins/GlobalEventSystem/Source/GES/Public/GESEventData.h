@@ -534,55 +534,55 @@ public:
 	template<typename T>
 	void PushParam(const TArray<T>& ArrayValue)
 	{
-		PushParamInternal(&ArrayValue, EGESCppType::None, EGESContainerType::TArray);
+		PushParamInternal(&ArrayValue, EGESCppType::Any, EGESContainerType::TArray);
 	}
 
 	template<typename T>
 	void PushParam(TArray<T>& ArrayValue)
 	{
-		PushParamInternal(&ArrayValue, EGESCppType::None, EGESContainerType::TArray);
+		PushParamInternal(&ArrayValue, EGESCppType::Any, EGESContainerType::TArray);
 	}
 
 	template<typename T>
-	void PushParam(TArray<T>&& SetValue)
+	void PushParam(TArray<T>&& ArrayValue)
 	{
-		PushParamInternal(&SetValue, EGESCppType::None, EGESContainerType::TArray);
+		PushParamInternal(&ArrayValue, EGESCppType::Any, EGESContainerType::TArray);
 	}
 
 	template<typename KeyType, typename ValueType>
 	void PushParam(const TMap<KeyType, ValueType>& MapValue)
 	{
-		PushParamInternal(&MapValue, EGESCppType::None, EGESContainerType::TMap);
+		PushParamInternal(&MapValue, EGESCppType::Any, EGESContainerType::TMap);
 	}
 
 	template<typename KeyType, typename ValueType>
 	void PushParam(TMap<KeyType, ValueType>& MapValue)
 	{
-		PushParamInternal(&MapValue, EGESCppType::None, EGESContainerType::TMap);
+		PushParamInternal(&MapValue, EGESCppType::Any, EGESContainerType::TMap);
 	}
 
 	template<typename KeyType, typename ValueType>
 	void PushParam(TMap<KeyType, ValueType>&& MapValue)
 	{
-		PushParamInternal(&MapValue, EGESCppType::None, EGESContainerType::TMap);
+		PushParamInternal(&MapValue, EGESCppType::Any, EGESContainerType::TMap);
 	}
 
 	template<typename T>
 	void PushParam(const TSet<T>& SetValue)
 	{
-		PushParamInternal(&SetValue, EGESCppType::None, EGESContainerType::TSet);
+		PushParamInternal(&SetValue, EGESCppType::Any, EGESContainerType::TSet);
 	}
 
 	template<typename T>
 	void PushParam(TSet<T>& SetValue)
 	{
-		PushParamInternal(&SetValue, EGESCppType::None, EGESContainerType::TSet);
+		PushParamInternal(&SetValue, EGESCppType::Any, EGESContainerType::TSet);
 	}
 
 	template<typename T>
 	void PushParam(TSet<T>&& SetValue)
 	{
-		PushParamInternal(&SetValue, EGESCppType::None, EGESContainerType::TSet);
+		PushParamInternal(&SetValue, EGESCppType::Any, EGESContainerType::TSet);
 	}	
 
 	void* GetNull(const int32 Index) const
@@ -727,7 +727,7 @@ private:
 
 		const FGESEventDataType& Type = EventConfigItem.EventDataTypes[Index];
 		const bool bIsTypeValid = (InCppType == EGESCppType::Any || InCppType == Type.CppType) &&
-			(InContainerType != EGESContainerType::None || InContainerType == Type.ContainerType);
+			(InContainerType == EGESContainerType::None || InContainerType == Type.ContainerType);
 		checkf(bIsTypeValid, TEXT("The event data type for event:%s doesn't match!"), *EventID.ToString());
 
 		Params.Add({Type, InValuePtr});
