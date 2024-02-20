@@ -14,6 +14,7 @@ void AGESTest::BeginPlay()
 
 	if (bDoCppTest_Register)
 	{
+		UE_LOG(LogGESTest, Verbose, TEXT("[GESTest_CPP] DoCppTest_Register"));
 		DoCppTest_Register();
 	}
 
@@ -21,12 +22,14 @@ void AGESTest::BeginPlay()
 	{
 		GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
 		{
+			UE_LOG(LogGESTest, Verbose, TEXT("[GESTest_CPP] DoCppTest_Dispatch"));
 			DoCppTest_Dispatch();
 		});
 	}
 
 	if (bDoBPTest_Register)
 	{
+		UE_LOG(LogGESTest, Verbose, TEXT("[GESTest_CPP] DoBPTest_Register"));
 		DoBPTest_Register();
 	}
 
@@ -34,12 +37,14 @@ void AGESTest::BeginPlay()
 	{
 		GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
 		{
+			UE_LOG(LogGESTest, Verbose, TEXT("[GESTest_CPP] DoBPTest_Dispatch"));
 			DoBPTest_Dispatch();
 		});
 	}
 
 	if (bDoLuaTest_Register)
 	{
+		UE_LOG(LogGESTest, Verbose, TEXT("[GESTest_CPP] DoLuaTest_Register"));
 		DoLuaTest_Register();
 	}
 
@@ -47,6 +52,7 @@ void AGESTest::BeginPlay()
 	{
 		GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
 		{
+			UE_LOG(LogGESTest, Verbose, TEXT("[GESTest_CPP] DoLuaTest_Dispatch"));
 			DoLuaTest_Dispatch();
 		});
 	}
@@ -63,12 +69,12 @@ void AGESTest::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 	if (bDoBPTest_Register)
 	{
-		DoCppTest_Unregister();
+		DoBPTest_Unregister();
 	}
 
 	if (bDoLuaTest_Register)
 	{
-		DoCppTest_Unregister();
+		DoLuaTest_Unregister();
 	}
 }
 
@@ -108,7 +114,7 @@ void AGESTest::DoCppTest_Unregister()
 
 void AGESTest::DoCppTest_Dispatch()
 {
-	UE_LOG(LogTemp, Log, TEXT("[GESTest_CPP] ========================== AGESTest::DoTest_Dispatch =========================="));
+	UE_LOG(LogGESTest, Log, TEXT("[GESTest_CPP] ========================== AGESTest::DoTest_Dispatch =========================="));
 	
 	FGES::Dispatch("BoolTestEvent", true);
 	FGES::Dispatch("IntegerTestEvent", 520);
@@ -142,67 +148,67 @@ void AGESTest::DoCppTest_Dispatch()
 	MapValue.Add(521, FVector(5, 52, 520));
 	FGES::Dispatch("MapTestEvent", MapValue);
 
-	UE_LOG(LogTemp, Log, TEXT("[GESTest_CPP] ========================== AGESTest::DoTest_Dispatch =========================="));
+	UE_LOG(LogGESTest, Log, TEXT("[GESTest_CPP] ========================== AGESTest::DoTest_Dispatch =========================="));
 }
 
 void AGESTest::OnBoolEvent(const FGESEventDataArray& EventData)
 {
 	const bool BoolValue = EventData.GetBool(0);
-	UE_LOG(LogTemp, Log, TEXT("[GESTest_CPP] AGESTest::OnBoolEvent Value:%s"), BoolValue ? TEXT("True") : TEXT("False"));
+	UE_LOG(LogGESTest, Log, TEXT("[GESTest_CPP] AGESTest::OnBoolEvent Value:%s"), BoolValue ? TEXT("True") : TEXT("False"));
 }
 
 void AGESTest::OnIntegerEvent(const FGESEventDataArray& EventData)
 {
 	const int32 IntValue = EventData.GetInt(0);
-	UE_LOG(LogTemp, Log, TEXT("[GESTest_CPP] AGESTest::OnIntegerEvent Value:%d"), IntValue);
+	UE_LOG(LogGESTest, Log, TEXT("[GESTest_CPP] AGESTest::OnIntegerEvent Value:%d"), IntValue);
 }
 
 void AGESTest::OnFloatEvent(const FGESEventDataArray& EventData)
 {
 	const float FloatValue = EventData.GetFloat(0);
-	UE_LOG(LogTemp, Log, TEXT("[GESTest_CPP] AGESTest::OnFloatEvent Value:%f"), FloatValue);	
+	UE_LOG(LogGESTest, Log, TEXT("[GESTest_CPP] AGESTest::OnFloatEvent Value:%f"), FloatValue);	
 }
 
 void AGESTest::OnStringEvent(const FGESEventDataArray& EventData)
 {
 	const FString& StringValue = EventData.GetString(0);
-	UE_LOG(LogTemp, Log, TEXT("[GESTest_CPP] AGESTest::OnStringEvent Value:%s"), *StringValue);	
+	UE_LOG(LogGESTest, Log, TEXT("[GESTest_CPP] AGESTest::OnStringEvent Value:%s"), *StringValue);	
 }
 
 void AGESTest::OnNameEvent(const FGESEventDataArray& EventData)
 {
 	const FName& NameValue = EventData.GetName(0);
-	UE_LOG(LogTemp, Log, TEXT("[GESTest_CPP] AGESTest::OnNameEvent Value:%s"), *NameValue.ToString());	
+	UE_LOG(LogGESTest, Log, TEXT("[GESTest_CPP] AGESTest::OnNameEvent Value:%s"), *NameValue.ToString());	
 }
 
 void AGESTest::OnTextEvent(const FGESEventDataArray& EventData)
 {
 	const FText& TextValue = EventData.GetText(0);
-	UE_LOG(LogTemp, Log, TEXT("[GESTest_CPP] AGESTest::OnTextEvent Value:%s"), *TextValue.ToString());	
+	UE_LOG(LogGESTest, Log, TEXT("[GESTest_CPP] AGESTest::OnTextEvent Value:%s"), *TextValue.ToString());	
 }
 
 void AGESTest::OnEnumEvent(const FGESEventDataArray& EventData)
 {
 	const EGESCppType EnumValue = EventData.GetEnum<EGESCppType>(0);
-	UE_LOG(LogTemp, Log, TEXT("[GESTest_CPP] AGESTest::OnEnumEvent Value:%d"), EnumValue);	
+	UE_LOG(LogGESTest, Log, TEXT("[GESTest_CPP] AGESTest::OnEnumEvent Value:%d"), EnumValue);	
 }
 
 void AGESTest::OnStructEvent(const FGESEventDataArray& EventData)
 {
 	const FVector& StructValue = EventData.GetStruct<FVector>(0);
-	UE_LOG(LogTemp, Log, TEXT("[GESTest_CPP] AGESTest::OnStructEvent Value:%s"), *StructValue.ToString());
+	UE_LOG(LogGESTest, Log, TEXT("[GESTest_CPP] AGESTest::OnStructEvent Value:%s"), *StructValue.ToString());
 }
 
 void AGESTest::OnObjectEvent(const FGESEventDataArray& EventData)
 {
 	const AGESTest* ObjectValue = EventData.GetUObject<AGESTest>(0);
-	UE_LOG(LogTemp, Log, TEXT("[GESTest_CPP] AGESTest::OnObjectEvent Value:%s"), *ObjectValue->GetName());
+	UE_LOG(LogGESTest, Log, TEXT("[GESTest_CPP] AGESTest::OnObjectEvent Value:%s"), *ObjectValue->GetName());
 }
 
 void AGESTest::OnClassEvent(const FGESEventDataArray& EventData)
 {
 	const UClass* ClassValue = EventData.GetClass(0);
-	UE_LOG(LogTemp, Log, TEXT("[GESTest_CPP] AGESTest::OnClassEvent Value:%s"), *ClassValue->GetName());
+	UE_LOG(LogGESTest, Log, TEXT("[GESTest_CPP] AGESTest::OnClassEvent Value:%s"), *ClassValue->GetName());
 }
 
 void AGESTest::OnArrayEvent(const FGESEventDataArray& EventData)
@@ -215,7 +221,7 @@ void AGESTest::OnArrayEvent(const FGESEventDataArray& EventData)
 	}
 	Ret += TEXT("}");
 	
-	UE_LOG(LogTemp, Log, TEXT("[GESTest_CPP] AGESTest::OnArrayEvent Value:%s"), *Ret);
+	UE_LOG(LogGESTest, Log, TEXT("[GESTest_CPP] AGESTest::OnArrayEvent Value:%s"), *Ret);
 }
 
 void AGESTest::OnSetEvent(const FGESEventDataArray& EventData)
@@ -228,7 +234,7 @@ void AGESTest::OnSetEvent(const FGESEventDataArray& EventData)
 	}
 	Ret += TEXT("}");
 	
-	UE_LOG(LogTemp, Log, TEXT("[GESTest_CPP] AGESTest::OnSetEvent Value:%s"), *Ret);
+	UE_LOG(LogGESTest, Log, TEXT("[GESTest_CPP] AGESTest::OnSetEvent Value:%s"), *Ret);
 }
 
 void AGESTest::OnMapEvent(const FGESEventDataArray& EventData)
@@ -242,7 +248,7 @@ void AGESTest::OnMapEvent(const FGESEventDataArray& EventData)
 	}
 	Ret += TEXT("}");
 	
-	UE_LOG(LogTemp, Log, TEXT("[GESTest_CPP] AGESTest::OnMapEvent Value:%s"), *Ret);
+	UE_LOG(LogGESTest, Log, TEXT("[GESTest_CPP] AGESTest::OnMapEvent Value:%s"), *Ret);
 }
 
 void AGESTest::Tick(float DeltaTime)

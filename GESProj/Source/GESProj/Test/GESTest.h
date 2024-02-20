@@ -7,6 +7,8 @@
 #include "GameFramework/Actor.h"
 #include "GESTest.generated.h"
 
+DEFINE_LOG_CATEGORY_STATIC(LogGESTest, Log, All);
+
 UCLASS(BlueprintType, Blueprintable)
 class GESPROJ_API AGESTest : public AActor
 {
