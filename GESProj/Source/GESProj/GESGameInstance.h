@@ -16,7 +16,5 @@ class GESPROJ_API UGESGameInstance : public UGameInstance
 
 public:
 	virtual void Init() override;
-	
-	virtual void OnStart() override;
 	virtual void Shutdown() override;
 };

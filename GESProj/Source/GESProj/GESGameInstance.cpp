@@ -2,24 +2,20 @@
 
 
 #include "GESGameInstance.h"
-
 #include "GES.h"
 
 void UGESGameInstance::Init()
 {
-	FGES::Init();
-
 	Super::Init();
-}
 
-void UGESGameInstance::OnStart()
-{
-	Super::OnStart();
+	// Initialize GES
+	FGES::Init();
 }
 
 void UGESGameInstance::Shutdown()
 {
-	FGES::Clear();
+	// Shutdown GES
+	FGES::Shutdown();
 	
 	Super::Shutdown();
 }

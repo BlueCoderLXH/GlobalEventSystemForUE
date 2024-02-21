@@ -40,9 +40,9 @@ public:
 	}
 
 	/**
-	 * @brief Clear GES
+	 * @brief Shutdown GES
 	 */
-	static void Clear()
+	static void Shutdown()
 	{
 		if (!bInit) return;
 		
