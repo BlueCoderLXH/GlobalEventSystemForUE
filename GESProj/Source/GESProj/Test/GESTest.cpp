@@ -250,9 +250,3 @@ void AGESTest::OnMapEvent(const FGESEventDataArray& EventData)
 	
 	UE_LOG(LogGESTest, Log, TEXT("[GESTest_CPP] AGESTest::OnMapEvent Value:%s"), *Ret);
 }
-
-void AGESTest::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-

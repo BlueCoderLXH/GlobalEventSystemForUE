@@ -76,7 +76,4 @@ private:
 	void OnArrayEvent(const FGESEventDataArray& EventData);
 	void OnSetEvent(const FGESEventDataArray& EventData);
 	void OnMapEvent(const FGESEventDataArray& EventData);
-
-public:
-	virtual void Tick(float DeltaTime) override;
 };
