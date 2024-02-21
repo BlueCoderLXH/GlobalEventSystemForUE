@@ -15,3 +15,6 @@ Features：
 * [C++](Docs/EN/C++.md)
 * [Blueprint](Docs/EN/Blueprint.md)
 * [Lua](Docs/EN/Lua.md)
+
+> My Blog&nbsp;：[bluecoder](https://www.zhihu.com/people/bluecoder_lxh)  
+> My Email：bluecoder@yeah.net

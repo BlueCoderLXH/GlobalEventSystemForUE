@@ -14,3 +14,6 @@ GES(GlobalEventSystem)，基于UE(当前版本4.26)开发的全局事件系统�
 * [C++](Docs/CN/C++.md)
 * [Blueprint](Docs/CN/Blueprint.md)
 * [Lua](Docs/CN/Lua.md)
+
+> 我的博客：[bluecoder](https://www.zhihu.com/people/bluecoder_lxh)  
+> 我的邮箱：bluecoder@yeah.net
