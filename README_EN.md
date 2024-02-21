@@ -1,13 +1,16 @@
 # GlobalEventSystemForUE
 
-## 概述
+## Overview
 GES(GlobalEventSystem)，a global event system developed based on UE engine 4.26，  
 Features：
-* Event data can be transferred between **C++**，**Lua** and **Blueprint**
-* Event config support hot reload
-* Tiny
-* Extendable
-* Easily usable
+* **Event Data Interworking**  
+  Event data can be transferred between **C++**，**Lua** and **Blueprint**
+* **Blueprint Support**
+> See more：[Blueprint](Docs/EN/Blueprint.md)
+* **Event Config Support Hot Reload**
+* **Tiny**
+* **Extendable**
+* **Easily usable**
 ## Install
 [Install GES to local project](Docs/EN/Installation.md)
 ## How to use GES

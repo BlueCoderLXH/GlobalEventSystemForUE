@@ -22,4 +22,4 @@ Fill in `EventType`，then is will unbind callback for this event in current blu
 Same as `GESRegisterEvent`  
 ![DispatchEvent](../Images/BP_GESDispatch1.png "GES Dispatch Event")  
 
-> See more [BP_GESTest.uasset](../../GESProj/Content/Blueprints/BP_GESTest.uasset)
+> See more：[BP_GESTest.uasset](../../GESProj/Content/Blueprints/BP_GESTest.uasset)

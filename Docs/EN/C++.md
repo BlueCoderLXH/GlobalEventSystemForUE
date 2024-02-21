@@ -198,4 +198,4 @@ void AGESTest::OnMapEvent(const FGESEventDataArray& EventData)
 FGES::Dispatch("EnumTestEvent", (int32)EGESCppType::UEnum);
 ```
 
-> Attention：See more [GESTest.cpp](../../GESProj/Source/GESProj/Test/GESTest.cpp)
+> See more：[GESTest.cpp](../../GESProj/Source/GESProj/Test/GESTest.cpp)

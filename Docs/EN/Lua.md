@@ -42,7 +42,7 @@ function GlobalEventSystem.Unregister(CppEvent, Callback)
 --- @param args ... Event params, eg. { ParamTypeName, Param }
 function GlobalEventSystem.Dispatch(CppEvent, ...)
 ```
-> See more [GlobalEventSystem.lua](../../GESProj/Content/Script/GlobalEventSystem/GlobalEventSystem.lua)
+> See more：[GlobalEventSystem.lua](../../GESProj/Content/Script/GlobalEventSystem/GlobalEventSystem.lua)
 ## Usage
 ### Register Event
 ```csharp
@@ -56,4 +56,4 @@ GES.Unregister(CppEvents.BoolTestEvent, { self, self.OnBoolTestEvent })
 ```csharp
 GES.Dispatch(CppEvents.BoolTestEvent, { GES.Bool, true })
 ```
-> See more [BP_GESTest.lua](../../GESProj/Content/Script/Test/BP_GESTest.lua)
+> See more：[BP_GESTest.lua](../../GESProj/Content/Script/Test/BP_GESTest.lua)

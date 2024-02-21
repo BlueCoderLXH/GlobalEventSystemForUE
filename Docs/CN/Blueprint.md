@@ -19,4 +19,4 @@
 同`GESRegisterEvent`，填写`EventType`后自动识别事件ID，并自动生成对应数量和对应类型的事件数据Pin  
 ![触发事件](../Images/BP_GESDispatch1.png "GES Dispatch Event")  
 
-> 更多详情参见蓝图 [BP_GESTest.uasset](../../GESProj/Content/Blueprints/BP_GESTest.uasset)
+> 更多详情参见蓝图：[BP_GESTest.uasset](../../GESProj/Content/Blueprints/BP_GESTest.uasset)

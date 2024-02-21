@@ -8,6 +8,16 @@
 * `GESProj\Content\Script`
 > 注：`GESProj\Content\Script\Test`可以忽略
 #### C++
+* ***.Build.cs设置**  
+为了在C++中使用GES，需要在对应*.Build.cs中添加对GES的Module引用
+```csharp
+PrivateDependencyModuleNames.AddRange(new string[]
+{
+    "GES",
+}
+```
+> 范例参见：[GESProj.Build.cs](../../GESProj/Source/GESProj/GESProj.Build.cs)
+* **Init/Shutdown**  
 游戏启动和结束时，需要对GES分别进行Init和Shutdown。  
 一个推荐的时机就是在GameInstance的Init和Shutdown执行：  
 ```c++
@@ -27,4 +37,4 @@ void UGESGameInstance::Shutdown()
 	Super::Shutdown();
 }
 ```
-> 注：更多详情参见 [GESGameInstance.cpp](../../GESProj/Source/GESProj/GESGameInstance.cpp)
+> 范例参见：[GESGameInstance.cpp](../../GESProj/Source/GESProj/GESGameInstance.cpp)
