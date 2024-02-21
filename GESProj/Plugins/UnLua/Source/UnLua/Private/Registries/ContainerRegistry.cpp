@@ -57,57 +57,40 @@ namespace UnLua
 
     void FContainerRegistry::FindOrAdd(lua_State* L, FScriptArray* ContainerPtr, TSharedPtr<ITypeInterface> ElementType)
     {
-        void* Userdata = CacheScriptContainer(L, ContainerPtr, FScriptContainerDesc::Array);
+        void* Userdata = CacheScriptContainer(L, ContainerPtr, FScriptContainerDesc::Array, [&](void* Cached)
+        {
+            const auto Array = (FLuaArray*)Cached;
+            return Array->Inner == ElementType;
+        });
+
         if (Userdata)
-        {
             new(Userdata) FLuaArray(ContainerPtr, ElementType, FLuaArray::OwnedByOther);
-        }else
-        {
-            //Check LuaFunc InnerProperty Valid On Each LuaCall
-            bool TwoLevelPtr;
-            FLuaArray* Exists = (FLuaArray*)GetUserdataFast(L, -1, &TwoLevelPtr);
-            if(Exists && Exists->Inner != ElementType)
-            {
-                Exists->Inner = ElementType;
-            }
-        }
     }
 
     void FContainerRegistry::FindOrAdd(lua_State* L, FScriptSet* ContainerPtr, TSharedPtr<ITypeInterface> ElementType)
     {
-        void* Userdata = CacheScriptContainer(L, ContainerPtr, FScriptContainerDesc::Set);
+        void* Userdata = CacheScriptContainer(L, ContainerPtr, FScriptContainerDesc::Set, [&](void* Cached)
+        {
+            const auto Set = (FLuaSet*)Cached;
+            return Set->ElementInterface == ElementType;
+        });
+
         if (Userdata)
-        {
             new(Userdata) FLuaSet(ContainerPtr, ElementType, FLuaSet::OwnedByOther);
-        }else
-        {
-            bool TwoLevelPtr;
-            FLuaSet* Exists = (FLuaSet*)GetUserdataFast(L, -1, &TwoLevelPtr);
-            if(Exists && Exists->ElementInterface != ElementType)
-            {
-                Exists->ElementInterface = ElementType;
-            }
-        }
     }
 
     void FContainerRegistry::FindOrAdd(lua_State* L, FScriptMap* ContainerPtr, TSharedPtr<ITypeInterface> KeyType, TSharedPtr<ITypeInterface> ValueType)
     {
-        void* Userdata = CacheScriptContainer(L, ContainerPtr, FScriptContainerDesc::Map);
+        void* Userdata = CacheScriptContainer(L, ContainerPtr, FScriptContainerDesc::Map, [&](void* Cached)
+        {
+            const auto Map = (FLuaMap*)Cached;
+            return Map->KeyInterface == KeyType && Map->ValueInterface == ValueType;
+        });
+
         if (Userdata)
-        {
             new(Userdata) FLuaMap(ContainerPtr, KeyType, ValueType, FLuaMap::OwnedByOther);
-        }else
-        {
-            bool TwoLevelPtr;
-            FLuaMap* Exists = (FLuaMap*)GetUserdataFast(L, -1, &TwoLevelPtr);
-            if(Exists && (Exists->KeyInterface != KeyType || Exists->ValueInterface != ValueType))
-            {
-                Exists->KeyInterface = KeyType;
-                Exists->ValueInterface = ValueType;
-            }
-        }
     }
-    
+
     void FContainerRegistry::Remove(const FLuaArray* Container)
     {
         const auto L = Env->GetMainState();

@@ -1,4 +1,4 @@
-// Tencent is pleased to support the open source community by making UnLua available.
+﻿// Tencent is pleased to support the open source community by making UnLua available.
 // 
 // Copyright (C) 2019 THL A29 Limited, a Tencent company. All rights reserved.
 //
@@ -144,9 +144,7 @@ namespace UnLua
             const FTCHARToUTF8 Bytes(*Chunk);
             return LoadBuffer(InL, Bytes.Get(), Bytes.Length(), TCHAR_TO_UTF8(*ChunkName));
         }
-    public:
-        static bool GOpenPreGarbageCollect;
-        static int32 GLuaGCType;
+
     private:
         void AddSearcher(lua_CFunction Searcher, int Index) const;
 
@@ -157,15 +155,8 @@ namespace UnLua
         void OnWorldTickStart(UWorld* World, ELevelTick TickType, float DeltaTime);
 
         void RegisterDelegates();
+
         void UnRegisterDelegates();
-
-        void OnPreGarbageCollect();
-        void OnPostGarbageCollect();
-
-        void PostWorldInit(UWorld* InWorld, const UWorld::InitializationValues IVS);
-        void OnWorldCleanup(UWorld* InWorld, bool bSessionEnded, bool bCleanupResources);
-        void DoLuaGCBeforeEngineGC();
-
 
         static TMap<lua_State*, FLuaEnv*> AllEnvs;
         TMap<FString, lua_CFunction> BuiltinLoaders;
@@ -188,19 +179,10 @@ namespace UnLua
         TMap<lua_State*, int32> ThreadToRef;
         TMap<int32, lua_State*> RefToThread;
         FDelegateHandle OnAsyncLoadingFlushUpdateHandle;
-        FDelegateHandle OnPreGarbageCollectHandle;
-        FDelegateHandle OnPostGarbageCollectHandle;
-
-        FDelegateHandle WorldInited;
-        FDelegateHandle WorldCleanup;
-        
-        TMap<TWeakObjectPtr<UWorld>, FTimerHandle> WorldGCTimers;
-
         TArray<UInputComponent*> CandidateInputComponents;
         FDelegateHandle OnWorldTickStartHandle;
         FString Name = TEXT("Env_0");
         bool bObjectArrayListenerRegistered;
         bool bStarted;
-        bool bCompletedLuaGCBeforeGC;
     };
 }

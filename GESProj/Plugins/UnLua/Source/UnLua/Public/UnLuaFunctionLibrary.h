@@ -32,13 +32,4 @@ public:
 
     UFUNCTION(BlueprintCallable)
     static void HotReload();
-    
-    UFUNCTION(BlueprintCallable)
-    static void OpenPreGarbageCollect(bool bOpen);
-
-    UFUNCTION(BlueprintCallable)
-    static void SetLuaGCType(int32 InType);
-
-    UFUNCTION(BlueprintCallable)
-    static int32 GetLuaGCType();
 };

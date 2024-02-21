@@ -89,10 +89,9 @@ namespace UnLua
         return LoadChunk(L, (const char*)(Data.GetData() + SkipLen), Data.Num() - SkipLen, TCHAR_TO_UTF8(*RelativeFilePath), Mode, Env);    // loads the buffer as a Lua chunk
     }
 
-
     /**
- * Run a Lua file
- */
+     * Run a Lua file
+     */
     bool RunFile(lua_State *L, const FString &RelativeFilePath, const char *Mode, int32 Env)
     {
         bool bSuccess = LoadFile(L, RelativeFilePath, Mode, Env);       // load the file content as a Lua chunk
@@ -110,7 +109,7 @@ namespace UnLua
         }
 
         return Code == LUA_OK;
-    }
+    }    
 
     /**
      * Load a Lua chunk without running it
@@ -184,9 +183,7 @@ namespace UnLua
             const char *ErrorString = lua_tostring(L, -1);
             luaL_traceback(L, L, ErrorString, 1);
             ErrorString = lua_tostring(L, -1);
-            FString Msg = UTF8_TO_TCHAR(ErrorString);
-            UE_LOG(LogUnLua, Error, TEXT("Lua error message: %s"), *Msg);
-            FUnLuaDelegates::NotifyLuaError.ExecuteIfBound(Msg);
+            UE_LOG(LogUnLua, Error, TEXT("Lua error message: %s"), UTF8_TO_TCHAR(ErrorString));
         }
         else if (Type == LUA_TTABLE)
         {
@@ -196,9 +193,7 @@ namespace UnLua
             while (lua_next(L, -2) != 0)
             {
                 const char *ErrorString = lua_tostring(L, -1);
-                FString Msg = UTF8_TO_TCHAR(ErrorString);
-                UE_LOG(LogUnLua, Error, TEXT("Lua error message %d : %s"), MessageIndex++, *Msg);
-                FUnLuaDelegates::NotifyLuaError.ExecuteIfBound(Msg);
+                UE_LOG(LogUnLua, Error, TEXT("Lua error message %d : %s"), MessageIndex++, UTF8_TO_TCHAR(ErrorString));
                 lua_pop(L, 1);
             }
         }
@@ -342,12 +337,13 @@ namespace UnLua
         return Object;
     }
 
-        /**
-    * Get a script container at the given stack index
-    */
-    void* GetScriptContainerPointer(lua_State* L, int32 Index) {
+    /**
+     * Get a script container at the given stack index
+     */
+    void* GetScriptContainerPointer(lua_State* L, int32 Index)
+    {
         return GetScriptContainer(L, Index);
-    }
+    }    
 
     /**
      * Allocate user data for smart pointer

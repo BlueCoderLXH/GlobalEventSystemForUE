@@ -1,4 +1,4 @@
-// Tencent is pleased to support the open source community by making UnLua available.
+﻿// Tencent is pleased to support the open source community by making UnLua available.
 // 
 // Copyright (C) 2019 THL A29 Limited, a Tencent company. All rights reserved.
 //
@@ -30,19 +30,12 @@
 #include "UnLuaLib.h"
 #include "UnLuaSettings.h"
 #include "lstate.h"
-#include "ReflectionUtils/PropertyDesc.h"
-
-#include "GameFramework/WorldSettings.h"
-#include "TimerManager.h"
-#include "Kismet/KismetSystemLibrary.h"
 
 namespace UnLua
 {
     constexpr EInternalObjectFlags AsyncObjectFlags = EInternalObjectFlags::AsyncLoading | EInternalObjectFlags::Async;
 
     TMap<lua_State*, FLuaEnv*> FLuaEnv::AllEnvs;
-    bool FLuaEnv::GOpenPreGarbageCollect = true;
-    int32 FLuaEnv::GLuaGCType = LUA_GCGEN;
     FLuaEnv::FOnCreated FLuaEnv::OnCreated;
     FLuaEnv::FOnDestroyed FLuaEnv::OnDestroyed;
 
@@ -80,7 +73,6 @@ namespace UnLua
 
     FLuaEnv::FLuaEnv()
         : bStarted(false)
-        , bCompletedLuaGCBeforeGC(false)
     {
         const auto Settings = GetDefault<UUnLuaSettings>();
         ModuleLocator = Settings->ModuleLocatorClass.GetDefaultObject();
@@ -111,14 +103,15 @@ namespace UnLua
 
         ObjectRegistry = new FObjectRegistry(this);
         ClassRegistry = new FClassRegistry(this);
-        ClassRegistry->Register("UObject");
-        ClassRegistry->Register("UClass");
+        ClassRegistry->Initialize();
 
         FunctionRegistry = new FFunctionRegistry(this);
         DelegateRegistry = new FDelegateRegistry(this);
         ContainerRegistry = new FContainerRegistry(this);
         PropertyRegistry = new FPropertyRegistry(this);
         EnumRegistry = new FEnumRegistry(this);
+        EnumRegistry->Initialize();
+
         DanglingCheck = new FDanglingCheck(this);
         DeadLoopCheck = new FDeadLoopCheck(this);
 
@@ -180,11 +173,6 @@ namespace UnLua
 
     FLuaEnv::~FLuaEnv()
     {
-// #if !WITH_EDITOR
-//         if (IsEngineExitRequested())
-//             return;
-// #endif
-        
         OnDestroyed.Broadcast(*this);
         lua_close(L);
         AllEnvs.Remove(L);
@@ -199,7 +187,7 @@ namespace UnLua
         delete DanglingCheck;
         delete DeadLoopCheck;
 
-        if (!IsEngineExitRequested() && IsValid(Manager))
+        if (!IsEngineExitRequested() && Manager)
         {
             Manager->Cleanup();
             Manager->RemoveFromRoot();
@@ -282,6 +270,8 @@ namespace UnLua
         if (Manager)
             Manager->NotifyUObjectDeleted(Object);
         ObjectRegistry->NotifyUObjectDeleted(Object);
+        ClassRegistry->NotifyUObjectDeleted(Object);
+        EnumRegistry->NotifyUObjectDeleted(Object);
 
         if (CandidateInputComponents.Num() <= 0)
             return;
@@ -319,8 +309,6 @@ namespace UnLua
 
     void FLuaEnv::OnWorldTickStart(UWorld* World, ELevelTick TickType, float DeltaTime)
     {
-        QUICK_SCOPE_CYCLE_COUNTER(Lua_OnWorldTickStart);
-
         if (!Manager)
             return;
 
@@ -453,8 +441,6 @@ namespace UnLua
 
     void FLuaEnv::GC()
     {
-        SCOPED_NAMED_EVENT_TEXT("FLuaEnv::GC", FColor::Emerald);
-
         lua_gc(L, LUA_GCCOLLECT, 0);
         lua_gc(L, LUA_GCCOLLECT, 0);
     }
@@ -619,9 +605,10 @@ namespace UnLua
 
         auto LoadIt = [&]
         {
-            if (Env.LoadString(L, Data, TCHAR_TO_UTF8(*FullPath)))
+            if (Env.LoadString(L, Data, FullPath))
                 return 1;
-            return luaL_error(L, "file loading from file system error");
+            const auto Msg = FString::Printf(TEXT("file loading from file system error.\nfull path:%s"), *FullPath);
+            return luaL_error(L, TCHAR_TO_UTF8(*Msg));
         };
 
         const auto PackagePath = UnLuaLib::GetPackagePath(L);
@@ -705,7 +692,6 @@ namespace UnLua
                 UObject* Object = ObjectPtr.Get();
                 if (Object->HasAnyFlags(RF_NeedPostLoad)
                     || Object->HasAnyInternalFlags(AsyncObjectFlags)
-                    || Object->GetClass()->HasAnyFlags(RF_NeedPostLoad | RF_NeedPostLoadSubobjects)
                     || Object->GetClass()->HasAnyInternalFlags(AsyncObjectFlags))
                 {
                     // delay bind on next update 
@@ -735,103 +721,18 @@ namespace UnLua
     FORCEINLINE void FLuaEnv::RegisterDelegates()
     {
         OnAsyncLoadingFlushUpdateHandle = FCoreDelegates::OnAsyncLoadingFlushUpdate.AddRaw(this, &FLuaEnv::OnAsyncLoadingFlushUpdate);
-        OnPreGarbageCollectHandle = FCoreUObjectDelegates::GetPreGarbageCollectDelegate().AddRaw(this, &FLuaEnv::OnPreGarbageCollect);
-        OnPostGarbageCollectHandle = FCoreUObjectDelegates:: GetPostGarbageCollect().AddRaw(this, &FLuaEnv::OnPostGarbageCollect);
-
-        if (!IsRunningDedicatedServer()) {
-            WorldInited = FWorldDelegates::OnPostWorldInitialization.AddRaw(this, &FLuaEnv::PostWorldInit);
-            WorldCleanup = FWorldDelegates::OnWorldCleanup.AddRaw(this, &FLuaEnv::OnWorldCleanup);
-        }        
-
         GUObjectArray.AddUObjectDeleteListener(this);
         bObjectArrayListenerRegistered = true;
     }
 
     FORCEINLINE void FLuaEnv::UnRegisterDelegates()
-    {        
-        if (!IsRunningDedicatedServer()) {
-            // remove all gc handlers
-            TArray<TWeakObjectPtr<UWorld>> Worlds;
-            for (auto& Elem : WorldGCTimers) {                
-                if (Elem.Key.IsValid()) {
-                    Worlds.Add(Elem.Key);
-                }
-            }
-            for (auto& WorldObject : Worlds) {
-                if (WorldObject.IsValid()) {
-                    OnWorldCleanup(WorldObject.Get(), false, false);
-                }
-            }
-            WorldGCTimers.Empty();
-            
-            if (WorldInited.IsValid()) FWorldDelegates::OnPostWorldInitialization.Remove(WorldInited);
-            if (WorldCleanup.IsValid()) FWorldDelegates::OnWorldCleanup.Remove(WorldCleanup);              
-        }
-
-        FCoreUObjectDelegates::GetPostGarbageCollect().Remove(OnPostGarbageCollectHandle);
+    {
         FCoreDelegates::OnAsyncLoadingFlushUpdate.Remove(OnAsyncLoadingFlushUpdateHandle);
-        FCoreUObjectDelegates::GetPreGarbageCollectDelegate().Remove(OnPreGarbageCollectHandle);
         if (!bObjectArrayListenerRegistered)
             return;
         GUObjectArray.RemoveUObjectDeleteListener(this);
         bObjectArrayListenerRegistered = false;
     }
-
-#pragma region "Handle LUA GC"
-    void FLuaEnv::PostWorldInit(UWorld* InWorld, const UWorld::InitializationValues IVS) {
-        if (UUnLuaSettings::IsLuaGCByAloneFrame()) {
-            if (InWorld && InWorld->IsGameWorld()) {                
-                float Rate = UKismetSystemLibrary::GetConsoleVariableFloatValue(TEXT("gc.TimeBetweenPurgingPendingKillObjects"));
-                if (Rate < 10) {
-                    Rate = 10;
-                }
-                FTimerHandle& TimeGCHandle = WorldGCTimers.FindOrAdd(InWorld);
-                FTimerDelegate TimerDelegate = FTimerDelegate::CreateRaw(this, &FLuaEnv::DoLuaGCBeforeEngineGC);
-                InWorld->GetTimerManager().SetTimer(TimeGCHandle, TimerDelegate, Rate, true, Rate / 2);                
-            }
-        }        
-    }
-
-    void FLuaEnv::OnWorldCleanup(UWorld* InWorld, bool bSessionEnded, bool bCleanupResources) {    
-        if (InWorld) {
-            FTimerHandle* PTimer = WorldGCTimers.Find(InWorld);
-            if (PTimer != nullptr) {                
-                if (PTimer->IsValid()) {
-                    InWorld->GetTimerManager().ClearTimer(*PTimer);
-                    PTimer->Invalidate();
-                }
-                WorldGCTimers.Remove(InWorld);
-            } 
-        }
-    }
-
-    void FLuaEnv::OnPreGarbageCollect(){
-        DoLuaGCBeforeEngineGC();
-    }
-
-    void FLuaEnv::DoLuaGCBeforeEngineGC() {
-        if (this != nullptr && GOpenPreGarbageCollect && L) {
-            if (!bCompletedLuaGCBeforeGC) {
-                SCOPED_NAMED_EVENT_TEXT("FLuaEnv::OnPreGarbageCollect", FColor::Emerald);
-                if(GLuaGCType == LUA_GCGEN){
-                    lua_gc(L, LUA_GCGEN, 0);
-                }else{
-                    lua_gc(L, LUA_GCCOLLECT, 0);
-                }
-                
-                bCompletedLuaGCBeforeGC = true;
-            }
-        }
-    }
-
-    void FLuaEnv::OnPostGarbageCollect() {
-        if (GOpenPreGarbageCollect && L) {
-            if (bCompletedLuaGCBeforeGC) {
-                bCompletedLuaGCBeforeGC = false;
-            }
-        }
-    }
-#pragma endregion
 
     void* FLuaEnv::DefaultLuaAllocator(void* ud, void* ptr, size_t osize, size_t nsize)
     {

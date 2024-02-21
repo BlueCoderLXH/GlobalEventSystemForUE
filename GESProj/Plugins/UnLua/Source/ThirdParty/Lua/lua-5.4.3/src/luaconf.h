@@ -269,25 +269,20 @@
 ** the libraries, you may want to use the following definition (define
 ** LUA_BUILD_AS_DLL to get it).
 */
+#if defined(LUA_BUILD_AS_DLL)	/* { */
 
-/**
- * Modified by LEO. Undef UE module api
- */
-#undef LUA_API
+#if defined(LUA_CORE) || defined(LUA_LIB)	/* { */
+#define LUA_API __declspec(dllexport)
+#else						/* }{ */
+#define LUA_API __declspec(dllimport)
+#endif						/* } */
 
-#if WITH_EDITOR || !IS_MONOLITHIC
-#   if PLATFORM_WINDOWS
-#       if defined(LUA_CORE) || defined(LUA_LIB)
-#           define LUA_API __declspec(dllexport)
-#       else
-#           define LUA_API __declspec(dllimport)
-#       endif
-#   else
-#       define LUA_API __attribute__((visibility("default")))
-#   endif
-#else
-#   define LUA_API extern
-#endif
+#else				/* }{ */
+
+#define LUA_API		extern
+
+#endif				/* } */
+
 
 /*
 ** More often than not the libs go together with the core.
@@ -490,6 +485,7 @@
 @@ LUA_MAXINTEGER is the maximum value for a LUA_INTEGER.
 @@ LUA_MININTEGER is the minimum value for a LUA_INTEGER.
 @@ LUA_MAXUNSIGNED is the maximum value for a LUA_UNSIGNED.
+@@ LUA_UNSIGNEDBITS is the number of bits in a LUA_UNSIGNED.
 @@ lua_integer2str converts an integer to a string.
 */
 
@@ -508,6 +504,9 @@
 ** can turn a comparison between unsigneds into a signed comparison)
 */
 #define LUA_UNSIGNED		unsigned LUAI_UACINT
+
+
+#define LUA_UNSIGNEDBITS	(sizeof(LUA_UNSIGNED) * CHAR_BIT)
 
 
 /* now the variable definitions */
@@ -755,7 +754,9 @@
 @@ of a function in debug information.
 ** CHANGE it if you want a different size.
 */
-#define LUA_IDSIZE	100
+#ifndef LUA_IDSIZE
+#define LUA_IDSIZE	60
+#endif
 
 
 /*
