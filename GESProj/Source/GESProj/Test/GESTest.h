@@ -9,6 +9,14 @@
 
 DEFINE_LOG_CATEGORY_STATIC(LogGESTest, Log, All);
 
+UENUM(BlueprintType)
+enum EDoTestDispatchType
+{
+	Cpp,
+	Blueprint,
+	Lua
+};
+
 UCLASS(BlueprintType, Blueprintable)
 class GESPROJ_API AGESTest : public AActor
 {
@@ -19,21 +27,15 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	bool bDoCppTest_Register;
-
-	UPROPERTY(EditAnywhere)
-	bool bDoCppTest_Dispatch;
-
+	
 	UPROPERTY(EditAnywhere)
 	bool bDoBPTest_Register;
-
-	UPROPERTY(EditAnywhere)
-	bool bDoBPTest_Dispatch;
 
 	UPROPERTY(EditAnywhere)
 	bool bDoLuaTest_Register;
 
 	UPROPERTY(EditAnywhere)
-	bool bDoLuaTest_Dispatch;	
+	TEnumAsByte<EDoTestDispatchType> DoTestDispatchType;	
 
 	UPROPERTY(EditAnywhere)
 	FString TestStr;

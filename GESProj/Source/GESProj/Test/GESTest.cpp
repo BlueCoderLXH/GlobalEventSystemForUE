@@ -18,7 +18,7 @@ void AGESTest::BeginPlay()
 		DoCppTest_Register();
 	}
 
-	if (bDoCppTest_Dispatch)
+	if (DoTestDispatchType == Cpp)
 	{
 		GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
 		{
@@ -33,7 +33,7 @@ void AGESTest::BeginPlay()
 		DoBPTest_Register();
 	}
 
-	if (bDoBPTest_Dispatch)
+	if (DoTestDispatchType == Blueprint)
 	{
 		GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
 		{
@@ -48,7 +48,7 @@ void AGESTest::BeginPlay()
 		DoLuaTest_Register();
 	}
 
-	if (bDoLuaTest_Dispatch)
+	if (DoTestDispatchType == Lua)
 	{
 		GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
 		{
