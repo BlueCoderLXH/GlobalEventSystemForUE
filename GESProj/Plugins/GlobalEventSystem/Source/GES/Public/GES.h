@@ -36,24 +36,27 @@ public:
 			return;			
 		}
 
+		UE_LOG(LogGES, Verbose, TEXT("FGES::Init OK!"));
+
 		bInit = true;
 	}
 
 	/**
 	 * @brief Shutdown GES
 	 */
-	static void Shutdown()
+	static void Shutdown(const UObject* WorldContext = nullptr)
 	{
 		if (!bInit) return;
 		
 		UnLua::Shutdown();
 		
-		GetHandler().Clear();
+		GetHandler(WorldContext).Clear();
 
 #if !WITH_EDITOR
 		FGESEventConfigHelper::Clear();
 #endif
 
+		UE_LOG(LogGES, Verbose, TEXT("FGES::Shutdown OK!"));
 		bInit = false;
 	}
 
@@ -105,7 +108,7 @@ public:
 			return;
 		}
 
-		GetHandler().Register(InEventID, InTarget, InCallback);
+		GetHandler(InTarget).Register(InEventID, InTarget, InCallback);
 	}
 
 	/**
@@ -124,7 +127,7 @@ public:
 			return;
 		}
 
-		GetHandler().Unregister(InEventID, InTarget, InCallback);
+		GetHandler(InTarget).Unregister(InEventID, InTarget, InCallback);
 	}
 
 	/**
@@ -182,7 +185,7 @@ public:
 
 		check(IsValid(InTarget));
 
-		GetHandler().RegisterBP(InEventID, InTarget, InFunctionName);
+		GetHandler(InTarget).RegisterBP(InEventID, InTarget, InFunctionName);
 	}
 
 	/**
@@ -202,7 +205,7 @@ public:
 
 		check(IsValid(InTarget));
 
-		GetHandler().UnregisterBP(InEventID, InTarget, InFunctionName);
+		GetHandler(InTarget).UnregisterBP(InEventID, InTarget, InFunctionName);
 	}
 
 	/**
@@ -256,10 +259,35 @@ private:
 	{
 	}
 
-	static FGESHandler& GetHandler()
+	static FGESHandler& GetHandler(const UObject* WorldContext = nullptr)
 	{
+#if WITH_EDITOR
+		// Separate 'GESHandler' between server and client, because there may exist server and client at the same time 
+		static FGESHandler ServerHandler, ClientHandler;
+
+		const UWorld* CurrentWorld = WorldContext ? WorldContext->GetWorld() : GEngine->GetCurrentPlayWorld();
+		if (!CurrentWorld)
+		{
+			UE_LOG(LogGES, Warning, TEXT("FGES::GetHandler GEngine->GetCurrentPlayWorld Null, this may triggers wrong logic!"));
+			const bool bIsServer = IsRunningDedicatedServer();
+			return bIsServer ? ServerHandler : ClientHandler;
+		}
+
+		const ENetMode NetMode = CurrentWorld->GetNetMode();
+		UE_CLOG(NetMode == NM_MAX, LogGES, Warning, TEXT("FGES::GetHandler NetMode:Invalid value!"));
+
+		// Standalone/DS/LS return ServerHandler
+		if (NetMode == NM_Standalone || NetMode == NM_DedicatedServer || NetMode == NM_ListenServer)
+		{
+			return ServerHandler;
+		}
+
+		// Client return 'ClientHandler'
+		return ClientHandler;
+#else
 		static FGESHandler Handler;
 		return Handler;
+#endif
 	}
 
 	static bool CheckLuaParams(lua_State* L);

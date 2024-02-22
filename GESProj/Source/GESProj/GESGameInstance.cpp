@@ -15,7 +15,7 @@ void UGESGameInstance::Init()
 void UGESGameInstance::Shutdown()
 {
 	// Shutdown GES
-	FGES::Shutdown();
+	FGES::Shutdown(this);
 	
 	Super::Shutdown();
 }

@@ -93,6 +93,14 @@ CppEvents = {
             [1] = { ContainerType= CT.TMap,     CppType=EDC.Integer,    CppSubTypeName="",  ValueType=EDC.UStruct,   ValueSubTypeName="Vector" },
         },
     },
+    --DSTestEvent = {
+    --    Name = "DSTestEvent",
+    --    Data = { [1] = { CppType=EDC.FString, }, },
+    --},
+    --ClientTestEvent = {
+    --    Name = "ClientTestEvent",
+    --    Data = { [1] = { CppType=EDC.FString, }, },
+    --},
 }
 
 --- Build cpp event config for GlobalEventSystem

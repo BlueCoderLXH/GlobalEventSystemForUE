@@ -93,6 +93,9 @@ void AGESTest::DoCppTest_Register()
 	FGES::Register(TEXT("ArrayTestEvent"), this, &AGESTest::OnArrayEvent);
 	FGES::Register(TEXT("SetTestEvent"), this, &AGESTest::OnSetEvent);
 	FGES::Register(TEXT("MapTestEvent"), this, &AGESTest::OnMapEvent);
+	
+	// FGES::Register(TEXT("DSTestEvent"), this, &AGESTest::OnStringEvent);
+	// FGES::Register(TEXT("ClientTestEvent"), this, &AGESTest::OnStringEvent);
 }
 
 void AGESTest::DoCppTest_Unregister()
@@ -110,6 +113,9 @@ void AGESTest::DoCppTest_Unregister()
 	FGES::Unregister(TEXT("ArrayTestEvent"), this, &AGESTest::OnArrayEvent);
 	FGES::Unregister(TEXT("SetTestEvent"), this, &AGESTest::OnSetEvent);
 	FGES::Unregister(TEXT("MapTestEvent"), this, &AGESTest::OnMapEvent);
+	
+	// FGES::Unregister(TEXT("DSTestEvent"), this, &AGESTest::OnStringEvent);
+	// FGES::Unregister(TEXT("ClientTestEvent"), this, &AGESTest::OnStringEvent);
 }
 
 void AGESTest::DoCppTest_Dispatch()
@@ -119,24 +125,24 @@ void AGESTest::DoCppTest_Dispatch()
 	FGES::Dispatch("BoolTestEvent", true);
 	FGES::Dispatch("IntegerTestEvent", 520);
 	FGES::Dispatch("FloatTestEvent", 520.1314f);
-
+	
 	FString StrValue = TEXT("StringValue");
 	FGES::Dispatch("StringTestEvent", StrValue);
-
+	
 	FName NameValue = TEXT("NameValue");
 	FGES::Dispatch("NameTestEvent", NameValue);
-
+	
 	FText TextValue = FText::FromString(TEXT("TextValue"));
 	FGES::Dispatch("TextTestEvent", TextValue);
-
+	
 	FGES::Dispatch("EnumTestEvent", (int32)EGESCppType::UEnum);
-
+	
 	FVector VectorValue(5, 52, 520);
 	FGES::Dispatch("StructTestEvent", VectorValue);
-
+	
 	FGES::Dispatch("ObjectTestEvent", this);
 	FGES::Dispatch("ClassTestEvent", StaticClass());
-
+	
 	TArray<int32> ArrayValue({ 520, 521 });
 	FGES::Dispatch("ArrayTestEvent", ArrayValue);
 	
@@ -147,6 +153,18 @@ void AGESTest::DoCppTest_Dispatch()
 	MapValue.Add(520, FVector(1, 10, 100));
 	MapValue.Add(521, FVector(5, 52, 520));
 	FGES::Dispatch("MapTestEvent", MapValue);
+
+	// if (IsNetMode(NM_DedicatedServer))
+	// {
+	// 	FString TestString = TEXT("DSTestEvent");
+	// 	FGES::Dispatch(TEXT("DSTestEvent"), TestString);
+	// }
+	//
+	// if (IsNetMode(NM_Client))
+	// {
+	// 	FString TestString = TEXT("ClientTestEvent");
+	// 	FGES::Dispatch(TEXT("ClientTestEvent"), TestString);
+	// }
 
 	UE_LOG(LogGESTest, Log, TEXT("[GESTest_CPP] ========================== AGESTest::DoTest_Dispatch =========================="));
 }
