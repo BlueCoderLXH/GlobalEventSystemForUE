@@ -15,6 +15,11 @@ public:
 	 */
 	static void Init()
 	{
+		if (IsRunningCommandlet())
+		{
+			return;
+		}
+		
 		if (bInit) return;
 		
 		if (!UnLua::Startup())
@@ -46,6 +51,11 @@ public:
 	 */
 	static void Shutdown(const UObject* WorldContext = nullptr)
 	{
+		if (IsRunningCommandlet())
+		{
+			return;
+		}
+		
 		if (!bInit) return;
 		
 		UnLua::Shutdown();

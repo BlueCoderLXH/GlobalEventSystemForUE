@@ -15,22 +15,16 @@ struct FGESEventDataPinInfo
 	FEdGraphPinType PinType;
 };
 
-namespace GESEditorConstant
+namespace GESEditorCommon
 {
 	const FName EventTypePinName = TEXT("EventType");
 	const FName EventDataArrayPinName = TEXT("EventDataArray");
 	const FName EventDelegatePinName = TEXT("EventDelegate");
-	const FName EventDelegateFuncName = TEXT("OnGESEvent");
 	const FName OnEventPinName = TEXT("OnEvent");
 	const FString EventDataPinPrefixName = TEXT("EventData");
 
 	static FName GetEventDataPinName(const int32 Index)
 	{
 		return *FString::Printf(TEXT("%s%d"), *EventDataPinPrefixName, Index);
-	}
-
-	static FName GetCustomEventFuncName(const FName& EventType)
-	{
-		return *FString::Printf(TEXT("%s_%s"), *EventDelegateFuncName.ToString(), *EventType.ToString());
 	}
 }

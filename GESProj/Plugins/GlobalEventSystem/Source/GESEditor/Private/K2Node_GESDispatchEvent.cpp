@@ -13,12 +13,10 @@
 #include "K2Node_MakeArray.h"
 #include "K2Node_MakeMap.h"
 #include "K2Node_MakeSet.h"
-#include "K2Node_TemporaryVariable.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 
-using namespace GESEditorConstant;
+using namespace GESEditorCommon;
 
 #define LOCTEXT_NAMESPACE "UK2Node_GESDispatchEvent"
 

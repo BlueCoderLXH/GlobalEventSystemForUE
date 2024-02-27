@@ -3,10 +3,15 @@
 #include "GESBPLibrary.h"
 
 #include "Engine.h"
-#include "GESEditorCommon.h"
 #include "GES.h"
 
-using namespace GESEditorConstant;
+TAutoConsoleVariable<bool> CVarGESHotReloadConfig(
+	TEXT("ges.hotreload"),
+	false,
+	TEXT("Whether should hot reload ges cpp event config from lua.\n")
+	TEXT("  true = Hot reload ges config every time in editor\n")
+	TEXT("  false = Not hot reload"),
+	ECVF_Default);
 
 void UGESBPLibrary::GESDispatchEvent(FName EventType)
 {

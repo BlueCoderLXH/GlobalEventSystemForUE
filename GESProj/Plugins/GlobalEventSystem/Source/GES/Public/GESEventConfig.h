@@ -8,13 +8,7 @@
 #include "UObject/Object.h"
 #include "GESEventConfig.generated.h"
 
-static TAutoConsoleVariable<bool> CVarGESHotReloadConfig(
-	TEXT("ges.hotreload"),
-	false,
-	TEXT("Whether should hot reload ges cpp event config from lua.\n")
-	TEXT("  true = Hot reload ges config every time in editor\n")
-	TEXT("  false = Not hot reload"),
-	ECVF_Default);
+extern GES_API TAutoConsoleVariable<bool> CVarGESHotReloadConfig;
 
 UENUM(BlueprintType)
 enum class EGESCppType : uint8

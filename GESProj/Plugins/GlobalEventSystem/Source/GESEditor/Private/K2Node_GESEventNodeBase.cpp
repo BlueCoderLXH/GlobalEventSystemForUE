@@ -9,7 +9,9 @@
 #include "GESEventConfig.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 
-using namespace GESEditorConstant;
+using namespace GESEditorCommon;
+
+extern GES_API TAutoConsoleVariable<bool> CVarGESHotReloadConfig;
 
 void UK2Node_GESEventNodeBase::GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const
 {

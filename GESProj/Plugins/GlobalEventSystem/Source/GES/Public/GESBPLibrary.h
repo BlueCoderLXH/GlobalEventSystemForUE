@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GES.h"
+#include "GESEventData.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "GESBPLibrary.generated.h"
 
@@ -14,7 +15,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FGESDelegateForBP, UPARAM(ref) FGESEventDataAr
  * Implement GES bp utility function
  */
 UCLASS()
-class GESEDITOR_API UGESBPLibrary : public UBlueprintFunctionLibrary
+class GES_API UGESBPLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
@@ -43,7 +44,7 @@ public:
 	static void GESUnregisterEvent(FName EventType);
 	DECLARE_FUNCTION(execGESUnregisterEvent);
 
-	/*
+	/*E
 	 * GESConvertEventData
 	 * Convert event data array to every single type-specified data
 	 */
@@ -88,6 +89,11 @@ public:
 
 	UFUNCTION(BlueprintPure, Category="GES_Utils", meta=(BlueprintInternalUseOnly="true"))
 	static UClass* MakeClass(UClass* Value);
+
+	static FName GetCustomEventFuncName(const FName& EventType)
+	{
+		return *FString::Printf(TEXT("%s_%s"), TEXT("OnGESEvent"), *EventType.ToString());
+	}	
 };
 
 FORCEINLINE FVector UGESBPLibrary::MakeLiteralVector(FVector Value)

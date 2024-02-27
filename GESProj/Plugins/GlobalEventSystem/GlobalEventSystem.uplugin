@@ -23,7 +23,7 @@
 		},
 		{
 			"Name": "GESEditor",
-			"Type": "Runtime",
+			"Type": "UncookedOnly",
 			"LoadingPhase": "Default"
 		}
 	],

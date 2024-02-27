@@ -13,7 +13,7 @@
 
 #define LOCTEXT_NAMESPACE "UK2Node_GESRegisterEvent"
 
-using namespace GESEditorConstant;
+using namespace GESEditorCommon;
 
 void UK2Node_GESRegisterEvent::BeforeAllocateEventDataPins()
 {
@@ -32,7 +32,7 @@ bool UK2Node_GESRegisterEvent::IsEventRegistered() const
 	for (const UK2Node_CustomEvent* EventNode : EventNodes)
 	{
 		// For single blueprint, every event can be only registered once
-		if (IsValid(EventNode) && EventNode->CustomFunctionName == GetCustomEventFuncName(EventTypeValue))
+		if (IsValid(EventNode) && EventNode->CustomFunctionName == UGESBPLibrary::GetCustomEventFuncName(EventTypeValue))
 		{
 			return true;
 		}
@@ -93,7 +93,7 @@ void UK2Node_GESRegisterEvent::ExpandNode(FKismetCompilerContext& CompilerContex
 
 	// Create a 'CustomEvent' node
 	UK2Node_CustomEvent* CustomEventNode = CompilerContext.SpawnIntermediateEventNode<UK2Node_CustomEvent>(this);
-	CustomEventNode->CustomFunctionName = GetCustomEventFuncName(EventTypeValue);
+	CustomEventNode->CustomFunctionName = UGESBPLibrary::GetCustomEventFuncName(EventTypeValue);
 	CustomEventNode->AllocateDefaultPins();
 
 	// Connect 'Delegate' pin
