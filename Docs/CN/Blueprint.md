@@ -8,7 +8,7 @@
 ![触发事件](../Images/BP_GESDispatch.png "GES Dispatch Event")
 ## 用法
 ### 注册事件
-填写`EventType`后自动识别事件ID，并自动生成对应数量和对应类型的事件数据Pin  
+填写`EventType`后自动识别事件ID，并自动生成对应类型的事件数据Pin和OnEvent事件回调Pin  
 
 例如下面这里填入`BoolTestEvent`后，自动生成了类型为bool的事件数据Pin：  
 ![注册事件](../Images/BP_GESRegister1.png "GES Register Event")

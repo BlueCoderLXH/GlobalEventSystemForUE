@@ -11,7 +11,7 @@
 ![DispatchEvent](../Images/BP_GESDispatch.png "GES Dispatch Event")
 ## Usage
 ### Register Event
-Fill in `EventType`，then it will recognize event ID and create event data pins match the type automatically  
+Fill in `EventType`，then it will recognize event ID by creating event data pins and `OnEvent` callback pin automatically  
 
 eg：  
 ![RegisterEvent](../Images/BP_GESRegister1.png "GES Register Event")

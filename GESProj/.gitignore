@@ -79,3 +79,7 @@ DerivedDataCache/*
 
 # Plugins ignore
 Plugins/Developer/RiderLink
+
+# Packages
+Packages
+*.pdb
